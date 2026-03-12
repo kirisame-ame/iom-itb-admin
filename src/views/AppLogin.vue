@@ -2,28 +2,22 @@
   <div class="flex items-center justify-center h-screen px-6 bg-gray-200">
     <div class="w-full max-w-sm p-6 bg-white rounded-md shadow-md">
       <div class="flex items-center justify-center">
-        <img :src="require('@/assets/image/logo.png')" alt="IOM-ITB" class="w-[60px]" />
+        <img
+          :src="require('@/assets/image/logo.png')"
+          alt="IOM-ITB"
+          class="w-[60px]"
+        />
         <span class="text-2xl font-semibold text-gray-700">IOM-Dashboard</span>
       </div>
       <form class="mt-4" @submit.prevent="login">
-        <p v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-red-500 text-sm mt-2">
+          {{ errorMessage }}
+        </p>
         <label class="block">
           <span class="text-sm text-gray-700">Email</span>
           <input
             type="email"
-            class="
-              block
-              w-full
-              mt-1
-              border
-              border-gray-200
-              rounded-md
-              focus:border-indigo-600
-              focus:ring
-              focus:ring-opacity-40
-              focus:ring-indigo-500
-              p-2
-            "
+            class="block w-full mt-1 border border-gray-200 rounded-md focus:border-indigo-600 focus:ring focus:ring-opacity-40 focus:ring-indigo-500 p-2"
             v-model="email"
             required
           />
@@ -33,25 +27,16 @@
           <span class="text-sm text-gray-700">Password</span>
           <input
             :type="showPassword ? 'text' : 'password'"
-            class="
-              block
-              w-full
-              mt-1
-              border
-              border-gray-200
-              rounded-md
-              focus:border-indigo-600
-              focus:ring
-              focus:ring-opacity-40
-              focus:ring-indigo-500
-              p-2
-            "
+            class="block w-full mt-1 border border-gray-200 rounded-md focus:border-indigo-600 focus:ring focus:ring-opacity-40 focus:ring-indigo-500 p-2"
             v-model="password"
             required
           />
-          <span class="absolute inset-y-0 top-[40%] right-0 flex items-center pr-3 cursor-pointer text-black w-[32px]" @click="showPassword = !showPassword">
-            <IcEyeClose v-if="showPassword"/>
-            <IcEyeOpen v-else/>
+          <span
+            class="absolute inset-y-0 top-[40%] right-0 flex items-center pr-3 cursor-pointer text-black w-[32px]"
+            @click="showPassword = !showPassword"
+          >
+            <IcEyeClose v-if="showPassword" />
+            <IcEyeOpen v-else />
           </span>
         </label>
 
@@ -86,19 +71,21 @@
         <div class="mt-6">
           <button
             type="submit"
-            class="
-              w-full
-              px-4
-              py-2
-              text-sm text-center text-white
-              bg-indigo-600
-              rounded-md
-              focus:outline-none
-              hover:bg-indigo-500
-            "
+            class="w-full px-4 py-2 text-sm text-center text-white bg-indigo-600 rounded-md focus:outline-none hover:bg-indigo-500"
             :disabled="isLoading"
           >
-            {{ isLoading ? "Loading..." : "Sign in"}}
+            {{ isLoading ? "Loading..." : "Sign in" }}
+          </button>
+        </div>
+
+        <!-- DEV ONLY: bypass login -->
+        <div class="mt-3 border-t border-dashed border-gray-300 pt-3">
+          <button
+            type="button"
+            class="w-full px-4 py-2 text-sm text-center text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
+            @click="$router.push('/dashboard')"
+          >
+            [Dev] Skip to Dashboard
           </button>
         </div>
       </form>
@@ -128,10 +115,10 @@ async function login() {
   // Reset the error message before validation
   errorMessage.value = "";
   const payload = {
-    data:{
+    data: {
       email: email.value,
-      password: password.value
-    }
+      password: password.value,
+    },
   };
 
   try {
@@ -142,18 +129,20 @@ async function login() {
       // Set the cookie with token
       const expires = new Date();
       expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-      document.cookie = `PSSID=${data.token}; path=/; secure; expires=${expires.toUTCString()}`;
-      
+      document.cookie = `PSSID=${
+        data.token
+      }; path=/; secure; expires=${expires.toUTCString()}`;
+
       // Redirect to dashboard
       window.location.href = "/dashboard";
     } else {
       // If invalid, show error message
       errorMessage.value = data;
     }
-  } catch (error:any) {
+  } catch (error: any) {
     errorMessage.value = error?.message;
-  }finally{
-    isLoading.value = false
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>

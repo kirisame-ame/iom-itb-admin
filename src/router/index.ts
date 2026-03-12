@@ -139,21 +139,21 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
-  // Jika bukan halaman login
-  if (to.name !== "Login") {
-      try {
-          // Panggil FETCH_JWT untuk memastikan token/jwt valid
-          await store.dispatch(FETCH_JWT);
-          next(); // Lanjutkan ke halaman tujuan
-      } catch (error) {
-          console.error("JWT validation failed:", error);
-          // Redirect ke halaman login jika FETCH_JWT gagal
-          next({ name: "Login" });
-      }
-  } else {
-      next(); // Langsung ke halaman login tanpa validasi
-  }
-});
+// router.beforeEach(async (to, from, next) => {
+//   // Jika bukan halaman login
+//   if (to.name !== "Login") {
+//       try {
+//           // Panggil FETCH_JWT untuk memastikan token/jwt valid
+//           await store.dispatch(FETCH_JWT);
+//           next(); // Lanjutkan ke halaman tujuan
+//       } catch (error) {
+//           console.error("JWT validation failed:", error);
+//           // Redirect ke halaman login jika FETCH_JWT gagal
+//           next({ name: "Login" });
+//       }
+//   } else {
+//       next(); // Langsung ke halaman login tanpa validasi
+//   }
+// });
 
 export default router;

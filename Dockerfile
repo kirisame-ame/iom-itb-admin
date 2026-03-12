@@ -16,6 +16,13 @@ ENV VUE_APP_API_URL=${VUE_APP_API_URL}
 
 RUN npm run build
 
-RUN cp -r /app/dist /.static
+# ─── Stage 2: Serve ───────────────────────────────────────────────────────────
+FROM nginx:1.27-alpine AS production
+
+COPY --from=builder /app/dist /.static
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 6767
+
+CMD ["nginx", "-g", "daemon off;"]

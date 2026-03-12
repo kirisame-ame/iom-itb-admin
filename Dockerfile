@@ -16,6 +16,6 @@ ENV VUE_APP_API_URL=${VUE_APP_API_URL}
 
 RUN npm run build
 
-COPY /app/dist /.static
+RUN cp -r /app/dist /.static
 
 EXPOSE 6767

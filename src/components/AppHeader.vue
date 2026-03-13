@@ -34,7 +34,7 @@
       <div class="mx-4 lg:mx-0">
         <div class="flex items-center gap-3">
 
-          <h1 class="text-3xl font-bold text-[#003793] mb-1">
+          <h1 class="text-4xl font-bold text-[#003793] mb-1 tracking-tight">
             Dashboard Admin
           </h1>
 
@@ -44,7 +44,7 @@
             alt="IOM Logo"
           />
         </div>
-        <p class="text-sm text-gray-700 -mt-3 leading-none">
+        <p class="text-xs text-gray-700 -mt-3 leading-none">
           Dashboard Admin Ikatan Orang Tua Mahasiswa Institut Teknologi Bandung
         </p>
       </div>

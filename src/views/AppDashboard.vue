@@ -26,9 +26,9 @@
           </p>
         </div>
 
-        <img
-          :src="stat.icon"
-          class="w-8 h-8"
+        <component
+          :is="stat.icon"
+          class="w-8 h-8 text-[#003793]"
         />
 
       </div>
@@ -38,7 +38,7 @@
     <!-- CHART -->
     <div class="mt-8 bg-white rounded-lg shadow p-6">
 
-      <h3 class="text-lg font-bold text-[#003793] mb-4">
+      <h3 class="text-2xl font-bold text-[#003793] mb-4">
         Tren Donasi 12 bulan terakhir
       </h3>
 
@@ -55,7 +55,7 @@
     <div class="mt-8 bg-white rounded-lg shadow overflow-hidden">
 
       <div class="px-6 py-4 border-b">
-        <h3 class="text-lg font-bold text-[#003793]">
+        <h3 class="text-2xl font-bold text-[#003793]">
           Donasi Terbaru
         </h3>
       </div>
@@ -168,16 +168,16 @@ import VueApexCharts from "vue3-apexcharts"
 import Banner from "../partials/AppBanner.vue"
 import Breadcrumb from "../partials/AppBreadcrumb.vue"
 
-import bantuanIcon from "@/assets/image/default.png"
-import donasiIcon from "@/assets/image/default.png"
-import anggotaIcon from "@/assets/image/default.png"
-import approveIcon from "@/assets/image/default.png"
+import bantuanIcon from "@/assets/svg/ic-card.vue"
+import donasiIcon from "@/assets/svg/ic-bag.vue"
+import anggotaIcon from "@/assets/svg/ic-user.vue"
+import approveIcon from "@/assets/svg/ic-grafic.vue"
 
 interface DashboardStat{
 label:string
 value:string|number
 description?:string
-icon:string
+icon:any
 }
 
 interface Donation{

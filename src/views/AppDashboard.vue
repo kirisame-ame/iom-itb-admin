@@ -232,27 +232,27 @@ const chartSeries=ref([
 
 {
 name:"UKT",
-data:[75,60,20,30,40,65]
+data:[45,50,40,30,60,75,45,65,55,70,60,80]
 },
 
 {
 name:"Biaya Hidup",
-data:[70,45,25,35,38,55]
+data:[35,40,45,35,50,70,60,45,55,65,75,60]
 },
 
 {
 name:"Tugas Akhir",
-data:[60,0,30,50,40,70]
+data:[20,30,40,50,30,60,40,30,50,60,40,70]
 },
 
 {
 name:"Anak Asuh",
-data:[0,70,25,35,50,65]
+data:[10,20,30,25,35,0,70,25,35,50,65,40]
 },
 
 {
 name:"Bantuan Kesehatan",
-data:[0,5,10,0,5,0]
+data:[5,5,10,5,0,0,5,10,0,5,0,15]
 }
 
 ])
@@ -283,8 +283,8 @@ colors:[
 ],
 
 xaxis:{
-categories:["2019","2020","2021","2022","2023","2024"],
-title:{text:"TAHUN"}
+categories:["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"],
+title:{text:"BULAN"}
 },
 
 legend:{

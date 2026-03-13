@@ -28,7 +28,7 @@
         transition
         duration-300
         transform
-        bg-gray-900
+        bg-[#003792]
         lg:translate-x-0 lg:static lg:inset-0
       "
     >
@@ -361,9 +361,9 @@ import IcHome from "@/assets/svg/ic-home.vue";
 
 const { isOpen } = useSidebar();
 const activeClass = ref(
-  "bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100"
+  "bg-gray-600 bg-opacity-25 text-white border-gray-100"
 );
 const inactiveClass = ref(
-  "border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100"
+  "border-[#003792] text-white/50 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100"
 );
 </script>

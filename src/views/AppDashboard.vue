@@ -6,7 +6,7 @@
       <div
         v-for="(stat,index) in stats"
         :key="index"
-        class="p-4 bg-white rounded-lg flex items-center justify-between"
+        class="p-4 bg-gray-100 rounded-lg flex items-center justify-between"
       >
 
         <div>
@@ -36,7 +36,7 @@
     </div>
 
     <!-- CHART -->
-    <div class="mt-8 bg-white rounded-lg shadow p-6">
+    <div class="mt-8 bg-gray-100 rounded-lg shadow p-6">
 
       <h3 class="text-2xl font-bold text-[#003793] mb-4">
         Tren Donasi 12 bulan terakhir
@@ -52,7 +52,7 @@
     </div>
 
     <!-- DONASI TERBARU -->
-    <div class="mt-8 bg-white rounded-lg shadow overflow-hidden">
+    <div class="mt-8 bg-gray-100 rounded-lg shadow overflow-hidden">
 
       <div class="px-6 py-4 border-b">
         <h3 class="text-2xl font-bold text-[#003793]">

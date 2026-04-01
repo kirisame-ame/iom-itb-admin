@@ -261,7 +261,7 @@ import { ref, computed, onMounted } from 'vue';
 import { GET_ACTIVITIES, DELETE_ACTIVITY } from "@/store/activity.module";
 import ModalForm from "../components/modal/FormActivity.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
+import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 import IcTrash from '@/assets/svg/ic-trash.vue';
 import IcEdit from '@/assets/svg/ic-edit.vue';

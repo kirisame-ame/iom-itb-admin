@@ -243,7 +243,7 @@ import { ref, computed, onMounted } from 'vue';
 import { GET_DONASI, DELETE_DONASI } from "@/store/donasi.module";
 import ModalForm from "../components/modal/FormMerchandise.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
+import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 import { formatDate, formattedPrice } from '@/utils';
 import IcLink from '@/assets/svg/ic-link.vue';

@@ -226,7 +226,7 @@
   import { GET_DANA_BANTUAN, DELETE_DANA_BANTUAN } from "@/store/danaBantuan.module";
   import ModalForm from "../components/modal/FormDanaBantuan.vue";
   import { useStore } from 'vuex'; // Impor useStore dari Vuex
-  import Breadcrumb from '../partials/AppBreadcrumb.vue';
+  import Breadcrumb from '../components/AppBreadcrumb.vue';
   import Swal from 'sweetalert2';
   import { formattedPrice } from '@/utils';
   import IcTrash from '@/assets/svg/ic-trash.vue';

@@ -268,7 +268,7 @@ import { ref, computed, onMounted } from 'vue';
 import { GET_MERCHANDISES, DELETE_MERCHANDISE } from "@/store/merchandise.module";
 import ModalForm from "../components/modal/FormMerchandise.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
+import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 import { formattedPrice } from '@/utils';
 import IcTrash from '@/assets/svg/ic-trash.vue';

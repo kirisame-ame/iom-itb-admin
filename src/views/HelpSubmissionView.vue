@@ -309,7 +309,7 @@ import { GET_HELP_SUBMISSIONS, DELETE_HELP_SUBMISSION } from "@/store/helpSubmis
 import ModalForm from "../components/modal/FormMember.vue";
 import ModalGenerate from "../components/modal/GenerateCard.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
+import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 
 // Mengambil data tabel

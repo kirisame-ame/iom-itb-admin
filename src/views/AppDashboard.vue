@@ -165,9 +165,6 @@
 import { ref } from "vue"
 import VueApexCharts from "vue3-apexcharts"
 
-import Banner from "../partials/AppBanner.vue"
-import Breadcrumb from "../partials/AppBreadcrumb.vue"
-
 import bantuanIcon from "@/assets/svg/ic-card.vue"
 import donasiIcon from "@/assets/svg/ic-bag.vue"
 import anggotaIcon from "@/assets/svg/ic-user.vue"

@@ -324,7 +324,7 @@ import { ref, computed, onMounted } from 'vue';
 import { GET_TRANSACTIONS, DELETE_TRANSACTION } from "@/store/transaction.module";
 import ModalForm from "../components/modal/FormTransaction.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
+import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 
 // Mengambil data tabel

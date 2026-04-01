@@ -395,7 +395,7 @@ import { GET_DONATIONS, DELETE_DONATION } from "@/store/donasiTerahir.module";
 import ModalForm from "../components/modal/FormDonation.vue";
 import ModalGenerate from "../components/modal/GenerateCard.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
+import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 import { formattedPrice } from '@/utils';
 import IcTrash from '@/assets/svg/ic-trash.vue';

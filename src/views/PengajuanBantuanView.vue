@@ -221,7 +221,7 @@ import { ref, computed, onMounted } from 'vue';
 import { GET_PENGAJUAN_BANTUAN, DELETE_PENGAJUAN_BANTUAN } from "@/store/pengajuanBantuan.module";
 import ModalForm from "../components/modal/FormMerchandise.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
+import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 import { formatDate } from '@/utils';
 import IcLink from '@/assets/svg/ic-link.vue';

@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from "axios";
 import JwtService from "./jwt.service";
-import config from "@/ConfigProvider";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 
@@ -28,13 +27,13 @@ const ApiService: ApiServiceType = {
     // Initialize both axios instances with cookie jar support
     this.api1 = wrapper(
       axios.create({
-        baseURL: config.value("API_URL"), // Main API endpoint
+        baseURL: process.env.VUE_APP_API_URL, // Main API endpoint
       }),
     );
 
     this.api2 = wrapper(
       axios.create({
-        baseURL: config.value("API_UPLOAD"), // Upload API endpoint
+        baseURL: process.env.VUE_APP_API_UPLOAD, // Upload API endpoint
       }),
     );
 

@@ -3,7 +3,7 @@
     <div class="w-full max-w-sm p-6 bg-white rounded-md shadow-md">
       <div class="flex items-center justify-center">
         <img
-          :src="require('@/assets/image/logo.png')"
+          :src="require('@/assets/image/logo.webp')"
           alt="IOM-ITB"
           class="w-[60px]"
         />

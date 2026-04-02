@@ -40,7 +40,7 @@
 
           <img
             class="h-20"
-            :src="require('@/assets/image/logo.png')"
+            :src="require('@/assets/image/logo.webp')"
             alt="IOM Logo"
           />
         </div>
@@ -212,7 +212,7 @@
         >
           <img
             class="object-cover w-full h-full"
-            :src="require('@/assets/image/logo.png')"
+            :src="require('@/assets/image/logo.webp')"
             alt="Your avatar"
           />
         </button>

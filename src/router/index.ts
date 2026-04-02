@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import AppSelectorView from "../views/AppSelectorView.vue";
 import Dashboard from "../views/AppDashboard.vue";
 import Forms from "../views/AppForms.vue";
 import Tables from "../views/AppTables.vue";
@@ -31,6 +32,12 @@ const routes: Array<RouteRecordRaw> = [
     component: Login,
     meta: { layout: "empty" },
   },
+  {
+  path: "/select",
+  name: "AppSelector",
+  component: AppSelectorView,
+  meta: { layout: "empty" }, // tanpa sidebar/navbar
+},
   {
     path: "/dashboard",
     name: "Dashboard",

@@ -34,7 +34,7 @@
     >
       <div class="flex items-center justify-center mt-8">
         <div class="flex items-center">
-         <!-- <img :src="require('@/assets/image/logo.png')" alt="IOM-ITB" class="w-[60px]"> -->
+         <!-- <img :src="require('@/assets/image/logo.webp')" alt="IOM-ITB" class="w-[60px]"> -->
 
           <span class="text-2xl font-semibold text-white">IOM-Dashboard</span>
         </div>

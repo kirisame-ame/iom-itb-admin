@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- STAT CARD -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
 
       <div
         v-for="(stat,index) in stats"
@@ -18,11 +18,9 @@
             {{ stat.value }}
           </p>
 
-          <p
-            v-if="stat.description"
-            class="text-xs text-green-600 mt-1"
-          >
-            {{ stat.description }}
+          <p class="text-xs mt-1 min-h-[16px]"
+            :class="stat.description ? 'text-green-600' : 'text-transparent'">
+            {{ stat.description || '-' }}
           </p>
         </div>
 
@@ -43,7 +41,7 @@
       </h3>
 
       <apexchart
-        type="bar"
+        type="line"
         height="350"
         :options="chartOptions"
         :series="chartSeries"
@@ -199,15 +197,27 @@ return new Date(date).toLocaleDateString("id-ID")
 const stats=ref<DashboardStat[]>([
 
 {
-label:"Pengajuan Bantuan",
+label:"Pengajuan Bantuan UKT",
 value:15,
 icon:bantuanIcon
 },
 
 {
-label:"Pengajuan Disetujui",
+label:"Pengajuan Bantuan Biaya Hidup",
 value:15,
-icon:approveIcon
+icon:bantuanIcon
+},
+
+{
+label:"Pengajuan Bantuan Tugas Akhir",
+value:15,
+icon:bantuanIcon
+},
+
+{
+label:"Pengajuan Bantuan Lainnya",
+value:15,
+icon:bantuanIcon
 },
 
 {
@@ -225,69 +235,48 @@ icon:anggotaIcon
 
 ])
 
-const chartSeries=ref([
-
-{
-name:"UKT",
-data:[45,50,40,30,60,75,45,65,55,70,60,80]
-},
-
-{
-name:"Biaya Hidup",
-data:[35,40,45,35,50,70,60,45,55,65,75,60]
-},
-
-{
-name:"Tugas Akhir",
-data:[20,30,40,50,30,60,40,30,50,60,40,70]
-},
-
-{
-name:"Anak Asuh",
-data:[10,20,30,25,35,0,70,25,35,50,65,40]
-},
-
-{
-name:"Bantuan Kesehatan",
-data:[5,5,10,5,0,0,5,10,0,5,0,15]
-}
-
+const chartSeries = ref([
+  {
+    name: "Donasi",
+    data: [
+      15000000, 13000000, 16500000, 14000000,
+      12000000, 13500000, 11000000, 13000000,
+      11500000, 12000000, 13000000, 15000000
+    ]
+  }
 ])
 
-const chartOptions=ref({
+const chartOptions = ref({
+  chart: {
+    type: "line",
+    toolbar: { show: false }
+  },
 
-chart:{
-type:"bar",
-toolbar:{show:false}
-},
+  stroke: {
+    curve: "smooth",
+    width: 3
+  },
 
-plotOptions:{
-bar:{
-columnWidth:"45%"
-}
-},
+  xaxis: {
+    categories: [
+      "Jan","Feb","Mar","Apr","Mei","Jun",
+      "Jul","Agu","Sep","Okt","Nov","Des"
+    ],
+    title: {
+      text: "Bulan"
+    }
+  },
 
-dataLabels:{
-enabled:false
-},
-
-colors:[
-"#3b82f6",
-"#f97316",
-"#94a3b8",
-"#eab308",
-"#60a5fa"
-],
-
-xaxis:{
-categories:["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"],
-title:{text:"BULAN"}
-},
-
-legend:{
-position:"bottom"
-}
-
+  yaxis: {
+    title: {
+      text: "Nominal Donasi (Rp)"
+    },
+    labels: {
+      formatter: (value: number) => {
+        return value.toLocaleString("id-ID")
+      }
+    }
+  }
 })
 
 const recentDonations=ref<Donation[]>([

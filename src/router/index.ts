@@ -11,7 +11,6 @@ import Users from "../views/UserView.vue";
 import Members from "../views/MemberView.vue";
 import DonasiTerakhir from "../views/DonasiTerakhirView.vue";
 import Donasi from "../views/DonasiView.vue";
-import HelpSubmissions from "../views/HelpSubmissionView.vue";
 import PendataanAnggota from "../views/PendataanAnggotaView.vue";
 import Login from "../views/AppLogin.vue";
 import Modal from "../views/AppModal.vue";
@@ -83,11 +82,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "Members",
     component: Members,
   },
-  {
-    path: "/10-donasi-terakhir",
-    name: "Donasi Trakhir",
-    component: DonasiTerakhir,
-  },
+  // {
+  //   path: "/10-donasi-terakhir",
+  //   name: "Donasi Trakhir",
+  //   component: DonasiTerakhir,
+  // },
   {
     path: "/donasi",
     name: "Donasi",

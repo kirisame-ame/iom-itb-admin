@@ -3,8 +3,6 @@ import auth from "./auth.module";
 import activity from "./activity.module";
 import merchandise from "./merchandise.module";
 import member from "./member.module";
-import donasiTerakhir from "./donasiTerahir.module";
-import helpSubmission from "./helpSubmission.module";
 import transaction from "./transaction.module";
 import upload from "./upload.module";
 import danaBantuan from "./danaBantuan.module";
@@ -19,8 +17,6 @@ export default createStore({
     auth,
     merchandise,
     member,
-    donasiTerakhir,
-    helpSubmission,
     activity,
     transaction,
     upload,

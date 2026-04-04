@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Breadcrumb -->
-    <Breadcrumb breadcrumb="charts" />
 
     <div class="mt-4">
       <h4 class="text-gray-600">Charts</h4>
@@ -29,7 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import Breadcrumb from "../components/AppBreadcrumb.vue";
 import DonutChart from "@/components/charts/DonutChart.vue";
 import LineChart from "@/components/charts/LineChart.vue";
 import BarChart from "../components/charts/BarChart.vue";

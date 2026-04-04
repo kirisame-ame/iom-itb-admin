@@ -3,10 +3,10 @@
     <Sidebar />
 
     <div class="flex-1 flex flex-col overflow-hidden">
-      <Header />
+      <!-- <Header /> -->
 
-      <main class="flex-1 overflow-x-hidden overflow-y-auto" :class="isDashboard ? 'bg-white' : 'bg-gray-200'">
-        <div :class="isDashboard ? 'p-6 md:p-8' : 'container mx-auto px-6 py-8'">
+      <main class="flex-1 overflow-x-hidden overflow-y-auto" :class="isDashboard ? 'bg-white' : ' bg-slate-50 '">
+        <div :class="isDashboard ? 'p-6 md:p-8' : 'container mx-auto px-6 py-2'">
           <slot />
         </div>
       </main>

@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Breadcrumb -->
-    <Breadcrumb breadcrumb="ui-elements" />
 
     <!-- Alerts -->
     <div class="mt-4">
@@ -280,5 +278,4 @@
   </div>
 </template>
 <script lang="ts" setup>
-import Breadcrumb from '../components/AppBreadcrumb.vue'
 </script>

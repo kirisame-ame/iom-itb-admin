@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Breadcrumb -->
-    <Breadcrumb breadcrumb="Modal" />
     <button
       @click="open = true"
       class="px-6 py-2 mt-3 font-medium tracking-wide text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
@@ -90,7 +88,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Breadcrumb from '../components/AppBreadcrumb.vue'
 
 const open = ref(false)
 </script>

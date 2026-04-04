@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Breadcrumb -->
-    <Breadcrumb breadcrumb="Cards" />
     <div class="mt-4 mb-3">
       <h4 class="text-gray-700">Stacked</h4>
 
@@ -88,5 +86,4 @@
   </div>
 </template>
 <script lang="ts" setup>
-import Breadcrumb from '../components/AppBreadcrumb.vue'
 </script>

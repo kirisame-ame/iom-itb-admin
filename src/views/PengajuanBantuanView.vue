@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 font-inter">
+  <div class="min-h-screen font-inter">
 
     <!-- ── Page Header ─────────────────────────────────────────── -->
     <div class="px-8 pt-8 pb-4">

@@ -16,7 +16,6 @@ import Login from "../views/AppLogin.vue";
 import Modal from "../views/AppModal.vue";
 import Chart from "../views/ChartView.vue";
 import Card from "../views/CardView.vue";
-import Blank from "../views/BlankView.vue";
 import NotFound from "../views/NotFound.vue";
 import store from "@/store";
 import { FETCH_JWT } from "@/store/auth.module";
@@ -131,11 +130,6 @@ const routes: Array<RouteRecordRaw> = [
     path: "/charts",
     name: "Chart",
     component: Chart,
-  },
-  {
-    path: "/blank",
-    name: "Blank",
-    component: Blank,
   },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];

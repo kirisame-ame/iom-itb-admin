@@ -1,7 +1,5 @@
 <template>
     <div>
-      <!-- Breadcrumb -->
-      <Breadcrumb :breadcrumb="title" />
   
       <!-- Modal -->
       <ModalForm
@@ -225,8 +223,7 @@
   import { ref, computed, onMounted } from 'vue';
   import { GET_DANA_BANTUAN, DELETE_DANA_BANTUAN } from "@/store/danaBantuan.module";
   import ModalForm from "../components/modal/FormDanaBantuan.vue";
-  import { useStore } from 'vuex'; // Impor useStore dari Vuex
-  import Breadcrumb from '../components/AppBreadcrumb.vue';
+  import { useStore } from 'vuex'; 
   import Swal from 'sweetalert2';
   import { formattedPrice } from '@/utils';
   import IcTrash from '@/assets/svg/ic-trash.vue';
@@ -234,7 +231,7 @@
 import IcPlus from '@/assets/svg/ic-plus.vue';
   
   // Mengambil data tabel
-  const store = useStore(); // Mengambil instance store
+  const store = useStore(); 
   
   const isOpened = ref(false); 
   const isLoading = ref(true); 

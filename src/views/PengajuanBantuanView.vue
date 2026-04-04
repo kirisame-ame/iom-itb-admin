@@ -3,21 +3,18 @@
 
     <!-- ── Page Header ─────────────────────────────────────────── -->
     <div class="px-8 pt-8 pb-4">
-      <h1 class="text-2xl font-bold text-blue-900 tracking-tight">Pengajuan Bantuan</h1>
-      <p class="text-sm text-slate-500 mt-0.5">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
+      <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Pengajuan Bantuan</h1>
+      <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
     </div>
 
-    <!-- ── Table Card ──────────────────────────────────────────── -->
-    <div class="mx-8 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-
       <!-- Toolbar -->
-      <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-100">
+      <div class="flex items-center justify-between gap-4 mx-8 py-4 border-b border-slate-100">
         <div class="flex items-center gap-3">
           <div class="relative">
             <select
               v-model="limit"
               @change="getData"
-              class="appearance-none pl-3 pr-8 py-2 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+              class="appearance-none pl-3 pr-8 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
             >
               <option :value="5">5 baris</option>
               <option :value="10">10 baris</option>
@@ -37,7 +34,7 @@
               v-model="search"
               @input="getData"
               placeholder="Cari nama atau NIM..."
-              class="pl-9 pr-4 py-2 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-slate-400"
+              class="pl-9 pr-4 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-slate-400"
             />
           </div>
         </div>
@@ -53,6 +50,9 @@
           Export Excel
         </a>
       </div>
+
+    <!-- ── Table Card ──────────────────────────────────────────── -->
+    <div class="mx-8 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
       <!-- Table -->
       <div class="overflow-x-auto">

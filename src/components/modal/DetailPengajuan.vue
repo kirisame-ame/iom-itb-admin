@@ -13,7 +13,7 @@
         <!-- Sticky header -->
         <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white rounded-t-2xl">
           <div>
-            <p class="text-[11px] font-semibold text-blue-600 uppercase tracking-widest mb-0.5">Detail Pengajuan</p>
+            <p class="text-[13px] font-bold text-blue-600 uppercase tracking-widest mb-0.5">Detail Pengajuan</p>
             <h2 class="text-[17px] font-bold text-slate-900">#{{ item?.id }}</h2>
           </div>
           <button
@@ -38,10 +38,29 @@
           <section>
             <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Informasi Dasar</h3>
             <div class="bg-slate-50 rounded-xl p-4 flex flex-col gap-2.5 border border-slate-100">
-              <InfoRow label="Nama"          :value="item?.nama" />
-              <InfoRow label="NIM"           :value="item?.nim" />
-              <InfoRow label="Jenis Bantuan" :value="item?.jenisBantuan" />
-              <InfoRow label="Tanggal Kirim" :value="formatDate(item?.tanggalKirim)" />
+              <!-- Nama -->
+                <div class="flex items-start gap-3">
+                <span class="text-xs font-medium text-slate-500 w-28 flex-shrink-0">Nama</span>
+                <span class="text-sm text-slate-800 font-medium">{{ item?.nama ?? '—' }}</span>
+                </div>
+
+                <!-- NIM -->
+                <div class="flex items-start gap-3">
+                <span class="text-xs font-medium text-slate-500 w-28 flex-shrink-0">NIM</span>
+                <span class="text-sm text-slate-800 font-medium">{{ item?.nim ?? '—' }}</span>
+                </div>
+
+                <!-- Jenis Bantuan -->
+                <div class="flex items-start gap-3">
+                <span class="text-xs font-medium text-slate-500 w-28 flex-shrink-0">Jenis Bantuan</span>
+                <span class="text-sm text-slate-800 font-medium">{{ item?.jenisBantuan ?? '—' }}</span>
+                </div>
+
+                <!-- Tanggal Kirim -->
+                <div class="flex items-start gap-3">
+                <span class="text-xs font-medium text-slate-500 w-28 flex-shrink-0">Tanggal Kirim</span>
+                <span class="text-sm text-slate-800 font-medium">{{ formatDate(item?.tanggalKirim) }}</span>
+                </div>
               <div class="flex items-center gap-3">
                 <span class="text-xs font-medium text-slate-500 w-28 flex-shrink-0">File Pengajuan</span>
                 <a
@@ -181,17 +200,6 @@ import { useStore } from 'vuex'
 import { UPDATE_STATUS_PENGAJUAN } from '@/store/pengajuanBantuan.module'
 import type { PengajuanBantuan, StatusPengajuan } from '@/store/pengajuanBantuan.module'
 import ConfirmDialog from '@/components/modal/ConfirmDialog.vue'
-
-// ─── tiny inline sub-component ────────────────────────────────────────────────
-const InfoRow = {
-  props: ['label', 'value'],
-  template: `
-    <div class="flex items-start gap-3">
-      <span class="text-xs font-medium text-slate-500 w-28 flex-shrink-0">{{ label }}</span>
-      <span class="text-sm text-slate-800 font-medium">{{ value ?? '—' }}</span>
-    </div>
-  `,
-}
 
 // ─── props & emits ────────────────────────────────────────────────────────────
 const props = defineProps<{

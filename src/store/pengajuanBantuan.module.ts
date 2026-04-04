@@ -110,28 +110,36 @@ const pengajuanBantuanModule: Module<PengajuanBantuanState, any> = {
 
         // ── Placeholder data ──────────────────────────────────────────────
         const placeholder: PengajuanBantuan[] = [
-          {
+        {
             id: 1, nim: '13523777', nama: 'Jonatan Levi',
-            jenisBantuan: 'UKT', alasanPengajuan: 'Alasan placeholder...',
-            filePengajuan: 'pengajuan.pdf', tanggalKirim: '2025-04-01T00:00:00.000Z',
-            status: 'Menunggu',
-            riwayat: [
-              { id: 1, waktu: '2025-04-01T08:00:00.000Z', keterangan: 'Pengajuan terdaftar', oleh: 'Sistem' },
-              { id: 2, waktu: '2025-04-01T08:05:00.000Z', keterangan: 'Status diubah menjadi Menunggu', oleh: 'Sistem' },
-            ],
-          },
-          {
-            id: 2, nim: '13521234', nama: 'Max Verstappen',
-            jenisBantuan: 'Tugas Akhir', alasanPengajuan: 'Alasan placeholder...',
-            filePengajuan: 'pengajuan_max.pdf', tanggalKirim: '2025-04-01T00:00:00.000Z',
+            jenisBantuan: 'UKT', alasanPengajuan: 'Kondisi finansial keluarga sedang mengalami kesulitan sehingga tidak mampu membayar UKT secara penuh pada semester ini.',
+            filePengajuan: 'pengajuan_jonatan.pdf', tanggalKirim: '2026-04-01T08:00:00.000Z',
             status: 'Menunggu', riwayat: [],
-          },
-          {
+        },
+        {
+            id: 2, nim: '13521234', nama: 'Max Verstappen',
+            jenisBantuan: 'Tugas Akhir', alasanPengajuan: 'Membutuhkan bantuan dana untuk penelitian tugas akhir bidang teknik mesin.',
+            filePengajuan: 'pengajuan_max.pdf', tanggalKirim: '2026-04-01T09:30:00.000Z',
+            status: 'Menunggu', riwayat: [],
+        },
+        {
             id: 3, nim: '13520001', nama: 'Windy',
-            jenisBantuan: 'Biaya Hidup', alasanPengajuan: 'Alasan placeholder...',
-            filePengajuan: 'pengajuan_windy.pdf', tanggalKirim: '2025-04-01T00:00:00.000Z',
+            jenisBantuan: 'Biaya Hidup', alasanPengajuan: 'Orang tua mengalami PHK sehingga tidak dapat memenuhi biaya hidup selama perkuliahan.',
+            filePengajuan: 'pengajuan_windy.pdf', tanggalKirim: '2026-03-28T10:00:00.000Z',
             status: 'Gagal', riwayat: [],
-          },
+        },
+        {
+            id: 4, nim: '13522345', nama: 'Aditya Wijaya',
+            jenisBantuan: 'Lomba', alasanPengajuan: 'Memerlukan dana untuk mengikuti lomba tingkat nasional di Jakarta.',
+            filePengajuan: 'pengajuan_aditya.pdf', tanggalKirim: '2026-03-30T07:45:00.000Z',
+            status: 'Menunggu', riwayat: [],
+        },
+        {
+            id: 5, nim: '13524567', nama: 'Siti Aminah',
+            jenisBantuan: 'UKT', alasanPengajuan: 'Penghasilan orang tua menurun drastis pasca pandemi.',
+            filePengajuan: 'pengajuan_siti.pdf', tanggalKirim: '2026-03-25T11:00:00.000Z',
+            status: 'Disetujui', riwayat: [],
+        },
         ]
 
         const page = params.page ?? 1
@@ -171,19 +179,18 @@ const pengajuanBantuanModule: Module<PengajuanBantuanState, any> = {
         // ── Placeholder ───────────────────────────────────────────────────
         await new Promise((r) => setTimeout(r, 400))
         const placeholder: PengajuanBantuan = {
-          id,
-          nim: '13523777',
-          nama: 'Jonatan Levi',
-          jenisBantuan: 'UKT',
-          alasanPengajuan:
-            'Alasan Saya mengajukan bantuan UKT adalah karena kondisi finansial keluarga yang sedang mengalami kesulitan pasca pandemi. Orang tua saya mengalami penurunan penghasilan yang signifikan sehingga tidak mampu membayar UKT secara penuh pada semester ini.',
-          filePengajuan: 'pengajuan.pdf',
-          tanggalKirim: '2026-04-01T00:00:00.000Z',
-          status: 'Menunggu',
-          riwayat: [
-            { id: 1, waktu: '2026-04-01T08:00:00.000Z', keterangan: 'Pengajuan terdaftar', oleh: 'Sistem' },
-            { id: 2, waktu: '2026-04-01T08:05:00.000Z', keterangan: 'Status diubah menjadi Menunggu', oleh: 'Sistem' },
-          ],
+            id,
+            nim: '13523777',
+            nama: 'Jonatan Levi',
+            jenisBantuan: 'UKT',
+            alasanPengajuan: 'Kondisi finansial keluarga sedang mengalami kesulitan sehingga tidak mampu membayar UKT secara penuh pada semester ini.',
+            filePengajuan: 'pengajuan_jonatan.pdf',
+            tanggalKirim: '2026-04-01T08:00:00.000Z',
+            status: 'Menunggu',
+            riwayat: [
+                { id: 1, waktu: '2026-04-01T08:00:00.000Z', keterangan: 'Pengajuan terdaftar', oleh: 'Sistem' },
+                { id: 2, waktu: '2026-04-01T08:05:00.000Z', keterangan: 'Status diubah menjadi Menunggu', oleh: 'Sistem' },
+            ],
         }
         commit(SET_DETAIL, placeholder)
         // ─────────────────────────────────────────────────────────────────

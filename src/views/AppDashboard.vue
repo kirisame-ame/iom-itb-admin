@@ -1,4 +1,10 @@
 <template>
+    <!-- ── Page Header ─────────────────────────────────────────── -->
+  <div class="pb-4">
+    <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Dashboard</h1>
+    <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
+  </div>
+
   <div>
     <!-- STAT CARD -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">

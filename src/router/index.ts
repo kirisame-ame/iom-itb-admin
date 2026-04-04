@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
   path: "/select",
   name: "AppSelector",
   component: AppSelectorView,
-  meta: { layout: "empty" }, // tanpa sidebar/navbar
+  meta: { layout: "empty" },
 },
   {
     path: "/dashboard",

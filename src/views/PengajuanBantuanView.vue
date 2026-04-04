@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen font-inter">
+  <div class="min-h-screen">
 
     <!-- ── Page Header ─────────────────────────────────────────── -->
-    <div class="px-8 pt-8 pb-4">
+    <div class="pb-4">
       <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Pengajuan Bantuan</h1>
       <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
     </div>
 
       <!-- Toolbar -->
-      <div class="flex items-center justify-between gap-4 mx-8 py-4 border-b border-slate-100">
+      <div class="flex items-center justify-between gap-4 py-4 border-b border-slate-100">
         <div class="flex items-center gap-3">
           <div class="relative">
             <select
@@ -52,7 +52,7 @@
       </div>
 
     <!-- ── Table Card ──────────────────────────────────────────── -->
-    <div class="mx-8 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
       <!-- Table -->
       <div class="overflow-x-auto">
@@ -231,8 +231,3 @@ const formatDate = (iso?: string) => {
   })
 }
 </script>
-
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-.font-inter { font-family: 'Inter', sans-serif; }
-</style>

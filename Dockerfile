@@ -10,9 +10,18 @@ RUN npm install --frozen-lockfile 2>/dev/null || npm install
 # Copy source and build
 COPY . .
 
-# Accept the API URL at build time (overrides .env)
+# Accept frontend environment values at build time (overrides .env)
 ARG VUE_APP_API_URL
+ARG VUE_APP_API_UPLOAD
+ARG VUE_APP_KEYCLOAK_URL
+ARG VUE_APP_KEYCLOAK_REALM
+ARG VUE_APP_KEYCLOAK_CLIENT_ID=iom-itb-admin
+
 ENV VUE_APP_API_URL=${VUE_APP_API_URL}
+ENV VUE_APP_API_UPLOAD=${VUE_APP_API_UPLOAD}
+ENV VUE_APP_KEYCLOAK_URL=${VUE_APP_KEYCLOAK_URL}
+ENV VUE_APP_KEYCLOAK_REALM=${VUE_APP_KEYCLOAK_REALM}
+ENV VUE_APP_KEYCLOAK_CLIENT_ID=${VUE_APP_KEYCLOAK_CLIENT_ID}
 
 RUN npm run build
 

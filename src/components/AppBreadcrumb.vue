@@ -25,6 +25,6 @@
 import { defineProps, computed } from 'vue'
 const props = defineProps<{ breadcrumb: string }>()
 const breadcrumbName = computed(() => {
-  return props.breadcrumb.toUpperCase()
+  return props.breadcrumb
 })
 </script>

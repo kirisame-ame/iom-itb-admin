@@ -34,7 +34,7 @@
     >
       <div class="flex items-center justify-center mt-8">
         <div class="flex items-center">
-         <!-- <img :src="require('@/assets/image/logo.png')" alt="IOM-ITB" class="w-[60px]"> -->
+         <!-- <img :src="require('@/assets/image/logo.webp')" alt="IOM-ITB" class="w-[60px]"> -->
 
           <span class="text-2xl font-semibold text-white">IOM-Dashboard</span>
         </div>
@@ -103,14 +103,14 @@
           <span class="mx-4">Members</span>
         </router-link> -->
 
-        <router-link
+        <!-- <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
           :class="[$route.name === 'Donasi Trakhir' ? activeClass : inactiveClass]"
           to="/10-donasi-terakhir"
         >
           <IcUser/>
           <span class="mx-4">10 Donasi Terakhir</span>
-        </router-link>
+        </router-link> -->
 
         <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"

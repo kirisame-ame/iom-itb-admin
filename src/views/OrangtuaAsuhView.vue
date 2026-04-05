@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Breadcrumb -->
-    <Breadcrumb :breadcrumb="title" />
 
     <!-- Modal -->
     <ModalForm
@@ -289,7 +287,6 @@ import { ref, computed, onMounted } from 'vue';
 import { GET_ORANGTUA_ASUH, DELETE_ORANGTUA_ASUH } from "@/store/orangtuaAsuh.module";
 import ModalForm from "../components/modal/FormMerchandise.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 import { formatDate, formattedPrice } from '@/utils';
 import IcLink from '@/assets/svg/ic-link.vue';

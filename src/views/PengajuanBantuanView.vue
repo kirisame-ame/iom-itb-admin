@@ -1,318 +1,233 @@
 <template>
-  <div>
-    <!-- Breadcrumb -->
-    <Breadcrumb :breadcrumb="title" />
+  <div class="min-h-screen">
 
-    <!-- Modal -->
-    <ModalForm
-      v-if="isOpened"
-      :id="currentId"
-      :title="`${currentId ? 'Edit' : 'Add'} ${title}`"
-      :data="dataUpdate"
-      @close="handleModalClose"
-    />
+    <!-- ── Page Header ─────────────────────────────────────────── -->
+    <div class="pb-4">
+      <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Pengajuan Bantuan</h1>
+      <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
+    </div>
 
-    <!-- Table -->
-    <div class="mt-8">
-
-      <div class="mt-6">
-        <h2 class="text-xl font-semibold leading-tight text-gray-700">{{ title }}</h2>
-
-        <div class="flex flex-col mt-3 sm:flex-row justify-between">
-          <div class="flex items-center">
-          <div class="flex">
-            <div class="relative">
-              <select
-                class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                v-model="limit"
-                @change="getData"
-              >
-                <option :value="5">5</option>
-                <option :value="10">10</option>
-                <option :value="20">20</option>
-                <option :value="1000">1000</option>
-              </select>
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
+      <!-- Toolbar -->
+      <div class="flex items-center justify-between gap-4 py-4 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <select
+              v-model="limit"
+              @change="getData"
+              class="appearance-none pl-3 pr-8 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+            >
+              <option :value="5">5 baris</option>
+              <option :value="10">10 baris</option>
+              <option :value="20">20 baris</option>
+              <option :value="100">Semua</option>
+            </select>
+            <svg class="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
           </div>
 
-          <div class="relative block mt-2 sm:mt-0">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-              <svg
-                viewBox="0 0 24 24"
-                class="w-4 h-4 text-gray-500 fill-current"
-              >
-                <path
-                  d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                />
-              </svg>
-            </span>
-
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
             <input
-              placeholder="Search"
-              class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
               v-model="search"
               @input="getData"
+              placeholder="Cari nama atau NIM..."
+              class="pl-9 pr-4 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-slate-400"
             />
           </div>
         </div>
-          <a
-            class="flex justify-between items-center gap-2 px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:bg-green-500"
-            href="https://docs.google.com/spreadsheets/d/1fX-pGRaiVNo37gx5YdIWZ4DTpp_RyZ1kYmL2dSeaHQ8/edit?usp=sharing"
-            target="_blank"
-          >
-          Excel
-          <IcLink class="w-[18px]"/>
+
+        <a
+          href="https://docs.google.com/spreadsheets/d/1fX-pGRaiVNo37gx5YdIWZ4DTpp_RyZ1kYmL2dSeaHQ8/edit?usp=sharing"
+          target="_blank"
+          class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          </svg>
+          Export Excel
         </a>
-        </div>
+      </div>
 
-        <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8">
-          <div
-            class="inline-block min-w-full overflow-hidden rounded-lg shadow"
-          >
-            <table class="min-w-full leading-normal">
-              <thead>
-                <tr>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    No
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    NIM
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Nama
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Jenis Bantuan
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Alasan Perlu Bantuan
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Proposal Ajuan
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Tanggal Kirim
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-if="isLoading">
-                  <td colspan="20" class="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    Loading...
-                  </td>
-                </tr>
-                <tr v-else v-for="(u, index) in computedData" :key="index">
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["no"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["NIM"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["Nama"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200 max-w-[200px]"
-                  >
-                    <p class="text-gray-900 break-words">{{ u?.["Jenis Bantuan"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-pre-line" style="word-wrap: break-word">{{ u?.["Alasan kenapa memerlukan bantuan "] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <a :href="u?.['Upload Berkas (Proposal Ajuan)']" target="_blank" class="text-blue-600 whitespace-pre-line hover:underline" style="word-wrap: break-word">Click disini</a>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ formatDate(u?.["Submitted at"]) }}
-                    </p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div
-              class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
-            >
-            <span class="text-xs text-gray-900 xs:text-sm"
-            >Showing {{ pagination?.start }} to {{ pagination?.end }} of {{ pagination?.totalEntries }}  Entries</span
-          >
+    <!-- ── Table Card ──────────────────────────────────────────── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
-              <div class="inline-flex mt-2 xs:mt-0">
-                <button
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400"
-                    :disabled="page <= 1"
-                    @click="()=>{page = pagination?.currentPage - 1; getData()}"
-                  >
-                    Prev
-                  </button>
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="bg-blue-900">
+              <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider w-12">No</th>
+              <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Nama</th>
+              <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Jenis Bantuan</th>
+              <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Status</th>
+              <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Last Update</th>
+              <th class="px-5 py-3.5 text-center text-xs font-semibold text-blue-100 uppercase tracking-wider">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-if="isLoading">
+              <tr v-for="i in limit" :key="i" class="border-b border-slate-100">
+                <td v-for="c in 6" :key="c" class="px-5 py-4">
+                  <div class="h-4 bg-slate-100 rounded animate-pulse" :class="c === 1 ? 'w-6' : c === 6 ? 'w-20 mx-auto' : 'w-full max-w-[140px]'" />
+                </td>
+              </tr>
+            </template>
+
+            <template v-else-if="!computedData.length">
+              <tr>
+                <td colspan="6" class="px-5 py-12 text-center text-sm text-slate-400 italic">
+                  Tidak ada data ditemukan.
+                </td>
+              </tr>
+            </template>
+
+            <template v-else>
+              <tr
+                v-for="(item, index) in computedData"
+                :key="item.id"
+                class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors"
+              >
+                <td class="px-5 py-4 text-sm text-slate-500">
+                  {{ getRowNumber(Number(index)) }}.
+                </td>
+                <td class="px-5 py-4">
+                  <p class="text-sm font-medium text-slate-800">{{ item.nama }}</p>
+                  <p class="text-xs text-slate-400 mt-0.5">{{ item.nim }}</p>
+                </td>
+                <td class="px-5 py-4 text-sm text-slate-700">{{ item.jenisBantuan }}</td>
+                <td class="px-5 py-4">
+                  <StatusBadge :status="item.status" />
+                </td>
+                <td class="px-5 py-4 text-sm text-slate-500">{{ formatDate(item.tanggalKirim) }}</td>
+                <td class="px-5 py-4 text-center">
                   <button
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400"
-                    :disabled="page >= pagination?.totalPages"
-                    @click="()=>{page = pagination?.currentPage + 1; getData()}"
+                    @click="openDetail(item)"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-800 rounded-full hover:bg-blue-700 transition-colors shadow-sm"
                   >
-                    Next
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+                    </svg>
+                    Detail
                   </button>
-              </div>
-            </div>
-          </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between px-6 py-4 border-t border-slate-100">
+        <span class="text-xs text-slate-500">
+          Showing
+          <span class="font-semibold text-slate-700">{{ pagination.start }}</span>
+          to
+          <span class="font-semibold text-slate-700">{{ pagination.end }}</span>
+          of
+          <span class="font-semibold text-slate-700">{{ pagination.totalEntries }}</span>
+          entries
+        </span>
+        <div class="flex gap-2">
+          <button
+            class="px-3.5 py-1.5 text-sm font-medium rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            :disabled="page <= 1"
+            @click="() => { page = pagination.currentPage - 1; getData() }"
+          >
+            ← Sebelumnya
+          </button>
+          <button
+            class="px-3.5 py-1.5 text-sm font-medium rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            :disabled="page >= pagination.totalPages"
+            @click="() => { page = pagination.currentPage + 1; getData() }"
+          >
+            Selanjutnya →
+          </button>
         </div>
       </div>
     </div>
+
+    <!-- ── Detail Modal ─────────────────────────────────────────── -->
+    <DetailPengajuanModal
+      v-model="detailOpen"
+      :item="selectedItem"
+      :loading="detailLoading"
+      @saved="onSaved"
+    />
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { GET_PENGAJUAN_BANTUAN, DELETE_PENGAJUAN_BANTUAN } from "@/store/pengajuanBantuan.module";
-import ModalForm from "../components/modal/FormMerchandise.vue";
-import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
-import Swal from 'sweetalert2';
-import { formatDate } from '@/utils';
-import IcLink from '@/assets/svg/ic-link.vue';
+import { ref, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import {
+  GET_PENGAJUAN_BANTUAN,
+  GET_PENGAJUAN_BANTUAN_BY_ID,
+} from '@/store/pengajuanBantuan.module'
+import type { PengajuanBantuan } from '@/store/pengajuanBantuan.module'
+import StatusBadge from '@/components/StatusBadge.vue'
+import DetailPengajuanModal from '@/components/modal/DetailPengajuan.vue'
 
-// Mengambil data tabel
-const store = useStore(); // Mengambil instance store
+const store = useStore()
 
-const isOpened = ref(false); 
-const isLoading = ref(true); 
-const dataUpdate = ref([]); 
-const currentId = ref(undefined); 
-const page = ref(1);
-const limit = ref(5);
-const search = ref(""); 
-const title = ref("Pengajuan Bantuan"); 
+// ─── table state ──────────────────────────────────────────────────────────────
+const isLoading = ref(true)
+const page      = ref(1)
+const limit     = ref(10)
+const search    = ref('')
 
-const openModal = () => {
-  isOpened.value = true; // Open the modal
-};
-
-const handleModalClose = async () => {
-  isOpened.value = false; // Close the modal
-  dataUpdate.value = [];
-  currentId.value = undefined
-  await getData();
-};
-
-// Contoh penggunaan computed
-const computedData = computed(() => {
-  const pengajuanBantuan = store.getters.pengajuanBantuan;
-  return pengajuanBantuan?.data || [];
-});
-
-const pagination = computed(() => {
-  const pengajuanBantuan = store.getters.pengajuanBantuan;
-  return pengajuanBantuan?.pagination || [];
-});
+const computedData = computed(() => store.getters['pengajuanBantuan/pengajuanBantuanList'] ?? [])
+const pagination   = computed(() => store.getters['pengajuanBantuan/pengajuanBantuanPagination'])
 
 const getData = async () => {
-  const params = {
-    data:{
-      search: search.value,
-      limit: limit.value,
-      page: page.value,
-    } 
-  };
-  const data = await store.dispatch(GET_PENGAJUAN_BANTUAN, params);
-  isLoading.value = false;
-  return data;
-};
+  isLoading.value = true
+  await store.dispatch(`pengajuanBantuan/${GET_PENGAJUAN_BANTUAN}`, {
+    search: search.value,
+    limit: limit.value,
+    page: page.value,
+  })
+  isLoading.value = false
+}
 
-// Contoh penggunaan onMounted
-onMounted(async () => {
-  await getData(); // Memanggil fungsi untuk mengambil data
-  console.log('Komponen telah dimount, data siap digunakan');
-});
+const getRowNumber = (index: number): number => {
+  return (Number(pagination.value.start) - 1) + Number(index) + 1
+}
 
-// Inside <script setup>
-const editItem = (item:any) => {
-  dataUpdate.value = { ...item }; // Copy current item's data to dataUpdate
-  currentId.value = item.id; 
-  isOpened.value = true; // Open the modal
-};
+onMounted(getData)
 
-const deleteItem = async (id: number) => {
-   await Swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
-  }).then(async (result) => {
-          if (result.isConfirmed) {
-            const params = { id: id };
-            try {
-              Swal.fire({
-                title: "Deleted!",
-                text: "Your item has been deleted.",
-                icon: "success",
-                confirmButtonColor: '#4CAF50',  // Change the color of the "OK" button
-                confirmButtonText: "OK"
-              }).then(async () => {
-                await getData();
-              });
-              await store.dispatch(DELETE_PENGAJUAN_BANTUAN, params);
-            } catch (err) {
-              console.log(err);
-            }
-          }
-        });
-};
+// ─── detail modal state ───────────────────────────────────────────────────────
+const detailOpen    = ref(false)
+const detailLoading = ref(false)
+const selectedItem  = computed<PengajuanBantuan | null>(
+  () => store.getters['pengajuanBantuan/pengajuanBantuanDetail']
+)
+
+const openDetail = async (item: PengajuanBantuan) => {
+  detailOpen.value    = true
+  detailLoading.value = true
+  await store.dispatch(`pengajuanBantuan/${GET_PENGAJUAN_BANTUAN_BY_ID}`, item.id)
+  detailLoading.value = false
+}
+
+const onSaved = async () => {
+  // re-fetch detail supaya riwayat perubahan terupdate
+  if (selectedItem.value) {
+    detailLoading.value = true
+    await store.dispatch(`pengajuanBantuan/${GET_PENGAJUAN_BANTUAN_BY_ID}`, selectedItem.value.id)
+    detailLoading.value = false
+  }
+  // refresh tabel juga kalau status berubah
+  await getData()
+}
+
+// ─── utils ────────────────────────────────────────────────────────────────────
+const formatDate = (iso?: string) => {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleDateString('id-ID', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  })
+}
 </script>

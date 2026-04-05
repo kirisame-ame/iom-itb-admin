@@ -40,7 +40,7 @@
 
           <img
             class="h-20"
-            :src="require('@/assets/image/logo.png')"
+            :src="require('@/assets/image/logo.webp')"
             alt="IOM Logo"
           />
         </div>
@@ -212,7 +212,7 @@
         >
           <img
             class="object-cover w-full h-full"
-            :src="require('@/assets/image/logo.png')"
+            :src="require('@/assets/image/logo.webp')"
             alt="Your avatar"
           />
         </button>
@@ -344,6 +344,7 @@
 import { ref, computed } from 'vue';
 import { useSidebar } from "../hooks/useSidebar";
 import { useStore } from "vuex";  // Import useStore untuk mengakses Vuex store
+import { LOGOUT } from "@/store/auth.module";
 
 // Mengakses Vuex store
 const store = useStore();  
@@ -355,9 +356,8 @@ const notificationOpen = ref(false);
 const currentUser = computed(() => store.getters.currentUser);
 
 // Logout method
-const logout = () => {
-  document.cookie = "PSSID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-  window.location.href = '/login';
+const logout = async () => {
+  await store.dispatch(LOGOUT);
 };
 </script>
 

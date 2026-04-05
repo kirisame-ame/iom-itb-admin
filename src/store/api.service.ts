@@ -1,7 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import JwtService from "./jwt.service";
-import { wrapper } from "axios-cookiejar-support";
-import { CookieJar } from "tough-cookie";
+import KeycloakService from "@/services/keycloak";
 
 // Define types for the ApiService instance
 interface ApiServiceType {
@@ -24,26 +22,39 @@ const ApiService: ApiServiceType = {
   api2: null,
 
   init() {
-    // Initialize both axios instances with cookie jar support
-    this.api1 = wrapper(
-      axios.create({
-        baseURL: process.env.VUE_APP_API_URL, // Main API endpoint
-      }),
-    );
+    this.api1 = axios.create({
+      baseURL: process.env.VUE_APP_API_URL,
+    });
 
-    this.api2 = wrapper(
-      axios.create({
-        baseURL: process.env.VUE_APP_API_UPLOAD, // Upload API endpoint
-      }),
-    );
+    this.api2 = axios.create({
+      baseURL: process.env.VUE_APP_API_UPLOAD,
+    });
 
-    // Set authorization header for api1 (Main API)
-    this.setHeader();
+    this.api1.interceptors.request.use(async (config) => {
+      const token = await KeycloakService.getValidToken();
+      if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
+
+    this.api2.interceptors.request.use(async (config) => {
+      const token = await KeycloakService.getValidToken();
+      if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
   },
 
   setHeader() {
     if (this.api1) {
-      this.api1.defaults.headers.common["Authorization"] = `Bearer ${JwtService.getSession()}`;
+      const token = KeycloakService.getToken();
+      if (token) {
+        this.api1.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      }
     }
   },
 
@@ -60,22 +71,13 @@ const ApiService: ApiServiceType = {
       });
   },
 
-  // GET request for main API (supports session cookies)
   async get<T>(resource: string, params?: { session?: string }): Promise<T> {
     if (!this.api1) {
       return Promise.reject(new Error("ApiService is not initialized"));
     }
 
-    if (params?.session) {
-      const cookieJar = new CookieJar();
-      return this.api1.get<T>(resource, {
-        jar: cookieJar,
-        params,
-      }).then(response => response.data);
-    } else {
-      return this.api1.get<T>(resource, { params })
-        .then(response => response.data);
-    }
+    return this.api1.get<T>(resource, { params })
+      .then(response => response.data);
   },
 
   // POST request for main API

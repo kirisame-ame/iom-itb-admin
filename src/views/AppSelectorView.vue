@@ -35,23 +35,36 @@
           </div>
         </div>
 
-        <!-- Logout -->
-        <div class="relative group flex-shrink-0">
-          <button
-            class="w-[38px] h-[38px] rounded-[9px] border border-slate-200 bg-slate-50 text-slate-500 flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
-            aria-label="Logout"
-            @click="showLogoutConfirm = true"
-          >
-            <IconLogout />
-          </button>
-          <span class="selector-tooltip pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[11.5px] font-medium px-2.5 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-            Logout
-          </span>
+        <div class="flex items-center gap-3">
+          <div class="text-right max-w-[220px]">
+            <p class="text-xs font-semibold text-slate-700 truncate">{{ currentUser?.name || currentUser?.preferredUsername || '-' }}</p>
+            <p class="text-[11px] text-slate-500 truncate">{{ currentUser?.email || '-' }}</p>
+          </div>
+
+          <div class="relative group flex-shrink-0">
+            <button
+              class="w-[38px] h-[38px] rounded-[9px] border border-slate-200 bg-slate-50 text-slate-500 flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+              aria-label="Logout"
+              @click="showLogoutConfirm = true"
+            >
+              <IconLogout />
+            </button>
+            <span class="selector-tooltip pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[11.5px] font-medium px-2.5 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+              Logout
+            </span>
+          </div>
         </div>
       </div>
 
       <!-- Divider -->
       <div class="flex-shrink-0 h-px bg-slate-100 mx-6" />
+
+      <div
+        v-if="accessWarning"
+        class="mx-6 mt-4 px-4 py-3 rounded-xl border border-amber-300 bg-amber-50 text-amber-800 text-[13px]"
+      >
+        {{ accessWarning }}
+      </div>
 
       <!-- Loading -->
       <div v-if="loading" class="flex flex-col items-center gap-3 py-16 text-slate-400 text-sm">
@@ -103,7 +116,7 @@
                   background: selectedApp?.id === app.id ? app.colorLight : '#f1f5f9'
                 }"
               >
-                <component :is="iconMap[app.iconKey]" />
+                <component :is="iconMap[app.iconKey] || iconMap.dashboard" />
               </div>
               <span class="text-[12.5px] font-semibold text-slate-700 text-center leading-tight">
                 {{ app.name }}
@@ -199,12 +212,14 @@
 import { defineComponent, computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
+import ApiService from "@/store/api.service";
 import {
   FETCH_APPS,
   SET_SELECTED_APP,
   SET_SELECTED_ROLE,
 } from "@/store/appSelector.module";
 import type { App, Role } from "@/store/appSelector.module";
+import { FETCH_JWT, LOGOUT } from "@/store/auth.module";
 
 import IconDashboard from "@/assets/image/IconDashboard.vue";
 import IconGlobe from "@/assets/image/IconGlobe.vue";
@@ -236,16 +251,29 @@ export default defineComponent({
     const loading = computed(() => store.getters["appSelector/appsLoading"]);
     const error = computed(() => store.getters["appSelector/appsError"]);
     const canEnter = computed(() => store.getters["appSelector/canEnter"]);
+    const currentUser = computed(() => store.getters.currentUser);
 
-    // TODO: sesuaikan key query param dengan yang Keycloak kirim
-    // Contoh redirect dari Keycloak: /select?from=iom-admin
     const originAppId = computed(() => (route.query.from as string) || null);
+    const accessWarning = computed(() => {
+      if (route.query.reason === "no-web-access") {
+        return "Akun Anda tidak memiliki akses ke modul web admin. Pilih modul lain yang tersedia.";
+      }
+
+      return null;
+    });
 
     const loadApps = async () => {
+      await store.dispatch(FETCH_JWT);
       await store.dispatch(`appSelector/${FETCH_APPS}`);
+
       if (originAppId.value) {
         const found = apps.value.find((a: App) => a.id === originAppId.value);
-        if (found) store.dispatch(`appSelector/${SET_SELECTED_APP}`, found);
+        if (found) {
+          await store.dispatch(`appSelector/${SET_SELECTED_APP}`, found);
+          if (found.roles.length === 1) {
+            await store.dispatch(`appSelector/${SET_SELECTED_ROLE}`, found.roles[0]);
+          }
+        }
       }
     };
 
@@ -262,27 +290,38 @@ export default defineComponent({
     const handleEnter = async () => {
       if (!canEnter.value || isEntering.value) return;
       isEntering.value = true;
-      const app = selectedApp.value!;
 
-      // TODO: kirim pilihan role ke backend ketika siap:
-      // await ApiService.post("/api/sso/select", { appId: app.id, roleId: selectedRole.value!.id });
+      try {
+        const app = selectedApp.value!;
+        const role = selectedRole.value!;
 
-      setTimeout(() => {
-        if (app.url.startsWith("/")) router.push(app.url);
-        else window.location.href = app.url;
-      }, 350);
+        const response: any = await ApiService.post("/auth/select", {
+          appId: app.id,
+          role: role.id,
+        });
+
+        const payload = response?.data || response;
+        const redirectUrl = payload?.redirectUrl || app.url;
+
+        if (redirectUrl.startsWith("/")) {
+          await router.push(redirectUrl);
+        } else {
+          window.location.href = redirectUrl;
+        }
+      } finally {
+        isEntering.value = false;
+      }
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
       showLogoutConfirm.value = false;
-      // TODO: ganti dengan redirect ke logout URL Keycloak:
-      // window.location.href = `http://localhost:8080/realms/sso-poc/protocol/openid-connect/logout?redirect_uri=${encodeURIComponent(window.location.origin)}`;
-      router.push("/");
+      await store.dispatch(LOGOUT);
     };
 
     return {
       apps, selectedApp, selectedRole,
       loading, error, canEnter,
+      currentUser, accessWarning,
       isEntering, showLogoutConfirm,
       originAppId, iconMap,
       loadApps, selectApp, selectRole,

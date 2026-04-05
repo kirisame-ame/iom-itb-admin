@@ -1,17 +1,17 @@
 <template>
-  <component :is="layout">
+  <component :is="layoutComponent">
     <router-view />
   </component>
 </template>
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
+import DashboardLayout from './components/DashboardLayout.vue'
+import EmptyLayout from './components/EmptyLayout.vue'
 
-const defaultLayout = 'default'
+const route = useRoute()
 
-const { currentRoute } = useRouter()
-
-const layout = computed(
-  () => `${currentRoute.value.meta.layout || defaultLayout}-layout`
-)
+const layoutComponent = computed(() => {
+  return route.meta.layout === 'empty' ? EmptyLayout : DashboardLayout
+})
 </script>

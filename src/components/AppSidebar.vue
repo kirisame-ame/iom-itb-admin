@@ -28,13 +28,13 @@
         transition
         duration-300
         transform
-        bg-gray-900
+        bg-[#003792]
         lg:translate-x-0 lg:static lg:inset-0
       "
     >
       <div class="flex items-center justify-center mt-8">
         <div class="flex items-center">
-         <!-- <img :src="require('@/assets/image/logo.png')" alt="IOM-ITB" class="w-[60px]"> -->
+         <!-- <img :src="require('@/assets/image/logo.webp')" alt="IOM-ITB" class="w-[60px]"> -->
 
           <span class="text-2xl font-semibold text-white">IOM-Dashboard</span>
         </div>
@@ -103,14 +103,14 @@
           <span class="mx-4">Members</span>
         </router-link> -->
 
-        <router-link
+        <!-- <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
           :class="[$route.name === 'Donasi Trakhir' ? activeClass : inactiveClass]"
           to="/10-donasi-terakhir"
         >
           <IcUser/>
           <span class="mx-4">10 Donasi Terakhir</span>
-        </router-link>
+        </router-link> -->
 
         <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
@@ -361,9 +361,9 @@ import IcHome from "@/assets/svg/ic-home.vue";
 
 const { isOpen } = useSidebar();
 const activeClass = ref(
-  "bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100"
+  "bg-gray-600 bg-opacity-25 text-white border-gray-100"
 );
 const inactiveClass = ref(
-  "border-gray-900 text-gray-500 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100"
+  "border-[#003792] text-white/50 hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100"
 );
 </script>

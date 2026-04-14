@@ -8,6 +8,7 @@ export const POST_DONATION = "postDonation";
 export const PUT_DONATION = "putDonation";
 export const DELETE_DONATION = "deleteDonation";
 
+// TODO: ini yg bakal kepake yg donasi.modul atau yg donasiterhir.module ya (atau both ngaco)
 // Define the Donation type
 interface Donation {
     id: number; // Update with the appropriate type

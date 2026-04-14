@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Breadcrumb -->
-    <Breadcrumb breadcrumb="members" />
 
     <!-- Modal -->
     <ModalForm
@@ -319,7 +317,6 @@ import { GET_MEMBERS, DELETE_MEMBER } from "@/store/member.module";
 import ModalForm from "../components/modal/FormMember.vue";
 import ModalGenerate from "../components/modal/GenerateCard.vue";
 import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Breadcrumb from '../partials/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 
 // Mengambil data tabel

@@ -8,6 +8,7 @@ export const POST_DONASI = "postDonasi";
 export const PUT_DONASI = "putDonasi";
 export const DELETE_DONASI = "deleteDonasi";
 
+// TODO: ini yg bakal kepake yg donasi.modul atau yg donasiterhir.module ya (atau both ngaco)
 
 // Define the state type
 interface State {

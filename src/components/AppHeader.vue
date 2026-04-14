@@ -31,37 +31,22 @@
         </svg>
       </button>
 
-      <div class="relative mx-4 lg:mx-0">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-          <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </span>
+      <div class="mx-4 lg:mx-0">
+        <div class="flex items-center gap-3">
 
-        <input
-          class="
-            w-32
-            pl-10
-            pr-4
-            py-2
-            text-indigo-600
-            border-gray-200
-            rounded-md
-            sm:w-64
-            focus:border-indigo-600
-            focus:ring
-            focus:ring-opacity-40
-            focus:ring-indigo-500
-          "
-          type="text"
-          placeholder="Search"
-        />
+          <h1 class="text-4xl font-bold text-[#003793] mb-1 tracking-tight">
+            Dashboard Admin
+          </h1>
+
+          <img
+            class="h-20"
+            :src="require('@/assets/image/logo.webp')"
+            alt="IOM Logo"
+          />
+        </div>
+        <p class="text-xs text-gray-700 -mt-3 leading-none">
+          Dashboard Admin Ikatan Orang Tua Mahasiswa Institut Teknologi Bandung
+        </p>
       </div>
     </div>
 
@@ -227,7 +212,7 @@
         >
           <img
             class="object-cover w-full h-full"
-            :src="require('@/assets/image/logo.png')"
+            :src="require('@/assets/image/logo.webp')"
             alt="Your avatar"
           />
         </button>
@@ -359,6 +344,7 @@
 import { ref, computed } from 'vue';
 import { useSidebar } from "../hooks/useSidebar";
 import { useStore } from "vuex";  // Import useStore untuk mengakses Vuex store
+import { LOGOUT } from "@/store/auth.module";
 
 // Mengakses Vuex store
 const store = useStore();  
@@ -370,9 +356,8 @@ const notificationOpen = ref(false);
 const currentUser = computed(() => store.getters.currentUser);
 
 // Logout method
-const logout = () => {
-  document.cookie = "PSSID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-  window.location.href = '/login';
+const logout = async () => {
+  await store.dispatch(LOGOUT);
 };
 </script>
 

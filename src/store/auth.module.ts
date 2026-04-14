@@ -1,42 +1,45 @@
 import ApiService from "./api.service";
-import JwtService from "./jwt.service";
-import config from "@/ConfigProvider";
-import router from "@/router";
 import { ActionContext } from "vuex";
+import KeycloakService from "@/services/keycloak";
 
 // Action Types
-export const POST_LOGIN = "postLogin";
-export const GET_JWT = "getJWT";
-export const GET_USER = "getUser";
-export const GET_USER_JSON = "getUserJson";
-export const VERIFY_AUTH = "verifyAuth";
-export const PURGE_AUTH = "purgeAuth";
+export const INIT_AUTH = "initAuth";
+export const LOGIN = "login";
+export const LOGOUT = "logout";
 export const FETCH_JWT = "fetchJwt";
 
 // Mutation Types
-export const SET_JWT = "setJWT";
 export const SET_USER = "setUser";
-export const SET_USER_JSON = "setUserJson";
+export const SET_AUTH = "setAuth";
+export const SET_ROLES = "setRoles";
+export const SET_APPS = "setApps";
+export const SET_ERROR = "setError";
 
 // State Type
 interface User {
+  sub?: string;
   email?: string;
-  shortName?: string;
+  name?: string;
+  preferredUsername?: string;
 }
 
 interface State {
   isAuthenticated: boolean;
   user: User | null;
-  userJson: Record<string, any>;
-  sessionId: string | null | undefined;  // Allow undefined
+  roles: string[];
+  apps: Record<string, any>[];
+  accessToken: string | null;
+  error: string | null;
 }
 
 // Initial State
 const state: State = {
-  isAuthenticated: !!JwtService.getToken(),
-  user: {}, // Ensure it's a User object
-  userJson: {},
-  sessionId: JwtService.getSession() || null,
+  isAuthenticated: false,
+  user: null,
+  roles: [],
+  apps: [],
+  accessToken: null,
+  error: null,
 };
 
 // Getters
@@ -47,79 +50,87 @@ const getters = {
   currentUser(state: State): User | null {
     return state.user;
   },
-  currentSession(state: State): string | null {
-    return state.sessionId ?? null;  // Convert undefined to null
+  currentRoles(state: State): string[] {
+    return state.roles;
+  },
+  accessibleApps(state: State): Record<string, any>[] {
+    return state.apps;
   },
 };
 
 // Define Vuex Context Type
 type VuexContext = ActionContext<State, any>;
 
+const extractResponseData = (response: Record<string, any>) => {
+  if (!response) return null;
+  return response.data ?? response;
+};
+
 // Actions
 const actions = {
-  [POST_LOGIN](context: VuexContext, params: Record<string, any>): Promise<any> {
-    return new Promise((resolve, reject) => {
-        ApiService.post<{ data: any }>("/auth/login", params.data)
-            .then(({ data }) => {
-                resolve(data);
-            })
-            .catch(err => {
-                reject(err?.response?.data);
-            });
-    });
-},
+  async [INIT_AUTH](context: VuexContext): Promise<any> {
+    const isAuthenticated = KeycloakService.isAuthenticated();
+    const token = isAuthenticated ? await KeycloakService.getValidToken() : null;
+    const parsed = KeycloakService.getParsedToken();
 
-  [GET_JWT](context: VuexContext): Promise<any> {
-    const tokenFormUrl = router.currentRoute.value.query?.token as string | undefined;
-    return new Promise((resolve, reject) => {
-      const nextUrl = encodeURIComponent(`/redirect?url=${window.location.href}`);
-      if (!context.getters.currentSession && !tokenFormUrl) {
-        context.commit(PURGE_AUTH);
-        window.location.href = config.value("GETHIRED_WEB_URL") + `/signin?next=${nextUrl}`;
-        return;
-      }
-
-      ApiService.get<{ jwt: string }>(config.value("GETHIRED_WEB_URL") + "/employee/jwt", {
-        session: context.getters.currentSession,
-      })
-        .then(({ jwt }) => {  // Directly destructure jwt
-          context.commit(SET_JWT, jwt);
-          setTimeout(() => {
-            ApiService.setHeader();
-          }, 100);
-          resolve(jwt);
-        })
-        .catch((err: any) => {
-          if (!tokenFormUrl) {
-            context.commit(PURGE_AUTH);
-          }
-          reject(err);
-        });
+    context.commit(SET_AUTH, {
+      isAuthenticated,
+      accessToken: token,
     });
+
+    if (!isAuthenticated || !parsed) {
+      context.commit(SET_USER, null);
+      context.commit(SET_ROLES, []);
+      context.commit(SET_APPS, []);
+      return null;
+    }
+
+    const roles = [
+      ...(parsed.realm_access?.roles || []),
+      ...Object.values(parsed.resource_access || {}).flatMap((entry: any) => entry?.roles || []),
+    ];
+
+    context.commit(SET_USER, {
+      sub: parsed.sub,
+      email: parsed.email,
+      name: parsed.name,
+      preferredUsername: parsed.preferred_username,
+    });
+    context.commit(SET_ROLES, [...new Set(roles)]);
+
+    return parsed;
   },
 
-  [GET_USER](context: VuexContext): Promise<User> {
-    ApiService.setHeader();
-    return new Promise((resolve, reject) => {
-      ApiService.get<User>(`/me?t=${new Date().getTime()}`)
-        .then(userData => {  // Directly use userData
-          context.commit(SET_USER, userData);
-          resolve(userData);
-        })
-        .catch((err: any) => {
-          reject(err);
-        });
-    });
+  [LOGIN](): Promise<void> {
+    return KeycloakService.login();
+  },
+
+  [LOGOUT](): Promise<void> {
+    return KeycloakService.logout();
   },
 
   [FETCH_JWT](context: VuexContext): Promise<any> {
     return new Promise((resolve, reject) => {
       ApiService.get<{ data: any }>("/auth/me")
-        .then(({ data }) => { 
-          context.commit(SET_USER, data);
-          resolve(data);
+        .then((response: any) => {
+          const payload = extractResponseData(response);
+          const user = payload?.user || null;
+          const roles = payload?.roles || [];
+          const apps = payload?.apps || [];
+
+          context.commit(SET_USER, user);
+          context.commit(SET_ROLES, roles);
+          context.commit(SET_APPS, apps);
+          context.commit(SET_ERROR, null);
+          context.commit(SET_AUTH, {
+            isAuthenticated: true,
+            accessToken: KeycloakService.getToken(),
+          });
+
+          resolve(payload);
         })
         .catch((err: any) => {
+          context.commit(SET_ERROR, err?.response?.data?.message || err?.message || "Unauthorized");
           reject(err);
         });
     });
@@ -128,24 +139,21 @@ const actions = {
 
 // Mutations
 const mutations = {
-  [SET_JWT](state: State, jwt: string) {
-    if (jwt) {
-      state.isAuthenticated = true;
-      JwtService.saveToken(jwt);
-    }
-  },
-  [PURGE_AUTH](state: State) {
-    state.isAuthenticated = false;
-    state.user = null;
-    state.sessionId = "";
-    JwtService.destroyToken();
-    JwtService.destroyUser();
-  },
-  [SET_USER](state: State, data: User) {
+  [SET_USER](state: State, data: User | null) {
     state.user = data;
   },
-  [SET_USER_JSON](state: State, data: Record<string, any>) {
-    state.userJson = data;
+  [SET_AUTH](state: State, payload: { isAuthenticated: boolean; accessToken: string | null }) {
+    state.isAuthenticated = payload.isAuthenticated;
+    state.accessToken = payload.accessToken;
+  },
+  [SET_ROLES](state: State, roles: string[]) {
+    state.roles = roles;
+  },
+  [SET_APPS](state: State, apps: Record<string, any>[]) {
+    state.apps = apps;
+  },
+  [SET_ERROR](state: State, message: string | null) {
+    state.error = message;
   },
 };
 

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import AppSelectorView from "../views/AppSelectorView.vue";
 import Dashboard from "../views/AppDashboard.vue";
 import Forms from "../views/AppForms.vue";
 import Tables from "../views/AppTables.vue";
@@ -8,18 +9,17 @@ import Activities from "../views/ActivityView.vue";
 import Transactions from "../views/TransactionView.vue";
 import Users from "../views/UserView.vue";
 import Members from "../views/MemberView.vue";
-import DonasiTerakhir from "../views/DonasiTerakhirView.vue";
 import Donasi from "../views/DonasiView.vue";
-import HelpSubmissions from "../views/HelpSubmissionView.vue";
 import PendataanAnggota from "../views/PendataanAnggotaView.vue";
 import Login from "../views/AppLogin.vue";
 import Modal from "../views/AppModal.vue";
 import Chart from "../views/ChartView.vue";
 import Card from "../views/CardView.vue";
-import Blank from "../views/BlankView.vue";
 import NotFound from "../views/NotFound.vue";
 import store from "@/store";
-import { FETCH_JWT } from "@/store/auth.module";
+import { FETCH_JWT, INIT_AUTH, LOGIN, LOGOUT } from "@/store/auth.module";
+import { FETCH_APPS, SET_SELECTED_APP, SET_SELECTED_ROLE } from "@/store/appSelector.module";
+import KeycloakService from "@/services/keycloak";
 import DanaBantuan from "@/views/DanaBantuan.vue";
 import PengajuanBantuan from "@/views/PengajuanBantuanView.vue";
 import OrangtuaAsuh from "@/views/OrangtuaAsuhView.vue";
@@ -31,6 +31,12 @@ const routes: Array<RouteRecordRaw> = [
     component: Login,
     meta: { layout: "empty" },
   },
+  {
+  path: "/select",
+  name: "AppSelector",
+  component: AppSelectorView,
+  meta: { layout: "empty" },
+},
   {
     path: "/dashboard",
     name: "Dashboard",
@@ -76,11 +82,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "Members",
     component: Members,
   },
-  {
-    path: "/10-donasi-terakhir",
-    name: "Donasi Trakhir",
-    component: DonasiTerakhir,
-  },
+  // {
+  //   path: "/10-donasi-terakhir",
+  //   name: "Donasi Trakhir",
+  //   component: DonasiTerakhir,
+  // },
   {
     path: "/donasi",
     name: "Donasi",
@@ -107,11 +113,6 @@ const routes: Array<RouteRecordRaw> = [
     component: PendataanAnggota,
   },
   {
-    path: "/pendataan-anggota",
-    name: "Pendataan Anggota",
-    component: PendataanAnggota,
-  },
-  {
     path: "/transactions",
     name: "Transactions",
     component: Transactions,
@@ -126,11 +127,6 @@ const routes: Array<RouteRecordRaw> = [
     name: "Chart",
     component: Chart,
   },
-  {
-    path: "/blank",
-    name: "Blank",
-    component: Blank,
-  },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];
 
@@ -140,19 +136,78 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  // Jika bukan halaman login
-  if (to.name !== "Login") {
-      try {
-          // Panggil FETCH_JWT untuk memastikan token/jwt valid
-          await store.dispatch(FETCH_JWT);
-          next(); // Lanjutkan ke halaman tujuan
-      } catch (error) {
-          console.error("JWT validation failed:", error);
-          // Redirect ke halaman login jika FETCH_JWT gagal
-          next({ name: "Login" });
+  const isLoginRoute = to.name === "Login";
+  const isSelectorRoute = to.name === "AppSelector";
+
+  if (!KeycloakService.isAuthenticated()) {
+    if (isLoginRoute) {
+      next();
+      return;
+    }
+
+    try {
+      await store.dispatch(LOGIN);
+    } catch (loginError) {
+      console.error("SSO login redirect failed", loginError);
+      next({ name: "Login" });
+    }
+    return;
+  }
+
+  try {
+    await store.dispatch(INIT_AUTH);
+    await store.dispatch(FETCH_JWT);
+
+    if (isLoginRoute) {
+      next({ name: "AppSelector" });
+      return;
+    }
+
+    if (!isSelectorRoute) {
+      await store.dispatch(`appSelector/${FETCH_APPS}`);
+      const apps = store.getters["appSelector/allApps"] || [];
+      const selectedApp = store.getters["appSelector/selectedApp"];
+      const selectedRole = store.getters["appSelector/selectedRole"];
+      const webApp = apps.find((app: any) => app.id === "web");
+
+      if (!webApp) {
+        next({ name: "AppSelector", query: { reason: "no-web-access" } });
+        return;
       }
-  } else {
-      next(); // Langsung ke halaman login tanpa validasi
+
+      if (!selectedApp || selectedApp.id !== "web") {
+        await store.dispatch(`appSelector/${SET_SELECTED_APP}`, webApp);
+
+        if (webApp.roles.length === 1) {
+          await store.dispatch(`appSelector/${SET_SELECTED_ROLE}`, webApp.roles[0]);
+          next();
+          return;
+        }
+
+        next({ name: "AppSelector", query: { from: "web" } });
+        return;
+      }
+
+      if (!selectedRole) {
+        if (selectedApp.roles.length === 1) {
+          await store.dispatch(`appSelector/${SET_SELECTED_ROLE}`, selectedApp.roles[0]);
+          next();
+          return;
+        }
+
+        next({ name: "AppSelector" });
+        return;
+      }
+    }
+
+    next();
+  } catch (error) {
+    try {
+      await store.dispatch(LOGOUT);
+    } catch (logoutError) {
+      console.error("Logout failed after auth guard error", logoutError);
+    }
+    next({ name: "Login" });
   }
 });
 

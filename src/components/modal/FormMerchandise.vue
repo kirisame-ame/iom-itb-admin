@@ -3,7 +3,7 @@
   <div class="fixed z-[999] flex justify-center items-center w-screen h-screen top-0 right-0" @click="closeModal">
     <div ref="modalContent" @click.stop>
       <div class="md:w-[500px] max-w-[500px] overflow-hidden bg-white border rounded-md shadow-md">
-        <form @submit.prevent="handleSubmit">
+        <form @submit.prevent="handleSubmit" novalidate>
           <div class="flex items-center justify-between px-5 py-3 text-gray-700 border-b">
             <h3 class="text-sm capitalize">{{ title }}</h3>
             <button type="button" @click="closeModal">
@@ -46,6 +46,7 @@ import { useStore } from 'vuex';
 import { POST_MERCHANDISE, PUT_MERCHANDISE } from "@/store/merchandise.module";
 import { POST_IMAGE } from "@/store/upload.module";
 import InputImageCostume from '../input/InputImageCostume.vue';
+import { showError } from '@/utils/swal';
 
 export default defineComponent({
   components: {
@@ -82,7 +83,7 @@ export default defineComponent({
 
     const formData = {
       id: '',
-      data: {} as Record<string, any>
+      data: { ...(props.data || {}) } as Record<string, any>
     }
 
     const updateValue = (params: { key: string; value: any }) => {
@@ -91,6 +92,51 @@ export default defineComponent({
 
     const handleSubmit = async () => {
       isLoading.value = true;
+
+      const errors: string[] = [];
+
+      const requiredFields: Record<string, string> = {
+        name: 'Nama',
+        stock: 'Stok',
+        price: 'Harga',
+        description: 'Deskripsi',
+        image: 'Gambar',
+      };
+      for (const [field, label] of Object.entries(requiredFields)) {
+        const val = formData.data[field];
+        if (val === undefined || val === null || val === '') {
+          errors.push(`${label} wajib diisi.`);
+        }
+      }
+
+      const stockValue = Number(formData.data.stock);
+      if (formData.data.stock !== undefined && formData.data.stock !== '') {
+        if (stockValue < 0) {
+          errors.push('Stok tidak boleh bernilai negatif.');
+        } else if (!Number.isInteger(stockValue)) {
+          errors.push('Stok harus berupa bilangan bulat (tidak boleh menggunakan koma).');
+        }
+      }
+
+      const link = formData.data.link;
+      if (link && link.trim() !== '') {
+        try {
+          const url = new URL(link);
+          const hostname = url.hostname.toLowerCase().replace(/\.$/, '');
+          const isItbPressDomain = hostname === 'itbpress.id' || hostname.endsWith('.itbpress.id');
+          if (!isItbPressDomain) {
+            errors.push('Link harus menggunakan domain ITB Press (itbpress.id).');
+          }
+        } catch {
+          errors.push('Masukkan URL yang benar (contoh: https://itbpress.id/...).');
+        }
+      }
+
+      if (errors.length > 0) {
+        showError('Error', errors);
+        isLoading.value = false;
+        return;
+      }
       try {
         if(formData?.data?.image){
           if(typeof formData?.data?.image !== "string") {
@@ -107,7 +153,7 @@ export default defineComponent({
         }
         closeModal();
       } catch (error:any) {
-        alert(error?.response?.data?.message);
+        showError('Error', error?.response?.data?.message || 'Terjadi kesalahan, coba lagi.');
         isLoading.value = false;
       }
     };

@@ -23,6 +23,8 @@ import KeycloakService from "@/services/keycloak";
 import DanaBantuan from "@/views/DanaBantuan.vue";
 import PengajuanBantuan from "@/views/PengajuanBantuanView.vue";
 import OrangtuaAsuh from "@/views/OrangtuaAsuhView.vue";
+import Kemitraan from "@/views/KemitraanView.vue";
+import KegiatanKemitraan from "@/views/KegiatanKemitraanView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -111,6 +113,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/pendataan-anggota",
     name: "Pendataan Anggota",
     component: PendataanAnggota,
+  },
+  {
+    path: "/kemitraan",
+    name: "Kemitraan",
+    component: Kemitraan,
+  },
+  {
+    path: "/kegiatan-kemitraan",
+    name: "Kegiatan Kemitraan",
+    component: KegiatanKemitraan,
   },
   {
     path: "/transactions",

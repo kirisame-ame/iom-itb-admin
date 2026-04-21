@@ -5,3 +5,63 @@
 @tailwind components;
 
 @tailwind utilities;
+
+/* ===== Custom SweetAlert2 Error Popup ===== */
+.swal2-popup.swal-error-popup {
+  padding-top: 0 !important;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.swal2-popup.swal-error-popup::before {
+  content: '';
+  display: block;
+  background-color: #ef4444;
+  height: 50px;
+  width: 100%;
+}
+
+.swal2-popup.swal-error-popup .swal2-close {
+  position: absolute !important;
+  top: 8px !important;
+  right: 12px !important;
+  color: white !important;
+  font-size: 1.75em !important;
+  font-weight: 300 !important;
+  opacity: 1 !important;
+  z-index: 100;
+  line-height: 1;
+}
+
+.swal2-popup.swal-error-popup .swal2-close:hover {
+  color: rgba(255, 255, 255, 0.75) !important;
+  transform: none !important;
+}
+
+.swal2-popup.swal-error-popup .swal2-icon.swal-custom-icon {
+  border: none !important;
+  background: none !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: -0.5rem !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.swal2-popup.swal-error-popup .swal2-title {
+  color: #ef4444 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 0;
+}
+
+.swal2-popup.swal-error-popup .swal2-html-container {
+  color: #374151;
+  font-size: 0.95em;
+  text-align: center;
+}
+
+/* Delete confirmation cancel button */
+.swal-cancel-btn {
+  color: #374151 !important;
+}

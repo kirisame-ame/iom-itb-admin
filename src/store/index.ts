@@ -11,6 +11,8 @@ import pengajuanBantuan from "./pengajuanBantuan.module";
 import orangtuaAsuh from "./orangtuaAsuh.module";
 import donasi from "./donasi.module";
 import appSelector from "./appSelector.module";
+import kegiatanKemitraan from "./kegiatanKemitraan.module";
+import kemitraan from "./kemitraan.module";
 
 export default createStore({
   modules: {
@@ -26,5 +28,7 @@ export default createStore({
     orangtuaAsuh,
     donasi,
     appSelector,
+    kegiatanKemitraan,
+    kemitraan,
   },
 });

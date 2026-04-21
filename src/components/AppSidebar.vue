@@ -157,6 +157,24 @@
           <span class="mx-4">Dana Bantuan</span>
         </router-link>
 
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
+          :class="[$route.name === 'Kemitraan' ? activeClass : inactiveClass]"
+          to="/kemitraan"
+        >
+          <IcBag/>
+          <span class="mx-4">Kemitraan</span>
+        </router-link>
+
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
+          :class="[$route.name === 'Kegiatan Kemitraan' ? activeClass : inactiveClass]"
+          to="/kegiatan-kemitraan"
+        >
+          <IcGrafic/>
+          <span class="mx-4">Kegiatan Kemitraan</span>
+        </router-link>
+
         <!-- <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
           :class="[$route.name === 'Pengajuan Bantuan' ? activeClass : inactiveClass]"

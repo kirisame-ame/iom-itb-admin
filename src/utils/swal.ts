@@ -27,7 +27,7 @@ export const confirmDelete = (
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
     ...options,
-  });
+  } as SweetAlertOptions);
 };
 
 export const successAlert = (
@@ -41,7 +41,7 @@ export const successAlert = (
     confirmButtonColor: "#4CAF50",
     confirmButtonText: "OK",
     ...options,
-  });
+  } as SweetAlertOptions);
 };
 
 export const errorAlert = (
@@ -55,7 +55,7 @@ export const errorAlert = (
     confirmButtonColor: "#d33",
     confirmButtonText: "OK",
     ...options,
-  });
+  } as SweetAlertOptions);
 };
 
 export const showError = (title: string, messages: string | string[]) => {

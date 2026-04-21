@@ -103,15 +103,6 @@
           <span class="mx-4">Members</span>
         </router-link> -->
 
-        <!-- <router-link
-          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
-          :class="[$route.name === 'Donasi Trakhir' ? activeClass : inactiveClass]"
-          to="/10-donasi-terakhir"
-        >
-          <IcUser/>
-          <span class="mx-4">10 Donasi Terakhir</span>
-        </router-link> -->
-
         <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
           :class="[$route.name === 'Donasi' ? activeClass : inactiveClass]"
@@ -119,6 +110,15 @@
         >
           <IcUser/>
           <span class="mx-4">Donasi</span>
+        </router-link>
+
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
+          :class="[$route.name === 'Fakultas' ? activeClass : inactiveClass]"
+          to="/fakultas"
+        >
+          <IcUser/>
+          <span class="mx-4">Fakultas</span>
         </router-link>
 
         <router-link

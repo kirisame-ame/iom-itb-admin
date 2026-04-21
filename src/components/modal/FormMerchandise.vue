@@ -18,7 +18,7 @@
             <InputNumber label="stock" :value="data?.stock" @update="updateValue" :required="true" />
             <InputPrice label="price" :value="data?.price" @update="updateValue" :required="true"/>
             <InputTextArea label="description" :value="data?.description" @update="updateValue" :required="true" />
-            <InputImageCostume label="image" :value="data?.image" @update="updateValue" :required="true" />
+            <InputImageCostume label="image" :value="data?.image" @update="updateValue" />
             <InputText label="link" :value="data?.link" @update="updateValue" />
           </div>
 
@@ -100,7 +100,6 @@ export default defineComponent({
         stock: 'Stok',
         price: 'Harga',
         description: 'Deskripsi',
-        image: 'Gambar',
       };
       for (const [field, label] of Object.entries(requiredFields)) {
         const val = formData.data[field];

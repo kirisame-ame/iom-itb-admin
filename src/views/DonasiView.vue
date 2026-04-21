@@ -19,13 +19,24 @@
             <h2 class="text-xl font-semibold leading-tight text-gray-700">{{ title }}</h2>
             <p class="text-sm text-gray-500 mt-1">Donasi manual & online (Midtrans) tergabung dalam satu pencatatan.</p>
           </div>
-          <button
-            type="button"
-            class="px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
-            @click="openAddModal"
-          >
-            + Add Donasi
-          </button>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              class="px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
+              @click="openAddModal"
+            >
+              + Add Donasi
+            </button>
+            <a
+              class="flex items-center gap-2 px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-green-600 rounded-md hover:bg-green-500 focus:outline-none"
+              :href="excelUrl"
+              target="_blank"
+              rel="noopener"
+            >
+              Excel
+              <IcLink class="w-[18px]" />
+            </a>
+          </div>
         </div>
 
         <div class="flex flex-col gap-3 mt-4 sm:flex-row sm:flex-wrap sm:items-center">
@@ -169,8 +180,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { GET_DONASI } from "@/store/donasi.module";
 import ModalForm from "@/components/modal/FormDonation.vue";
+import IcLink from "@/assets/svg/ic-link.vue";
 import { useStore } from 'vuex';
 import { formatDate } from '@/utils';
+
+const excelUrl = "https://docs.google.com/spreadsheets/d/13w3FcIz4jjIBcf7DvG_83FmU8NBss_MkGt4lM7U6x6k/edit?usp=sharing";
 
 const store = useStore();
 

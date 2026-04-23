@@ -12,16 +12,18 @@ import router from "./router";
 async function bootstrap() {
 	ApiService.init();
 
-	try {
-		await KeycloakService.init();
-	} catch (error) {
-		console.error("Keycloak initialization failed", error);
-	}
+	if (process.env.VUE_APP_DEV_BYPASS_AUTH !== 'true') {
+		try {
+			await KeycloakService.init();
+		} catch (error) {
+			console.error("Keycloak initialization failed", error);
+		}
 
-	try {
-		await store.dispatch(INIT_AUTH);
-	} catch (error) {
-		console.error("Auth initialization failed", error);
+		try {
+			await store.dispatch(INIT_AUTH);
+		} catch (error) {
+			console.error("Auth initialization failed", error);
+		}
 	}
 
 	const app = createApp(App);

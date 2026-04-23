@@ -1,97 +1,94 @@
-import ApiService from "./api.service";
-import { ActionContext } from "vuex";
+import ApiService from './api.service'
+import type { Module } from 'vuex'
 
-// Constants for actions and mutations
-export const GET_ORANGTUA_ASUH = "getOrangtuaAsuh";
-export const SET_ORANGTUA_ASUH = "setOrangtuaAsuh";
-export const POST_ORANGTUA_ASUH = "postOrangtuaAsuh";
-export const PUT_ORANGTUA_ASUH = "putOrangtuaAsuh";
-export const DELETE_ORANGTUA_ASUH = "deleteOrangtuaAsuh";
+export const GET_ORANGTUA_ASUH = 'GET_ORANGTUA_ASUH'
 
-
-// Define the state type
-interface State {
-    orangtuaAsuh: any[];
+interface TallySubmission {
+  id: number
+  tallySubmissionId: string
+  submittedAt: string
+  payload: { answersByLabel: Record<string, string>; [key: string]: any }
+  extractedWhatsapp: string | null
+  sourceType: string
 }
 
-// Define the initial state
-const state: State = {
-    orangtuaAsuh: [],
-};
+interface Pagination {
+  currentPage: number
+  totalPages: number
+  totalEntries: number
+  perPage: number
+  start: number
+  end: number
+}
 
-// Define getters
-const getters = {
-    orangtuaAsuh(state: State): any[] {
-        return state.orangtuaAsuh; // Return the list of orangtuaAsuh
-    },
-};
+interface State {
+  list: TallySubmission[]
+  pagination: Pagination
+  loading: boolean
+  error: string | null
+}
 
-// Define the VuexContext type (with a generic RootState)
-type VuexContext = ActionContext<State, any>;
+const SET_LIST = 'SET_LIST'
+const SET_PAGINATION = 'SET_PAGINATION'
+const SET_LOADING = 'SET_LOADING'
+const SET_ERROR = 'SET_ERROR'
 
-const actions = {
-    [GET_ORANGTUA_ASUH](context: VuexContext, params: Record<string, any>): Promise<any> {
-        return new Promise((resolve, reject) => {
-            ApiService.get<{ data: any }>("/orangtua-asuh", params.data)
-                .then(response => {
-                    context.commit(SET_ORANGTUA_ASUH, response);
-                    resolve(response);
-                })
-                .catch(err => {
-                    console.error("Error fetching orangtuaAsuh:", err);
-                    reject(err);
-                });
-        });
-    },
-    [POST_ORANGTUA_ASUH](context: VuexContext, params: Record<string, any>): Promise<any[]> {
-        return new Promise((resolve, reject) => {
-            ApiService.post<{ data: any[] }>("/orangtua-asuh", params.data)
-                .then(({ data }) => {
-                    resolve(data);
-                })
-                .catch((err) => {
-                    console.error("Error creating activity:", err);
-                    reject(err);
-                });
-        });
-    },
-    [PUT_ORANGTUA_ASUH](context: VuexContext, params: Record<string, any>): Promise<any[]> {
-        return new Promise((resolve, reject) => {
-            ApiService.put<{ data: any[] }>(`/orangtua-asuh/${params.id}`, params.data)
-                .then(({ data }) => {
-                    resolve(data);
-                })
-                .catch((err) => {
-                    console.error("Error updating activity:", err);
-                    reject(err);
-                });
-        });
-    },
-    [DELETE_ORANGTUA_ASUH](context: VuexContext, params: Record<string, any>): Promise<void> {
-        return new Promise((resolve, reject) => {
-            ApiService.delete(`/orangtua-asuh/${params.id}`)
-                .then(() => {
-                    resolve();
-                })
-                .catch((err) => {
-                    console.error("Error deleting activity:", err);
-                    reject(err);
-                });
-        });
-    },
-};
+const orangtuaAsuhModule: Module<State, any> = {
+  namespaced: true,
 
-// Define mutations
-const mutations = {
-    [SET_ORANGTUA_ASUH](state: State, data: any[]): void {
-        state.orangtuaAsuh = data; // Set the state with the fetched OrangtuaAsuh data
-    },
-};
+  state: (): State => ({
+    list: [],
+    pagination: { currentPage: 1, totalPages: 1, totalEntries: 0, perPage: 10, start: 0, end: 0 },
+    loading: false,
+    error: null,
+  }),
 
-// Export the Vuex store module
-export default {
-    state,
-    getters,
-    actions,
-    mutations,
-};
+  getters: {
+    orangtuaAsuh: (s) => s.list,
+    orangtuaAsuhPagination: (s) => s.pagination,
+    orangtuaAsuhLoading: (s) => s.loading,
+    orangtuaAsuhError: (s) => s.error,
+  },
+
+  mutations: {
+    [SET_LIST](state, payload: TallySubmission[]) { state.list = payload },
+    [SET_PAGINATION](state, payload: Pagination) { state.pagination = payload },
+    [SET_LOADING](state, val: boolean) { state.loading = val },
+    [SET_ERROR](state, msg: string | null) { state.error = msg },
+  },
+
+  actions: {
+    async [GET_ORANGTUA_ASUH](
+      { commit },
+      params: { search?: string; limit?: number; page?: number } = {},
+    ) {
+      commit(SET_LOADING, true)
+      commit(SET_ERROR, null)
+      try {
+        const res = await ApiService.get<any>(
+          '/tally-submissions/form/orang_tua_asuh',
+          params as any,
+        )
+        const { data, pagination } = res
+        const p = pagination.currentPage
+        const lim = pagination.perPage
+        const total = pagination.totalEntries
+        commit(SET_LIST, data ?? [])
+        commit(SET_PAGINATION, {
+          currentPage: p,
+          totalPages: pagination.totalPages,
+          totalEntries: total,
+          perPage: lim,
+          start: total === 0 ? 0 : (p - 1) * lim + 1,
+          end: Math.min(p * lim, total),
+        })
+      } catch (err: any) {
+        commit(SET_ERROR, err?.message ?? 'Gagal memuat data')
+      } finally {
+        commit(SET_LOADING, false)
+      }
+    },
+  },
+}
+
+export default orangtuaAsuhModule

@@ -148,7 +148,16 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
+  if (process.env.VUE_APP_DEV_BYPASS_AUTH === 'true') {
+    if (to.name === 'Login' || to.name === 'AppSelector') {
+      next({ name: 'Dashboard' });
+      return;
+    }
+    next();
+    return;
+  }
+
   const isLoginRoute = to.name === "Login";
   const isSelectorRoute = to.name === "AppSelector";
 

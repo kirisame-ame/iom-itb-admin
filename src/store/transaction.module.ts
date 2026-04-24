@@ -18,7 +18,14 @@ interface Transaction {
     merchandiseId: number; // Related merchandise ID
     qty: number; // Quantity of merchandise
     payment: string | null; // Payment image path or null
+    paymentMethod?: "manual" | "midtrans";
+    paymentStatus?: "pending" | "settlement" | "expired" | "failed" | "refunded";
+    midtransOrderId?: string | null;
+    midtransTransactionId?: string | null;
+    paymentType?: string | null;
     status: string; // Current status of the transaction (e.g., waiting, completed)
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 // Define type for state

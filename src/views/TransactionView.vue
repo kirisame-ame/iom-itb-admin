@@ -18,7 +18,7 @@
     <div class="mt-8">
 
       <div class="mt-6">
-        <h2 class="text-xl font-semibold leading-tight text-gray-700">Users</h2>
+        <h2 class="text-xl font-semibold leading-tight text-gray-700">Transactions</h2>
 
         <div class="flex flex-col mt-3 sm:flex-row justify-between">
           <div class="flex items-center">
@@ -111,7 +111,7 @@
                   <th
                     class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                   >
-                    Payment
+                    Bukti
                   </th>
                   <th
                     class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
@@ -151,7 +151,12 @@
                   <th
                     class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                   >
-                  Status
+                  Payment
+                  </th>
+                  <th
+                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                  >
+                  Status Pesanan
                   </th>
                   <th
                     class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
@@ -178,19 +183,18 @@
                     <div class="flex items-center">
                       <div class="flex-shrink-0 w-10 h-10">
                         <img
-                          v-if="u?.payment"
+                          v-if="isManualProof(u?.payment)"
                           class="w-[50px] h-[50px] rounded-[4px] cursor-pointer hover:opacity-[0.8]"
                           :src="u?.payment"
-                          alt="profile pic"
+                          alt="payment proof"
                           @click="openImageModal(u?.payment)"
                         />
-                        <img
+                        <div
                           v-else
-                          class="w-[50px] h-[50px] rounded-[4px] cursor-pointer hover:opacity-[0.8]"
-                          :src="require('@/assets/image/default.png')"
-                          alt="profile pic"
-                          @click="openImageModal(u?.payment)"
-                        />
+                          class="flex items-center justify-center w-[50px] h-[50px] text-[10px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded-[4px]"
+                        >
+                          {{ u?.paymentMethod === 'midtrans' ? 'MID' : '—' }}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -232,7 +236,25 @@
                   <td
                     class="px-5 py-5 text-sm bg-white border-b border-gray-200"
                   >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.status }}</p>
+                    <div class="space-y-1">
+                      <span :class="paymentStatusBadgeClass(u?.paymentStatus)" class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize whitespace-nowrap">
+                        {{ paymentStatusLabel(u?.paymentStatus) }}
+                      </span>
+                      <p class="text-xs text-gray-500 whitespace-nowrap">
+                        {{ paymentMethodLabel(u?.paymentMethod) }}
+                        <span v-if="u?.paymentType">• {{ u.paymentType }}</span>
+                      </p>
+                      <p v-if="u?.midtransOrderId" class="font-mono text-[11px] text-gray-400 whitespace-nowrap">
+                        {{ u.midtransOrderId }}
+                      </p>
+                    </div>
+                  </td>
+                  <td
+                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                  >
+                    <span :class="orderStatusBadgeClass(u?.status)" class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap">
+                      {{ u?.status || '-' }}
+                    </span>
                   </td>
                   <td
                     class="px-5 py-5 text-sm bg-white border-b border-gray-200"
@@ -375,17 +397,47 @@ const closeImageModal = () => {
       isImageModalOpen.value = false;
 }
 
-const formattedPrice = (value: number) => {
-  if (value === undefined || value === null) return '';
-  const numberValue = value;
+const isManualProof = (payment?: string | null) => Boolean(payment) && !String(payment).startsWith('midtrans:');
 
-  if (isNaN(numberValue)) return '';
+const paymentMethodLabel = (paymentMethod?: string) => {
+  if (paymentMethod === 'midtrans') return 'Midtrans';
+  if (paymentMethod === 'manual') return 'Manual';
+  return '-';
+};
 
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(numberValue);
+const paymentStatusLabel = (paymentStatus?: string) => paymentStatus || 'pending';
+
+const paymentStatusBadgeClass = (paymentStatus?: string) => {
+  switch (paymentStatus) {
+    case 'settlement':
+      return 'bg-emerald-100 text-emerald-700';
+    case 'expired':
+      return 'bg-amber-100 text-amber-700';
+    case 'failed':
+      return 'bg-rose-100 text-rose-700';
+    case 'refunded':
+      return 'bg-slate-200 text-slate-700';
+    case 'pending':
+    default:
+      return 'bg-blue-100 text-blue-700';
+  }
+};
+
+const orderStatusBadgeClass = (status?: string) => {
+  switch (status) {
+    case 'done':
+    case 'arrived':
+      return 'bg-emerald-100 text-emerald-700';
+    case 'on process':
+    case 'on delivery':
+      return 'bg-sky-100 text-sky-700';
+    case 'canceled':
+    case 'denied':
+      return 'bg-rose-100 text-rose-700';
+    case 'waiting':
+    default:
+      return 'bg-slate-100 text-slate-700';
+  }
 };
 
 // Fungsi untuk memformat tanggal

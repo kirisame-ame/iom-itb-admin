@@ -14,7 +14,7 @@
           </div>
 
           <div class="px-5 py-6 text-gray-700 bg-gray-200 border-b max-h-[80vh] overflow-y-scroll">
-            <InputSelect label="status" :value="data?.status" :options="['waiting', 'on process', 'on delivery', 'arrived', 'denied']" @update="updateValue"  />
+            <InputSelect label="status" :value="data?.status" :options="['waiting', 'on process', 'on delivery', 'arrived', 'canceled', 'denied']" @update="updateValue"  />
           </div>
 
           <div class="flex items-center justify-between px-5 py-3">

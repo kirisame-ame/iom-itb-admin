@@ -1,33 +1,39 @@
 <template>
-  <div class="fixed z-[998] bg-black top-0 right-0 w-full h-screen opacity-[0.4]"></div>
-  <div class="fixed z-[999] flex justify-center items-center w-screen h-screen top-0 right-0" @click="closeModal">
-    <div ref="modalContent" @click.stop>
-      <div class="md:w-[500px] max-w-[500px] overflow-hidden bg-white border rounded-md shadow-md">
+  <div class="fixed inset-0 z-[998] bg-slate-900/50 backdrop-blur-sm"></div>
+  <div class="fixed inset-0 z-[999] flex items-center justify-center p-4" @click="closeModal">
+    <div ref="modalContent" class="w-full max-w-[580px]" @click.stop>
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
         <form @submit.prevent="handleSubmit" novalidate>
-          <div class="flex items-center justify-between px-5 py-3 text-gray-700 border-b">
-            <h3 class="text-sm capitalize">{{ title }}</h3>
-            <button type="button" @click="closeModal">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="flex items-start justify-between gap-4 bg-blue-900 px-6 py-5 text-white">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-blue-100">Form Merchandise</p>
+              <h3 class="mt-1 text-xl font-bold capitalize">{{ title }}</h3>
+              <p class="mt-1 text-sm text-blue-100">Lengkapi informasi produk yang akan tampil di katalog.</p>
+            </div>
+            <button type="button" class="rounded-full p-1.5 text-blue-100 transition hover:bg-white/10 hover:text-white" @click="closeModal">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <div class="px-5 py-6 text-gray-700 bg-gray-200 border-b max-h-[80vh] overflow-y-scroll">
+          <div class="max-h-[75vh] space-y-4 overflow-y-auto bg-slate-50 px-6 py-6 text-slate-700">
             <InputText label="name" :value="data?.name" @update="updateValue" :required="true" />
-            <InputNumber label="stock" :value="data?.stock" @update="updateValue" :required="true" />
-            <InputPrice label="price" :value="data?.price" @update="updateValue" :required="true"/>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <InputNumber label="stock" :value="data?.stock" @update="updateValue" :required="true" />
+              <InputPrice label="price" :value="data?.price" @update="updateValue" :required="true"/>
+            </div>
             <InputTextArea label="description" :value="data?.description" @update="updateValue" :required="true" />
             <InputImageCostume label="image" :value="data?.image" @update="updateValue" />
             <InputText label="link" :value="data?.link" @update="updateValue" />
           </div>
 
-          <div class="flex items-center justify-between px-5 py-3">
-            <button type="button" @click="closeModal" class="px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none">
-              Cancel
+          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
+            <button type="button" @click="closeModal" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 focus:outline-none">
+              Batal
             </button>
-            <button type="submit" :disabled="isLoading" class="px-3 py-1 text-sm text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none">
-              {{ isLoading ? 'Loading...' : 'Save' }}
+            <button type="submit" :disabled="isLoading" class="rounded-lg bg-blue-800 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60">
+              {{ isLoading ? 'Menyimpan...' : 'Simpan' }}
             </button>
           </div>
         </form>

@@ -1,63 +1,83 @@
 <template>
-  <div class="fixed z-[998] bg-black top-0 right-0 w-full h-screen opacity-[0.4]"></div>
-  <div class="fixed z-[999] flex justify-center items-center w-screen h-screen top-0 right-0" @click="closeModal">
-    <div ref="modalContent" @click.stop>
-      <div class="md:w-[500px] max-w-[500px] overflow-hidden bg-white border rounded-md shadow-md">
+  <div class="fixed inset-0 z-[998] bg-slate-900/50 backdrop-blur-sm"></div>
+  <div class="fixed inset-0 z-[999] flex items-center justify-center p-4" @click="closeModal">
+    <div ref="modalContent" class="w-full max-w-[680px]" @click.stop>
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
         <form @submit.prevent="handleSubmit">
-          <div class="flex items-center justify-between px-5 py-3 text-gray-700 border-b">
-            <h3 class="text-sm capitalize">{{ title }}</h3>
-            <button type="button" @click="closeModal">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="flex items-start justify-between gap-4 bg-blue-900 px-6 py-5 text-white">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-blue-100">Form Donasi</p>
+              <h3 class="mt-1 text-xl font-bold capitalize">{{ title }}</h3>
+              <p class="mt-1 text-sm text-blue-100">Catat donasi manual, nominal, kanal notifikasi, dan bukti bayar.</p>
+            </div>
+            <button type="button" class="rounded-full p-1.5 text-blue-100 transition hover:bg-white/10 hover:text-white" @click="closeModal">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <div class="px-5 py-6 text-gray-700 bg-gray-200 border-b max-h-[80vh] overflow-y-scroll">
-            <InputText label="Nama" keyValue="name" :value="data?.name" @update="updateValue" :required="true" />
-            <InputText label="Email" keyValue="email" :value="data?.email" @update="updateValue" />
-            <InputText label="No WA" keyValue="noWhatsapp" :value="data?.noWhatsapp" @update="updateValue" />
-            <p class="text-xs text-gray-500 -mt-1 mb-2">Email atau No WA wajib diisi salah satu.</p>
-
-            <InputSelect
-              label="Jenis Donasi"
-              keyValue="donationType"
-              :value="data?.donationType"
-              :options="donationTypeOptions"
-              @update="updateValue"
-            />
-
-            <div class="relative mt-2 rounded-md shadow-sm">
-              <label class="text-sm capitalize">Fakultas</label>
-              <select
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                v-model="facultyId"
-              >
-                <option :value="null">- Tidak terkait fakultas -</option>
-                <option v-for="f in fakultasList" :key="f.id" :value="f.id">
-                  {{ f.name }} (kode unik: {{ f.kodeUnik }})
-                </option>
-              </select>
-              <p v-if="selectedFaculty" class="text-xs text-gray-500 mt-1">
-                Nominal akhir akan ditambah kode unik <b>{{ selectedFaculty.kodeUnik }}</b>.
-              </p>
+          <div class="max-h-[75vh] space-y-5 overflow-y-auto bg-slate-50 px-6 py-6 text-slate-700">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Data Donatur</p>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <InputText label="Nama" keyValue="name" :value="data?.name" @update="updateValue" :required="true" />
+                <InputText label="Email" keyValue="email" :value="data?.email" @update="updateValue" />
+                <InputText label="No WA" keyValue="noWhatsapp" :value="data?.noWhatsapp" @update="updateValue" />
+              </div>
+              <p class="mt-3 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-800">Email atau No WA wajib diisi salah satu.</p>
             </div>
 
-            <InputPrice label="Uang yang didonasi" keyValue="amount" :value="data?.amount" @update="updateValue" :required="true" />
-            <InputDate label="Tanggal uang masuk" keyValue="date" :value="data?.date" @update="updateValue" :required="true" />
-            <InputText label="Bank" keyValue="bank" :value="data?.bank" @update="updateValue" />
-            <InputCheckboxOptions label="Notifikasi melalui?" :options="['whatsapp', 'email']" keyValue="notification" :value="data?.notification" @update="updateValue" :required="true" />
-            <InputCheckbox label="Sembunyikan nama?" keyValue="nameIsHidden" :value="data?.options?.nameIsHidden" @update="updateValue" />
-            <InputCheckbox label="Hamba Allah?" keyValue="isHambaAllah" :value="data?.options?.isHambaAllah" @update="updateValue" />
-            <InputImage label="Bukti Bayar" keyValue="image" :value="data?.proof" @update="updateValue" />
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Detail Donasi</p>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <InputSelect
+                  label="Jenis Donasi"
+                  keyValue="donationType"
+                  :value="data?.donationType"
+                  :options="donationTypeOptions"
+                  @update="updateValue"
+                />
+
+                <div class="relative mt-2 rounded-md shadow-sm">
+                  <label class="text-sm capitalize">Fakultas</label>
+                  <select
+                    class="block w-full rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-sm text-slate-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                    v-model="facultyId"
+                  >
+                    <option :value="null">- Tidak terkait fakultas -</option>
+                    <option v-for="f in fakultasList" :key="f.id" :value="f.id">
+                      {{ f.name }} (kode unik: {{ f.kodeUnik }})
+                    </option>
+                  </select>
+                  <p v-if="selectedFaculty" class="mt-1 text-xs text-slate-500">
+                    Nominal akhir akan ditambah kode unik <b>{{ selectedFaculty.kodeUnik }}</b>.
+                  </p>
+                </div>
+
+                <InputPrice label="Uang yang didonasi" keyValue="amount" :value="data?.amount" @update="updateValue" :required="true" />
+                <InputDate label="Tanggal uang masuk" keyValue="date" :value="data?.date" @update="updateValue" :required="true" />
+                <InputText label="Bank" keyValue="bank" :value="data?.bank" @update="updateValue" />
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Publikasi & Bukti</p>
+              <InputCheckboxOptions label="Notifikasi melalui?" :options="['whatsapp', 'email']" keyValue="notification" :value="data?.notification" @update="updateValue" :required="true" />
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <InputCheckbox label="Sembunyikan nama?" keyValue="nameIsHidden" :value="data?.options?.nameIsHidden" @update="updateValue" />
+                <InputCheckbox label="Hamba Allah?" keyValue="isHambaAllah" :value="data?.options?.isHambaAllah" @update="updateValue" />
+              </div>
+              <InputImage label="Bukti Bayar" keyValue="image" :value="data?.proof" @update="updateValue" />
+            </div>
           </div>
 
-          <div class="flex items-center justify-between px-5 py-3">
-            <button type="button" @click="closeModal" class="px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none">
-              Cancel
+          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
+            <button type="button" @click="closeModal" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 focus:outline-none">
+              Batal
             </button>
-            <button type="submit" :disabled="isLoading" class="px-3 py-1 text-sm text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none">
-              {{ isLoading ? 'Loading...' : 'Save' }}
+            <button type="submit" :disabled="isLoading" class="rounded-lg bg-blue-800 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60">
+              {{ isLoading ? 'Menyimpan...' : 'Simpan' }}
             </button>
           </div>
         </form>
@@ -79,6 +99,7 @@ import { useStore } from 'vuex';
 import { POST_DONASI, PUT_DONASI } from '@/store/donasi.module';
 import { POST_IMAGE } from '@/store/upload.module';
 import { GET_FAKULTAS, Fakultas } from '@/store/fakultas.module';
+import { showError } from '@/utils/swal';
 
 const DONATION_TYPE_OPTIONS = [
   'iuran_sukarela',
@@ -153,7 +174,7 @@ export default defineComponent({
         }
         closeModal();
       } catch (error: any) {
-        alert(error?.response?.data?.message || 'Gagal menyimpan donasi');
+        showError('Gagal', error?.response?.data?.message || 'Gagal menyimpan donasi');
         isLoading.value = false;
       }
     };
@@ -169,7 +190,7 @@ export default defineComponent({
       try {
         if (!fakultasList.value.length) await store.dispatch(GET_FAKULTAS);
       } catch (err) {
-        console.error('Failed to load fakultas list', err);
+        showError('Gagal', err instanceof Error ? err.message : 'Gagal memuat daftar fakultas');
       }
     });
 

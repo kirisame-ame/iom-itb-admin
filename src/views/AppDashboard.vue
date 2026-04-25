@@ -1,111 +1,204 @@
 <template>
+  <div class="bg-slate-50 min-h-screen p-6">
     <!-- ── Page Header ─────────────────────────────────────────── -->
-  <div class="pb-4">
-    <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Dashboard</h1>
-    <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
-  </div>
+    <div class="pb-4">
+      <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Dashboard</h1>
+      <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
+    </div>
 
-  <div>
-    <!-- STAT CARD -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-
-      <div
-        v-for="(stat,index) in stats"
-        :key="index"
-        class="p-4 bg-gray-100 rounded-lg flex items-center justify-between"
-      >
-
-        <div>
-          <p class="text-sm text-gray-600">
-            {{ stat.label }}
-          </p>
-
-          <p class="text-2xl font-bold text-gray-900 mt-1">
-            {{ stat.value }}
-          </p>
-
-          <p class="text-xs mt-1 min-h-[16px]"
-            :class="stat.description ? 'text-green-600' : 'text-transparent'">
-            {{ stat.description || '-' }}
-          </p>
+    <!-- TUGAS 2 & 3: KPI CARDS GRID (REVISI 5 CARDS) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6 mt-2 mb-8">
+      
+      <!-- Card 1: Pengajuan Perlu Proses -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalPengajuanPending.title }}</h3>
+          <div class="p-2 bg-orange-50 text-orange-500 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
         </div>
+        <div class="mt-4">
+          <p class="text-3xl font-bold text-slate-800">{{ kpiData.totalPengajuanPending.value }}</p>
+        </div>
+      </div>
 
-        <component
-          :is="stat.icon"
-          class="w-8 h-8 text-[#003793]"
+      <!-- Card 2: Bantuan Disetujui -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalBantuanDisetujui.title }}</h3>
+          <div class="p-2 bg-green-50 text-green-500 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-3xl font-bold text-slate-800">{{ kpiData.totalBantuanDisetujui.value }}</p>
+        </div>
+      </div>
+
+      <!-- Card 3: Pesanan Merchandise -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.pesananMerchandise.title }}</h3>
+          <div class="p-2 bg-blue-50 text-blue-500 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-3xl font-bold text-slate-800">{{ kpiData.pesananMerchandise.value }}</p>
+        </div>
+      </div>
+
+      <!-- Card 4: Total Donasi -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalDonasi.title }}</h3>
+          <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-xl font-bold text-slate-800">{{ kpiData.totalDonasi.value }}</p>
+        </div>
+      </div>
+
+      <!-- Card 5: Total Anggota -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalAnggota.title }}</h3>
+          <div class="p-2 bg-indigo-50 text-indigo-500 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-3xl font-bold text-slate-800">{{ kpiData.totalAnggota.value }}</p>
+          <p class="text-xs text-green-500 mt-1 relative top-2 font-medium">{{ kpiData.totalAnggota.description }}</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TUGAS 4: GRAFIK (CHARTS) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      
+      <!-- Grafik Kiri (Tren Pengajuan) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+        <h3 class="text-slate-700 font-bold text-lg mb-4">Tren Pengajuan Masuk</h3>
+        <apexchart 
+          type="line" 
+          height="300" 
+          :options="trenChartOptions" 
+          :series="trenChartSeries" 
         />
+      </div>
 
+      <!-- Grafik Kanan (Distribusi Status) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col">
+        <h3 class="text-slate-700 font-bold text-lg mb-4">Distribusi Status Bantuan</h3>
+        <div class="flex-1 flex items-center justify-center">
+          <apexchart 
+            type="donut" 
+            height="320" 
+            :options="statusChartOptions" 
+            :series="statusChartSeries" 
+          />
+        </div>
+      </div>
+
+      <!-- Grafik Bawah (Penerima Bantuan per Tahun) - Bar Chart -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 lg:col-span-2">
+        <h3 class="text-slate-700 font-bold text-lg mb-4">Penerima Bantuan per Tahun</h3>
+        <apexchart 
+          type="bar" 
+          height="300" 
+          :options="penerimaChartOptions" 
+          :series="penerimaChartSeries" 
+        />
       </div>
 
     </div>
 
-    <!-- CHART -->
-    <div class="mt-8 bg-gray-100 rounded-lg shadow p-6">
-
-      <h3 class="text-2xl font-bold text-[#003793] mb-4">
-        Tren Donasi 12 bulan terakhir
-      </h3>
-
-      <apexchart
-        type="line"
-        height="350"
-        :options="chartOptions"
-        :series="chartSeries"
-      />
-
-    </div>
-
-    <!-- DONASI TERBARU -->
-    <div class="mt-8 bg-gray-100 rounded-lg shadow overflow-hidden">
-
-      <div class="px-6 py-4 border-b">
-        <h3 class="text-2xl font-bold text-[#003793]">
-          Donasi Terbaru
-        </h3>
+    <!-- TABEL BAWAH: PENGAJUAN & LOG AKTIVITAS -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+      
+      <!-- Tabel Kiri: Pengajuan Bantuan Terbaru -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 bg-white">
+          <h3 class="text-slate-700 font-bold text-lg">Pengajuan Bantuan Terbaru</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-left">
+            <thead class="bg-slate-50 text-slate-500">
+              <tr>
+                <th class="px-6 py-3 font-semibold">Nama Pemohon</th>
+                <th class="px-6 py-3 font-semibold">NIM</th>
+                <th class="px-6 py-3 font-semibold text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="submission in recentSubmissions" :key="submission.id" class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-slate-800">
+                  {{ submission.name }}
+                  <div class="text-xs text-slate-400 mt-1">{{ submission.type }} &bull; {{ submission.date }}</div>
+                </td>
+                <td class="px-6 py-4 text-slate-600">{{ submission.nim }}</td>
+                <td class="px-6 py-4 text-center">
+                  <span 
+                    class="px-3 py-1 text-xs font-semibold rounded-full"
+                    :class="{
+                      'bg-yellow-50 text-yellow-600': submission.status === 'Menunggu',
+                      'bg-blue-50 text-blue-600': submission.status === 'Diproses',
+                      'bg-green-50 text-green-600': submission.status === 'Disetujui',
+                      'bg-red-50 text-red-600': submission.status === 'Ditolak'
+                    }"
+                  >
+                    {{ submission.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <table class="min-w-full text-sm">
-
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left">Donatur</th>
-            <th class="px-6 py-3 text-left">Jumlah</th>
-            <th class="px-6 py-3 text-left">Tanggal</th>
-            <th class="px-6 py-3 text-left">Status</th>
-          </tr>
-        </thead>
-
-        <tbody class="divide-y">
-
-          <tr
-            v-for="donation in recentDonations"
-            :key="donation.id"
-            class="hover:bg-gray-50"
-          >
-
-            <td class="px-6 py-4 font-medium">
-              {{ donation.donorName }}
-            </td>
-
-            <td class="px-6 py-4 text-green-600 font-bold">
-              {{ formatCurrency(donation.amount) }}
-            </td>
-
-            <td class="px-6 py-4 text-gray-500">
-              {{ formatDate(donation.date) }}
-            </td>
-
-            <td class="px-6 py-4">
-              <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                {{ donation.status }}
-              </span>
-            </td>
-
-          </tr>
-
-        </tbody>
-
-      </table>
+      <!-- Tabel Kanan: Log Aktivitas Terbaru -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 bg-white">
+          <h3 class="text-slate-700 font-bold text-lg">Log Aktivitas Terbaru</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-left">
+            <thead class="bg-slate-50 text-slate-500">
+              <tr>
+                <th class="px-6 py-3 font-semibold">Admin</th>
+                <th class="px-6 py-3 font-semibold">Waktu</th>
+                <th class="px-6 py-3 font-semibold">Perubahan Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="log in activityLogs" :key="log.id" class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-slate-800">{{ log.admin }}</td>
+                <td class="px-6 py-4 text-slate-500 text-xs">{{ log.time }}</td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center space-x-2 text-xs font-medium">
+                    <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded">{{ log.oldStatus }}</span>
+                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    <span 
+                      class="px-2 py-1 rounded"
+                      :class="{
+                        'bg-blue-50 text-blue-600': log.newStatus === 'Diproses',
+                        'bg-green-50 text-green-600': log.newStatus === 'Disetujui',
+                        'bg-red-50 text-red-600': log.newStatus === 'Ditolak'
+                      }"
+                    >
+                      {{ log.newStatus }}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
     </div>
 
@@ -169,149 +262,62 @@
 import { ref } from "vue"
 import VueApexCharts from "vue3-apexcharts"
 
-import bantuanIcon from "@/assets/svg/ic-card.vue"
-import donasiIcon from "@/assets/svg/ic-bag.vue"
-import anggotaIcon from "@/assets/svg/ic-user.vue"
-import approveIcon from "@/assets/svg/ic-grafic.vue"
+const kpiData = ref({
+  totalPengajuanPending: { title: "Pengajuan Perlu Proses", value: 12, color: "text-orange-500" },
+  totalBantuanDisetujui: { title: "Bantuan Disetujui (Bulan Ini)", value: 45, color: "text-green-500" },
+  pesananMerchandise: { title: "Pesanan Merchandise Baru", value: 5, color: "text-blue-500" },
+  totalDonasi: { title: "Donasi Terkumpul", value: "Rp 25.000.000", color: "text-emerald-500" },
+  totalAnggota: { title: "Total Anggota", value: 1500, description: "+15 anggota baru bulan ini", color: "text-indigo-500" }
+});
 
-interface DashboardStat{
-label:string
-value:string|number
-description?:string
-icon:any
-}
+const tPengajuan = ref([12, 19, 3, 5, 2, 0, 8]);
+const tLabels = ref(['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']);
 
-interface Donation{
-id:number
-donorName:string
-amount:number
-date:string
-status:string
-}
+const trenChartSeries = ref([{ name: 'Pengajuan', data: tPengajuan.value }]);
+const trenChartOptions = ref({
+  chart: { type: 'line', toolbar: { show: false } },
+  stroke: { curve: 'smooth', width: 3 },
+  xaxis: { categories: tLabels.value },
+  colors: ['#3B82F6']
+});
 
-const formatCurrency=(value:number)=>{
-return new Intl.NumberFormat("id-ID",{
-style:"currency",
-currency:"IDR"
-}).format(value)
-}
+const statusChartSeries = ref([45, 12, 5, 20]);
+const statusChartOptions = ref({
+  chart: { type: 'donut' },
+  labels: ['Disetujui', 'Menunggu', 'Ditolak', 'Diproses'],
+  colors: ['#10B981', '#F59E0B', '#EF4444', '#3B82F6'],
+  dataLabels: { enabled: true },
+  legend: { position: 'bottom' }
+});
 
-const formatDate=(date:string)=>{
-return new Date(date).toLocaleDateString("id-ID")
-}
-
-const stats=ref<DashboardStat[]>([
-
-{
-label:"Pengajuan Bantuan UKT",
-value:15,
-icon:bantuanIcon
-},
-
-{
-label:"Pengajuan Bantuan Biaya Hidup",
-value:15,
-icon:bantuanIcon
-},
-
-{
-label:"Pengajuan Bantuan Tugas Akhir",
-value:15,
-icon:bantuanIcon
-},
-
-{
-label:"Pengajuan Bantuan Lainnya",
-value:15,
-icon:bantuanIcon
-},
-
-{
-label:"Total Donasi Bulan Ini",
-value:"Rp 15.000.000",
-icon:donasiIcon
-},
-
-{
-label:"Total Anggota",
-value:1500,
-description:"+15 anggota baru bulan ini",
-icon:anggotaIcon
-}
-
-])
-
-const chartSeries = ref([
-  {
-    name: "Donasi",
-    data: [
-      15000000, 13000000, 16500000, 14000000,
-      12000000, 13500000, 11000000, 13000000,
-      11500000, 12000000, 13000000, 15000000
-    ]
-  }
-])
-
-const chartOptions = ref({
-  chart: {
-    type: "line",
-    toolbar: { show: false }
+const penerimaChartSeries = ref([{
+  name: 'Total Penerima Bantuan',
+  data: [120, 185, 240, 320]
+}]);
+const penerimaChartOptions = ref({
+  chart: { type: 'bar', toolbar: { show: false } },
+  plotOptions: { 
+    bar: { 
+      borderRadius: 4, 
+      horizontal: false,
+      columnWidth: '50%'
+    } 
   },
+  xaxis: { categories: ['2023', '2024', '2025', '2026'] },
+  colors: ['#8B5CF6'], // Ungu
+  dataLabels: { enabled: false }
+});
 
-  stroke: {
-    curve: "smooth",
-    width: 3
-  },
+const recentSubmissions = ref([
+  { id: 1, name: "Ahmad Budi", nim: "13523101", type: "Bantuan UKT", date: "2026-04-25", status: "Menunggu" },
+  { id: 2, name: "Siti Rahma", nim: "13523102", type: "Bantuan Biaya Hidup", date: "2026-04-24", status: "Diproses" },
+  { id: 3, name: "Rizky Fauzi", nim: "13523103", type: "Bantuan UKT", date: "2026-04-23", status: "Disetujui" }
+]);
 
-  xaxis: {
-    categories: [
-      "Jan","Feb","Mar","Apr","Mei","Jun",
-      "Jul","Agu","Sep","Okt","Nov","Des"
-    ],
-    title: {
-      text: "Bulan"
-    }
-  },
-
-  yaxis: {
-    title: {
-      text: "Nominal Donasi (Rp)"
-    },
-    labels: {
-      formatter: (value: number) => {
-        return value.toLocaleString("id-ID")
-      }
-    }
-  }
-})
-
-const recentDonations=ref<Donation[]>([
-
-{
-id:1,
-donorName:"Hamba Allah",
-amount:5000000,
-date:"2023-10-25",
-status:"Berhasil"
-},
-
-{
-id:2,
-donorName:"Alumni 98",
-amount:1500000,
-date:"2023-10-24",
-status:"Berhasil"
-},
-
-{
-id:3,
-donorName:"Budi Santoso",
-amount:250000,
-date:"2023-10-24",
-status:"Berhasil"
-}
-
-])
+const activityLogs = ref([
+  { id: 101, admin: "Dr. Ayi Purbasari", time: "10 menit yang lalu", oldStatus: "Menunggu", newStatus: "Diproses" },
+  { id: 102, admin: "Orvin Andika", time: "1 jam yang lalu", oldStatus: "Diproses", newStatus: "Disetujui" }
+]);
 
 const csvRows=ref<string[][]>([])
 

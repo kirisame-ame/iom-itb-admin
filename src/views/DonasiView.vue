@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <div class="min-h-screen">
+    <Breadcrumb :breadcrumb="title" />
+
     <ModalForm
       v-if="isOpened"
       :id="currentId"
@@ -17,15 +19,21 @@
     </div>
 
     <div class="mt-8 space-y-5">
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 class="text-xl font-semibold text-gray-900">{{ title }}</h2>
-          <p class="mt-0.5 text-sm text-gray-500">Donasi manual & online (Midtrans) tercatat dalam satu daftar.</p>
-        </div>
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-6 text-white shadow-sm">
+        <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
+        <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
+        <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
+              Keuangan IOM ITB
+            </p>
+            <h1 class="text-3xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Donasi manual dan online Midtrans tercatat dalam satu daftar.</p>
+          </div>
         <div class="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white transition-colors bg-indigo-600 rounded-md hover:bg-indigo-500"
+            class="inline-flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl"
             @click="openAddModal"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
@@ -37,22 +45,23 @@
             :href="excelUrl"
             target="_blank"
             rel="noopener"
-            class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white transition-colors bg-emerald-600 rounded-md hover:bg-emerald-500"
+            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:bg-emerald-400 hover:shadow-xl"
           >
             Excel
             <IcLink class="w-4 h-4" />
           </a>
         </div>
       </div>
+      </section>
 
-      <div class="p-3 bg-white border border-gray-200 rounded-md">
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label class="block mb-1 text-xs text-gray-500">Per halaman</label>
+            <label class="block mb-1 text-xs text-slate-500">Per halaman</label>
             <select
               v-model="limit"
-              @change="getData"
-              class="block w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              @change="() => { page = 1; getData() }"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             >
               <option :value="5">5</option>
               <option :value="10">10</option>
@@ -62,11 +71,11 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-gray-500">Metode</label>
+            <label class="block mb-1 text-xs text-slate-500">Metode</label>
             <select
               v-model="paymentMethod"
-              @change="getData"
-              class="block w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              @change="() => { page = 1; getData() }"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             >
               <option value="">Semua</option>
               <option value="manual">Manual</option>
@@ -75,11 +84,11 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-gray-500">Status</label>
+            <label class="block mb-1 text-xs text-slate-500">Status</label>
             <select
               v-model="paymentStatus"
-              @change="getData"
-              class="block w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              @change="() => { page = 1; getData() }"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             >
               <option value="">Semua</option>
               <option value="pending">Pending</option>
@@ -91,11 +100,11 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-gray-500">Jenis Donasi</label>
+            <label class="block mb-1 text-xs text-slate-500">Jenis Donasi</label>
             <select
               v-model="donationType"
-              @change="getData"
-              class="block w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              @change="() => { page = 1; getData() }"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             >
               <option value="">Semua</option>
               <option value="iuran_sukarela">Iuran Sukarela</option>
@@ -107,46 +116,48 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-gray-500">Cari Nama</label>
+            <label class="block mb-1 text-xs text-slate-500">Cari Nama</label>
             <input
               v-model="search"
-              @input="getData"
+              @input="onSearchInput"
               placeholder="Ketik nama..."
-              class="block w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             />
           </div>
         </div>
       </div>
 
-      <div class="overflow-hidden bg-white border border-gray-200 rounded-md">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
-          <table class="min-w-full text-sm divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">No</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Tanggal</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Donatur</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Jenis</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Fakultas</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Kode</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-right text-gray-500 uppercase">Nominal</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Metode</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Status</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-500 uppercase">Bukti</th>
+          <table class="min-w-full text-sm">
+            <thead>
+              <tr class="bg-blue-900">
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">No</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Tanggal</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Donatur</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Jenis</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Fakultas</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Kode</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Nominal</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Metode</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-100">
+            <tbody class="bg-white divide-y divide-slate-100">
               <tr v-if="isLoading">
-                <td colspan="10" class="px-4 py-6 text-sm text-center text-gray-500">Memuat data...</td>
+                <td v-for="c in 10" :key="c" class="px-4 py-4">
+                  <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
+                </td>
               </tr>
               <tr v-else-if="computedData.length === 0">
-                <td colspan="10" class="px-4 py-10 text-sm text-center text-gray-500">Belum ada donasi.</td>
+                <td colspan="10" class="px-4 py-12 text-sm text-center text-slate-400 italic">Belum ada donasi.</td>
               </tr>
               <tr
                 v-else
                 v-for="(u, index) in computedData"
                 :key="u.id"
-                class="transition-colors hover:bg-gray-50"
+                class="transition-colors hover:bg-blue-50/40"
               >
                 <td class="px-4 py-3 text-gray-500 align-middle">{{ startNumber + index }}</td>
                 <td class="px-4 py-3 text-gray-700 align-middle whitespace-nowrap">{{ formatDate(u.date || u.createdAt) }}</td>
@@ -182,18 +193,18 @@
           </table>
         </div>
 
-        <div class="flex flex-col items-center justify-between gap-2 px-4 py-3 border-t border-gray-200 bg-gray-50 sm:flex-row">
-          <span class="text-xs text-gray-500">
+        <div class="flex flex-col items-center justify-between gap-2 border-t border-slate-100 px-6 py-4 sm:flex-row">
+          <span class="text-xs text-slate-500">
             Menampilkan {{ pagination?.start || 0 }}–{{ pagination?.end || 0 }} dari {{ pagination?.totalEntries || 0 }} entri
           </span>
           <div class="inline-flex">
             <button
-              class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="rounded-l-lg border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               :disabled="page <= 1"
               @click="() => { page = (pagination?.currentPage || 1) - 1; getData(); }"
             >Sebelumnya</button>
             <button
-              class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border-t border-b border-r border-gray-300 rounded-r-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="rounded-r-lg border-y border-r border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               :disabled="page >= (pagination?.totalPages || 1)"
               @click="() => { page = (pagination?.currentPage || 1) + 1; getData(); }"
             >Berikutnya</button>
@@ -211,6 +222,7 @@ import ModalForm from '@/components/modal/FormDonation.vue';
 import IcLink from '@/assets/svg/ic-link.vue';
 import { useStore } from 'vuex';
 import { formatDate } from '@/utils';
+import Breadcrumb from '@/components/AppBreadcrumb.vue';
 
 const excelUrl =
   'https://docs.google.com/spreadsheets/d/13w3FcIz4jjIBcf7DvG_83FmU8NBss_MkGt4lM7U6x6k/edit?usp=sharing';
@@ -231,6 +243,7 @@ const title = ref('Donasi');
 const isOpened = ref(false);
 const currentId = ref<string | undefined>(undefined);
 const dataUpdate = ref<Record<string, any>>({});
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 const openAddModal = () => {
   currentId.value = undefined;
@@ -305,6 +318,14 @@ const getData = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const onSearchInput = () => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    page.value = 1;
+    getData();
+  }, 350);
 };
 
 onMounted(getData);

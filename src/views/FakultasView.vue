@@ -1,24 +1,30 @@
 <template>
-  <div>
-    <div v-if="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" @click.self="closeModal">
-      <div class="bg-white rounded-md shadow-lg w-full max-w-md p-6">
-        <h3 class="text-lg font-semibold mb-4">{{ editingId ? 'Edit' : 'Tambah' }} Fakultas</h3>
-        <form @submit.prevent="handleSubmit" class="space-y-3">
+  <div class="min-h-screen">
+    <Breadcrumb breadcrumb="fakultas" />
+
+    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm" @click.self="closeModal">
+      <div class="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div class="bg-blue-900 px-6 py-5 text-white">
+          <p class="text-xs font-semibold uppercase tracking-wider text-blue-100">Form Fakultas</p>
+          <h3 class="mt-1 text-xl font-bold">{{ editingId ? 'Edit' : 'Tambah' }} Fakultas</h3>
+          <p class="mt-1 text-sm text-blue-100">Kode unik dipakai pada pembayaran donasi/iuran manual.</p>
+        </div>
+        <form @submit.prevent="handleSubmit" class="space-y-4 bg-slate-50 px-6 py-6">
           <div>
-            <label class="block text-sm text-gray-600">Nama Fakultas</label>
-            <input v-model="form.name" class="mt-1 block w-full px-3 py-2 border rounded" placeholder="mis. FTI" required />
+            <label class="block text-sm font-medium text-slate-600">Nama Fakultas</label>
+            <input v-model="form.name" class="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30" placeholder="mis. FTI" required />
           </div>
           <div>
-            <label class="block text-sm text-gray-600">Kode Unik (3 digit)</label>
-            <input v-model="form.kodeUnik" maxlength="3" class="mt-1 block w-full px-3 py-2 border rounded font-mono" placeholder="001" required />
+            <label class="block text-sm font-medium text-slate-600">Kode Unik (3 digit)</label>
+            <input v-model="form.kodeUnik" maxlength="3" class="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30" placeholder="001" required />
           </div>
           <label class="inline-flex items-center">
             <input type="checkbox" v-model="form.isActive" class="mr-2" />
-            <span class="text-sm text-gray-700">Aktif</span>
+            <span class="text-sm text-slate-700">Aktif</span>
           </label>
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button" class="px-4 py-2 bg-gray-200 rounded" @click="closeModal">Batal</button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded" :disabled="isSubmitting">
+          <div class="flex justify-end gap-2 border-t border-slate-100 bg-white -mx-6 -mb-6 mt-2 px-6 py-4">
+            <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50" @click="closeModal">Batal</button>
+            <button type="submit" class="rounded-lg bg-blue-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60" :disabled="isSubmitting">
               {{ isSubmitting ? 'Menyimpan...' : 'Simpan' }}
             </button>
           </div>
@@ -26,48 +32,60 @@
       </div>
     </div>
 
-    <div class="mt-8">
-      <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold text-gray-700">Fakultas</h2>
-        <button class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500" @click="openCreate">+ Tambah</button>
-      </div>
-      <p class="text-sm text-gray-500 mt-1">
-        Kode unik fakultas dipakai sebagai kode unik pembayaran donasi/iuran manual.
-      </p>
+    <div class="mt-8 space-y-5">
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-6 text-white shadow-sm">
+        <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
+        <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
+        <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">Master Data</p>
+            <h1 class="text-3xl font-bold tracking-tight md:text-4xl">Fakultas</h1>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Kelola kode unik fakultas untuk pembayaran donasi dan iuran manual.</p>
+          </div>
+          <button class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl" @click="openCreate">
+            + Tambah Fakultas
+          </button>
+        </div>
+      </section>
 
-      <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8">
-        <div class="inline-block min-w-full overflow-hidden rounded-lg shadow">
-          <table class="min-w-full leading-normal">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
             <thead>
-              <tr>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">Nama</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">Kode Unik</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">Status</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-right text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">Aksi</th>
+              <tr class="bg-blue-900">
+                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Nama</th>
+                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Kode Unik</th>
+                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status</th>
+                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-slate-100 bg-white">
               <tr v-if="isLoading">
-                <td colspan="4" class="px-5 py-5 text-sm bg-white border-b border-gray-200">Loading...</td>
+                <td v-for="c in 4" :key="c" class="px-5 py-4">
+                  <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
+                </td>
               </tr>
               <tr v-else-if="fakultasList.length === 0">
-                <td colspan="4" class="px-5 py-5 text-sm bg-white border-b border-gray-200 text-center text-gray-500">Belum ada fakultas.</td>
+                <td colspan="4" class="px-5 py-12 text-sm text-center text-slate-400 italic">Belum ada fakultas.</td>
               </tr>
-              <tr v-else v-for="item in fakultasList" :key="item.id">
-                <td class="px-4 py-3 text-sm bg-white border-b border-gray-200">{{ item.name }}</td>
-                <td class="px-4 py-3 text-sm bg-white border-b border-gray-200 font-mono">{{ item.kodeUnik }}</td>
-                <td class="px-4 py-3 text-sm bg-white border-b border-gray-200">
-                  <span :class="item.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'" class="px-2 py-1 rounded text-xs">
+              <tr v-else v-for="item in fakultasList" :key="item.id" class="transition-colors hover:bg-blue-50/40">
+                <td class="px-5 py-4 font-semibold text-slate-900">{{ item.name }}</td>
+                <td class="px-5 py-4 font-mono text-sm text-slate-600">{{ item.kodeUnik }}</td>
+                <td class="px-5 py-4">
+                  <span :class="item.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'" class="rounded-full px-2.5 py-1 text-xs font-semibold">
                     {{ item.isActive ? 'Aktif' : 'Nonaktif' }}
                   </span>
                 </td>
-                <td class="px-4 py-3 text-sm bg-white border-b border-gray-200 text-right">
-                  <button class="text-blue-600 hover:underline mr-3" @click="openEdit(item)">Edit</button>
-                  <button class="text-red-600 hover:underline" @click="handleDelete(item)">Hapus</button>
+                <td class="px-5 py-4 text-right">
+                  <button class="mr-3 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100" @click="openEdit(item)">Edit</button>
+                  <button class="rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100" @click="handleDelete(item)">Hapus</button>
                 </td>
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="border-t border-slate-100 px-6 py-4">
+          <span class="text-xs text-slate-500">Total: {{ fakultasList.length }} fakultas</span>
         </div>
       </div>
     </div>
@@ -78,6 +96,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
+import Breadcrumb from '@/components/AppBreadcrumb.vue';
 import {
   GET_FAKULTAS,
   POST_FAKULTAS,

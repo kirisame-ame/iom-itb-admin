@@ -232,7 +232,12 @@
                   <td
                     class="px-5 py-5 text-sm bg-white border-b border-gray-200"
                   >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.status }}</p>
+                    <span
+                      class="inline-block px-2 py-1 rounded-full text-xs font-semibold capitalize"
+                      :class="statusBadgeClass(u?.status)"
+                    >
+                      {{ u?.status }}
+                    </span>
                   </td>
                   <td
                     class="px-5 py-5 text-sm bg-white border-b border-gray-200"
@@ -411,8 +416,15 @@ const formatDate = (dateString: string) => {
 // Inside <script setup>
 const editItem = (item:any) => {
   dataUpdate.value = { ...item }; // Copy current item's data to dataUpdate
-  currentId.value = item.id; 
+  currentId.value = item.id;
   isOpened.value = true; // Open the modal
+};
+
+const statusBadgeClass = (status?: string) => {
+  if (status === 'done' || status === 'arrived') return 'bg-green-100 text-green-700';
+  if (status === 'on process' || status === 'on delivery') return 'bg-blue-100 text-blue-700';
+  if (status === 'canceled' || status === 'denied') return 'bg-red-100 text-red-700';
+  return 'bg-yellow-100 text-yellow-700';
 };
 
 const deleteItem = async (id: number) => {

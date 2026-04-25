@@ -14,7 +14,15 @@
           </div>
 
           <div class="px-5 py-6 text-gray-700 bg-gray-200 border-b max-h-[80vh] overflow-y-scroll">
-            <InputSelect label="status" :value="data?.status" :options="['waiting', 'on process', 'on delivery', 'arrived', 'denied']" @update="updateValue"  />
+            <InputSelect
+              label="Status Pesanan / Pengiriman"
+              :value="data?.status"
+              :options="['waiting', 'on process', 'on delivery', 'arrived', 'done', 'canceled', 'denied']"
+              @update="updateValue"
+            />
+            <p class="text-xs text-gray-600 mt-2">
+              Mengubah status ke <strong>on delivery</strong>, <strong>arrived</strong>, atau <strong>done</strong> akan otomatis mengirim notifikasi ke pembeli via Email & WhatsApp.
+            </p>
           </div>
 
           <div class="flex items-center justify-between px-5 py-3">

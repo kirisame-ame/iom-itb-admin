@@ -341,7 +341,6 @@ const currentMediaIndex = ref(0);
 const newMediaType = ref<'upload' | 'url' | 'youtube'>('upload');
 const newMediaValue = ref('');
 const newMediaCaption = ref('');
-const slugGenerated = ref(false); // flag: slug sudah pernah di-generate atau belum
 
 const form = ref({
   title: '',
@@ -385,11 +384,9 @@ const formatUpdatedAt = (dateStr: string) => {
   });
 };
 
-// Handle input judul — generate slug sekali saja
 const handleTitleInput = () => {
-  if (!slugGenerated.value && form.value.title) {
+  if (form.value.status !== 'published') {
     form.value.url = generateSlug(form.value.title);
-    slugGenerated.value = true;
   }
   autoSave();
 };
@@ -639,7 +636,6 @@ onMounted(async () => {
       media: activity.media || [],
     };
     lastUpdated.value = formatUpdatedAt(activity.updatedAt);
-    slugGenerated.value = true;
   }
 
   await nextTick();

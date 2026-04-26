@@ -1,7 +1,10 @@
-<style>
+<style scoped>
+.tooltip-wrapper {
+  position: relative;
+}
 .tooltip-wrapper:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 .tooltip-text {
   visibility: hidden;
@@ -62,7 +65,8 @@
       <select
         v-model="sort"
         @change="fetchData"
-        class="px-3 py-2 border border-gray-200 rounded-md text-sm bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="h-[38px] px-3 py-2 border border-gray-200 rounded-md text-sm bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 cursor-pointer"
+        :style="selectStyle"
       >
         <option value="newest">Terbaru</option>
         <option value="oldest">Terlama</option>
@@ -127,18 +131,25 @@
 
         <!-- Action Buttons (muncul saat hover) -->
         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <!-- Publish (hanya kalau draft) -->
-          <div v-if="activity.status === 'draft'" class="relative tooltip-wrapper">
+
+          <!-- Publish (kalau draft) atau Retract (kalau published) -->
+          <div class="relative tooltip-wrapper">
             <button
-              @click.stop="publishActivity(activity)"
-              class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              @click.stop="activity.status === 'draft' ? publishActivity(activity) : retractActivity(activity)"
+              :class="activity.status === 'draft' ? 'text-blue-600 hover:bg-blue-50' : 'text-yellow-600 hover:bg-yellow-50'"
+              class="p-2 rounded-lg transition-colors"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <!-- Icon publish (draft) -->
+              <svg v-if="activity.status === 'draft'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
               </svg>
+              <!-- Icon retract (published) -->
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+              </svg>
             </button>
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
-              Publish
+            <div class="tooltip-text absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap pointer-events-none z-10">
+              {{ activity.status === 'draft' ? 'Publish' : 'Tarik ke Draft' }}
             </div>
           </div>
 
@@ -153,7 +164,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
               </svg>
             </button>
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
+            <div class="tooltip-text absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap pointer-events-none z-10">
               Preview
             </div>
           </div>
@@ -168,7 +179,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
             </button>
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
+            <div class="tooltip-text absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap pointer-events-none z-10">
               Hapus
             </div>
           </div>
@@ -206,7 +217,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
-import { GET_ACTIVITIES, DELETE_ACTIVITY, POST_ACTIVITY, PUBLISH_ACTIVITY, GET_ACTIVITY_COUNTS } from '@/store/activity.module';
+import { GET_ACTIVITIES, DELETE_ACTIVITY, POST_ACTIVITY, PUBLISH_ACTIVITY, GET_ACTIVITY_COUNTS, PUT_ACTIVITY } from '@/store/activity.module';
 
 
 const store = useStore();
@@ -236,6 +247,30 @@ const end = computed(() => activitiesData.value?.pagination?.end || 0);
 const totalDraft = ref(0);
 const totalPublished = ref(0);
 const totalAll = ref(0);
+
+const selectStyle = {
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 8px center',
+  backgroundSize: '16px',
+}
+
+const retractActivity = async (activity: any) => {
+  const result = await Swal.fire({
+    title: 'Tarik ke draft?',
+    text: 'Kegiatan tidak akan terlihat publik.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d97706',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Ya, tarik ke draft',
+    cancelButtonText: 'Batal'
+  });
+  if (result.isConfirmed) {
+    await store.dispatch(PUT_ACTIVITY, { id: activity.id, data: { status: 'draft' } });
+    await fetchData();
+  }
+};
 
 const fetchCounts = async () => {
   const counts = await store.dispatch(GET_ACTIVITY_COUNTS);

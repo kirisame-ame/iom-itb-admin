@@ -1,9 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
+  <div class="h-screen flex flex-col overflow-hidden">
 
     <!-- Top Bar -->
-    <div class="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between gap-4">
-      <!-- Kiri: back + judul halaman -->
+    <div class="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3 min-w-0">
         <button
           @click="$router.push('/kegiatan')"
@@ -15,8 +14,7 @@
         </button>
         <span class="text-sm text-gray-500 truncate">Kegiatan</span>
         <span class="text-gray-300">/</span>
-        <span class="text-sm text-gray-700 font-medium truncate">{{ form.title || 'Untitled' }}</span>
-        <!-- Status badge -->
+        <span class="text-sm text-gray-700 font-medium truncate max-w-[200px]">{{ form.title || 'Untitled' }}</span>
         <span
           :class="form.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
           class="px-2 py-0.5 text-xs font-medium rounded-full flex-shrink-0"
@@ -25,14 +23,10 @@
         </span>
       </div>
 
-      <!-- Kanan: last updated + actions -->
       <div class="flex items-center gap-3 flex-shrink-0">
-        <span v-if="lastUpdated" class="text-xs text-gray-400 hidden sm:block">
-          Diperbarui: {{ lastUpdated }}
-        </span>
+        <span v-if="lastUpdated" class="text-xs text-gray-400 hidden sm:block">Diperbarui: {{ lastUpdated }}</span>
         <span v-if="saveStatus" class="text-xs text-gray-400">{{ saveStatus }}</span>
 
-        <!-- Tombol berdasarkan status -->
         <template v-if="form.status === 'draft'">
           <button
             @click="saveAsDraft"
@@ -74,245 +68,239 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex flex-1 overflow-hidden" style="height: calc(100vh - 57px);">
 
-      <!-- Editor Area -->
+      <!-- Editor Area — scrollable -->
       <div class="flex-1 overflow-y-auto">
-        <div class="max-w-3xl mx-auto px-8 py-10">
-
-          <!-- Judul -->
+        <div class="max-w-4xl mx-auto px-10 py-10">
           <input
             v-model="form.title"
             @input="handleTitleInput"
             placeholder="Judul kegiatan..."
             class="w-full text-4xl font-bold text-gray-900 bg-transparent border-none outline-none placeholder-gray-200 mb-6 leading-tight"
           />
-
-          <!-- Quill Toolbar + Editor -->
           <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <QuillEditor
+              ref="quillRef"
               v-model:content="form.description"
               content-type="html"
               @update:content="autoSave"
               :options="quillOptions"
               class="min-h-[600px]"
-              ref="quillRef"
             />
           </div>
-
         </div>
       </div>
 
       <!-- Sidebar Kanan -->
-      <div class="w-80 flex-shrink-0 border-l border-gray-200 bg-white overflow-y-auto flex flex-col">
+      <div class="w-96 flex-shrink-0 border-l border-gray-200 bg-white flex flex-col overflow-hidden">
+        <div class="flex-1 overflow-y-auto min-h-0">
+          <div class="p-5 border-b border-gray-100">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Media</h3>
 
-        <!-- Media Preview Section -->
-        <div class="p-5 border-b border-gray-100">
-          <h3 class="text-sm font-semibold text-gray-700 mb-4">Media</h3>
-
-          <!-- Kalau ada media -->
-          <div v-if="form.media.length > 0">
-            <!-- Preview utama -->
-            <div class="relative w-full aspect-video bg-gray-100 rounded-xl overflow-hidden mb-3">
-              <img
-                v-if="form.media[currentMediaIndex]?.type === 'image'"
-                :src="form.media[currentMediaIndex]?.value"
-                class="w-full h-full object-cover"
-              />
-              <div
-                v-else-if="form.media[currentMediaIndex]?.type === 'youtube'"
-                class="w-full h-full flex items-center justify-center bg-gray-900"
-              >
-                <svg class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.27 8.27 0 004.84 1.56V6.79a4.85 4.85 0 01-1.07-.1z"/>
-                </svg>
-              </div>
-
-              <!-- Counter -->
-              <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
-                {{ currentMediaIndex + 1 }} / {{ form.media.length }}
-              </div>
-            </div>
-
-            <!-- Thumbnail previews + nav -->
-            <div class="flex items-center gap-2 mb-3">
-              <!-- Prev -->
-              <button
-                @click="prevMedia"
-                :disabled="currentMediaIndex === 0"
-                class="p-1.5 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition-colors flex-shrink-0"
-              >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-              </button>
-
-              <!-- Thumbnail strip -->
-              <div class="flex gap-1.5 flex-1 overflow-x-auto scrollbar-hide">
-                <button
-                  v-for="(item, i) in form.media"
-                  :key="i"
-                  @click="currentMediaIndex = i"
-                  :class="currentMediaIndex === i ? 'ring-2 ring-blue-500' : 'opacity-60 hover:opacity-100'"
-                  class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 transition-all"
+            <!-- Ada media -->
+            <div v-if="form.media.length > 0">
+              <!-- Preview utama -->
+              <div class="relative w-full aspect-video bg-gray-100 rounded-xl overflow-hidden mb-3">
+                <!-- Image -->
+                <img
+                  v-if="form.media[currentMediaIndex]?.type === 'image'"
+                  :src="form.media[currentMediaIndex]?.value"
+                  class="w-full h-full object-cover"
+                />
+                <!-- YouTube — tampilkan thumbnail, klik buka tab baru -->
+                <div
+                  v-else-if="form.media[currentMediaIndex]?.type === 'youtube'"
+                  @click="openYoutube(form.media[currentMediaIndex]?.value)"
+                  class="w-full h-full relative cursor-pointer group"
                 >
-                  <img v-if="item.type === 'image'" :src="item.value" class="w-full h-full object-cover" />
-                  <div v-else class="w-full h-full bg-gray-800 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
+                  <img
+                    :src="getYoutubeThumbnail(form.media[currentMediaIndex]?.value)"
+                    class="w-full h-full object-cover"
+                  />
+                  <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+                    <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
+                      <svg class="w-5 h-5 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
                   </div>
+                </div>
+
+                <!-- Counter -->
+                <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
+                  {{ currentMediaIndex + 1 }} / {{ form.media.length }}
+                </div>
+              </div>
+
+              <!-- Thumbnail strip + nav -->
+              <div class="flex items-center gap-2 mb-3">
+                <button
+                  @click="prevMedia"
+                  :disabled="currentMediaIndex === 0"
+                  class="p-1.5 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition-colors flex-shrink-0"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                </button>
+
+                <div class="flex gap-1.5 flex-1 overflow-x-auto py-1">
+                  <button
+                    v-for="(item, i) in form.media"
+                    :key="i"
+                    @click="currentMediaIndex = i"
+                    :class="currentMediaIndex === i ? 'ring-1 ring-blue-500 ring-offset-1' : 'opacity-60 hover:opacity-100'"
+                    class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 transition-all"
+                  >
+                    <img
+                      v-if="item.type === 'image'"
+                      :src="item.value"
+                      class="w-full h-full object-cover"
+                    />
+                    <div v-else class="w-full h-full bg-gray-800 flex items-center justify-center">
+                      <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+
+                <button
+                  @click="nextMedia"
+                  :disabled="currentMediaIndex === form.media.length - 1"
+                  class="p-1.5 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition-colors flex-shrink-0"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
                 </button>
               </div>
 
-              <!-- Next -->
+              <!-- Set as thumbnail (hanya untuk image) -->
               <button
-                @click="nextMedia"
-                :disabled="currentMediaIndex === form.media.length - 1"
-                class="p-1.5 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition-colors flex-shrink-0"
+                v-if="form.media[currentMediaIndex]?.type === 'image'"
+                @click="setAsThumbnail(currentMediaIndex)"
+                :class="form.image === form.media[currentMediaIndex]?.value
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'"
+                class="w-full px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors flex items-center justify-center gap-1.5 mb-3"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
+                {{ form.image === form.media[currentMediaIndex]?.value ? 'Thumbnail aktif' : 'Set as thumbnail' }}
               </button>
+
+              <!-- Caption -->
+              <div class="mb-3">
+                <label class="block text-xs text-gray-500 mb-1">Caption</label>
+                <input
+                  v-model="form.media[currentMediaIndex].caption"
+                  @input="autoSave"
+                  placeholder="Tambahkan caption..."
+                  class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <!-- Move + Hapus -->
+              <div class="flex gap-2">
+                <button
+                  @click="moveMedia('left')"
+                  :disabled="currentMediaIndex === 0"
+                  class="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition-colors flex items-center justify-center gap-1"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                  Maju
+                </button>
+                <button
+                  @click="moveMedia('right')"
+                  :disabled="currentMediaIndex === form.media.length - 1"
+                  class="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition-colors flex items-center justify-center gap-1"
+                >
+                  Mundur
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </button>
+                <button
+                  @click="removeMedia(currentMediaIndex)"
+                  class="px-2 py-1.5 text-xs border border-red-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <!-- Set as thumbnail -->
-            <button
-              v-if="form.media[currentMediaIndex]?.type === 'image'"
-              @click="setAsThumbnail(currentMediaIndex)"
-              :class="form.image === form.media[currentMediaIndex]?.value
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'"
-              class="w-full px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors flex items-center justify-center gap-1.5 mb-3"
-            >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            <!-- Belum ada media -->
+            <div v-else class="w-full aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300">
+              <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
-              {{ form.image === form.media[currentMediaIndex]?.value ? 'Thumbnail aktif' : 'Set as thumbnail' }}
-            </button>
+              <p class="text-xs">Belum ada media</p>
+            </div>
+          </div>
 
-            <!-- Caption -->
+          <!-- Tambah Media -->
+          <div class="p-5">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Tambah Media</h3>
+
+            <!-- Tipe media -->
             <div class="mb-3">
-              <label class="block text-xs text-gray-500 mb-1">Caption</label>
-              <input
-                v-model="form.media[currentMediaIndex].caption"
-                @input="autoSave"
-                placeholder="Tambahkan caption..."
-                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <label class="block text-xs text-gray-500 mb-1">Tipe Media</label>
+              <div class="relative">
+                <select
+                  v-model="newMediaType"
+                  class="w-full h-9 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8 cursor-pointer"
+                  :style="selectStyle"
+                >
+                  <option value="upload">Upload Gambar</option>
+                  <option value="url">URL Gambar</option>
+                  <option value="youtube">YouTube</option>
+                </select>
+              </div>
             </div>
 
-            <!-- Move urutan + Hapus -->
-            <div class="flex gap-2">
-              <button
-                @click="moveMedia('left')"
-                :disabled="currentMediaIndex === 0"
-                class="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition-colors flex items-center justify-center gap-1"
-              >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-                Maju
-              </button>
-              <button
-                @click="moveMedia('right')"
-                :disabled="currentMediaIndex === form.media.length - 1"
-                class="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition-colors flex items-center justify-center gap-1"
-              >
-                Mundur
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </button>
-              <button
-                @click="removeMedia(currentMediaIndex)"
-                class="px-2 py-1.5 text-xs border border-red-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
-              >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-              </button>
+            <!-- Field sesuai tipe -->
+            <div class="mb-3">
+              <div v-if="newMediaType === 'upload'">
+                <label class="block w-full px-3 py-2.5 text-xs text-center border border-dashed border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  Pilih file gambar...
+                  <input type="file" accept="image/*" multiple class="hidden" @change="uploadMedia" />
+                </label>
+              </div>
+              <div v-else-if="newMediaType === 'url'">
+                <label class="block text-xs text-gray-500 mb-1">URL Gambar</label>
+                <input
+                  v-model="newMediaValue"
+                  placeholder="https://..."
+                  class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div v-else-if="newMediaType === 'youtube'">
+                <label class="block text-xs text-gray-500 mb-1">URL YouTube</label>
+                <input
+                  v-model="newMediaValue"
+                  placeholder="https://youtube.com/watch?v=..."
+                  class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
-          </div>
 
-          <!-- Kalau belum ada media -->
-          <div v-else class="w-full aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300 mb-3">
-            <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <p class="text-xs">Belum ada media</p>
-          </div>
-        </div>
-
-        <!-- Add New Media Section -->
-        <div class="p-5 flex-1">
-          <h3 class="text-sm font-semibold text-gray-700 mb-4">Tambah Media</h3>
-
-          <!-- Tipe media dropdown -->
-          <div class="mb-3">
-            <label class="block text-xs text-gray-500 mb-1">Tipe Media</label>
-            <select
-              v-model="newMediaType"
-              class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            <!-- Tombol tambah -->
+            <button
+              v-if="newMediaType !== 'upload'"
+              @click="addMedia"
+              class="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              <option value="upload">Upload Gambar</option>
-              <option value="url">URL Gambar</option>
-              <option value="youtube">YouTube</option>
-            </select>
+              Tambah
+            </button>
           </div>
-
-          <!-- Field sesuai tipe -->
-          <div class="mb-3">
-            <!-- Upload -->
-            <div v-if="newMediaType === 'upload'">
-              <label class="block w-full px-3 py-2.5 text-xs text-center border border-dashed border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                Pilih file gambar...
-                <input type="file" accept="image/*" multiple class="hidden" @change="uploadMedia" />
-              </label>
-            </div>
-
-            <!-- URL Gambar -->
-            <div v-else-if="newMediaType === 'url'">
-              <label class="block text-xs text-gray-500 mb-1">URL Gambar</label>
-              <input
-                v-model="newMediaValue"
-                placeholder="https://..."
-                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <!-- YouTube -->
-            <div v-else-if="newMediaType === 'youtube'">
-              <label class="block text-xs text-gray-500 mb-1">URL YouTube</label>
-              <input
-                v-model="newMediaValue"
-                placeholder="https://youtube.com/watch?v=..."
-                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          <!-- Caption input untuk semua tipe -->
-          <div class="mb-3">
-            <label class="block text-xs text-gray-500 mb-1">Caption (opsional)</label>
-            <input
-              v-model="newMediaCaption"
-              placeholder="Tambahkan caption..."
-              class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <!-- Tombol tambah (hanya untuk url & youtube) -->
-          <button
-            v-if="newMediaType !== 'upload'"
-            @click="addMedia"
-            class="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Tambah
-          </button>
         </div>
-
       </div>
     </div>
   </div>
@@ -340,8 +328,23 @@ const lastUpdated = ref('');
 const currentMediaIndex = ref(0);
 const newMediaType = ref<'upload' | 'url' | 'youtube'>('upload');
 const newMediaValue = ref('');
-const newMediaCaption = ref('');
-const slugGenerated = ref(false); // flag: slug sudah pernah di-generate atau belum
+
+const selectStyle = {
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 8px center',
+  backgroundSize: '16px',
+}
+
+const getYoutubeThumbnail = (url: string) => {
+  const match = url?.match(/(?:v=|youtu\.be\/)([^&\n?#]+)/);
+  return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : '';
+};
+
+const openYoutube = (url: string) => {
+  window.open(url, '_blank');
+};
+
 
 const form = ref({
   title: '',
@@ -367,7 +370,7 @@ const quillOptions = {
   }
 };
 
-// Generate slug dari judul
+
 const generateSlug = (title: string) => {
   return title
     .toLowerCase()
@@ -385,11 +388,9 @@ const formatUpdatedAt = (dateStr: string) => {
   });
 };
 
-// Handle input judul — generate slug sekali saja
 const handleTitleInput = () => {
-  if (!slugGenerated.value && form.value.title) {
+  if (form.value.status !== 'published') {
     form.value.url = generateSlug(form.value.title);
-    slugGenerated.value = true;
   }
   autoSave();
 };
@@ -581,10 +582,12 @@ const uploadMedia = async (event: Event) => {
       type: 'image',
       value: url,
       order: form.value.media.length,
-      caption: newMediaCaption.value || undefined
     });
+    // Auto-set thumbnail kalau belum ada
+    if (!form.value.image) {
+      form.value.image = url;
+    }
   }
-  newMediaCaption.value = '';
   currentMediaIndex.value = form.value.media.length - 1;
   autoSave();
 };
@@ -602,7 +605,6 @@ const addMedia = () => {
       type: 'youtube',
       value: newMediaValue.value,
       order: form.value.media.length,
-      caption: newMediaCaption.value || undefined
     });
   } else if (newMediaType.value === 'url') {
     try {
@@ -612,8 +614,11 @@ const addMedia = () => {
         type: 'image',
         value: newMediaValue.value,
         order: form.value.media.length,
-        caption: newMediaCaption.value || undefined
       });
+      // Auto-set thumbnail kalau belum ada
+      if (!form.value.image) {
+        form.value.image = newMediaValue.value;
+      }
     } catch {
       Swal.fire({ title: 'URL gambar tidak valid', icon: 'warning', confirmButtonColor: '#2563eb' });
       return;
@@ -622,7 +627,6 @@ const addMedia = () => {
 
   currentMediaIndex.value = form.value.media.length - 1;
   newMediaValue.value = '';
-  newMediaCaption.value = '';
   autoSave();
 };
 
@@ -639,7 +643,6 @@ onMounted(async () => {
       media: activity.media || [],
     };
     lastUpdated.value = formatUpdatedAt(activity.updatedAt);
-    slugGenerated.value = true;
   }
 
   await nextTick();

@@ -31,22 +31,21 @@
         </svg>
       </button>
 
-      <div class="mx-4 lg:mx-0">
-        <div class="flex items-center gap-3">
-
-          <h1 class="text-4xl font-bold text-[#003793] mb-1 tracking-tight">
+      <div class="mx-4 lg:mx-0 flex items-center gap-1.5">
+        <div class="flex flex-col">
+          <h1 class="text-3xl lg:text-4xl font-bold text-[#003793] tracking-tight leading-none">
             Dashboard Admin
           </h1>
-
-          <img
-            class="h-20"
-            :src="require('@/assets/image/logo.webp')"
-            alt="IOM Logo"
-          />
+          <p class="text-xs text-gray-600 mt-1.5 hidden sm:block">
+            Ikatan Orang Tua Mahasiswa Institut Teknologi Bandung
+          </p>
         </div>
-        <p class="text-xs text-gray-700 -mt-3 leading-none">
-          Dashboard Admin Ikatan Orang Tua Mahasiswa Institut Teknologi Bandung
-        </p>
+
+        <img
+          class="h-16 lg:h-20 object-contain ml-1 lg:ml-2"
+          :src="require('@/assets/image/logo.webp')"
+          alt="IOM Logo"
+        />
       </div>
     </div>
 

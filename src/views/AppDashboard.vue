@@ -107,14 +107,20 @@
       </div>
 
       <!-- Grafik Bawah (Penerima Bantuan per Tahun) - Bar Chart -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 lg:col-span-2">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 lg:col-span-2 flex flex-col">
         <h3 class="text-slate-700 font-bold text-lg mb-4">Penerima Bantuan per Tahun</h3>
-        <apexchart 
-          type="bar" 
-          height="300" 
-          :options="penerimaChartOptions" 
-          :series="penerimaChartSeries" 
-        />
+        <div v-if="penerimaChartSeries[0]?.data?.length > 0" class="flex-1">
+          <apexchart 
+            type="bar" 
+            height="300" 
+            :options="penerimaChartOptions" 
+            :series="penerimaChartSeries" 
+          />
+        </div>
+        <div v-else class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg min-h-[300px] bg-slate-50">
+          <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          <span class="text-slate-500 font-medium">Belum ada data penerima bantuan</span>
+        </div>
       </div>
 
     </div>

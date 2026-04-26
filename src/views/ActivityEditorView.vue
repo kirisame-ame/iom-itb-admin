@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
+  <div class="h-screen flex flex-col overflow-hidden">
 
     <!-- Top Bar -->
-    <div class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between gap-4">
+    <div class="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3 min-w-0">
         <button
           @click="$router.push('/kegiatan')"
@@ -68,7 +68,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex flex-1" style="height: calc(100vh - 57px);">
+    <div class="flex flex-1 overflow-hidden" style="height: calc(100vh - 57px);">
 
       <!-- Editor Area — scrollable -->
       <div class="flex-1 overflow-y-auto">
@@ -92,11 +92,9 @@
         </div>
       </div>
 
-      <!-- Sidebar Kanan — sticky, tidak ikut scroll -->
+      <!-- Sidebar Kanan -->
       <div class="w-96 flex-shrink-0 border-l border-gray-200 bg-white flex flex-col overflow-hidden">
-
-        <!-- Media Preview — scrollable kalau media banyak -->
-        <div class="flex-1 overflow-y-auto">
+        <div class="flex-1 overflow-y-auto min-h-0">
           <div class="p-5 border-b border-gray-100">
             <h3 class="text-sm font-semibold text-gray-700 mb-4">Media</h3>
 

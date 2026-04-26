@@ -6,6 +6,7 @@ import { ActionContext } from "vuex";
 export const POST_FILE = "postFile";
 export const POST_IMAGE = "postImage";
 export const POST_PDF = "postPdf";
+export const POST_ACTIVITY_IMAGE = "postActivityImage";
 
 // Define the state type (example placeholder, adjust as needed)
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -41,6 +42,11 @@ const actions = {
   },
   [POST_PDF](context: ActionContext<State, any>, params: Record<string, any>): Promise<string> {
     return handleRequest(ApiService.upload<{ data: string }>("/pdf/upload", params.data));
+  },
+  [POST_ACTIVITY_IMAGE](context: ActionContext<State, any>, file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return handleRequest(ApiService.upload<{ data: string }>("/images/upload", formData as any));
   },
 };
 

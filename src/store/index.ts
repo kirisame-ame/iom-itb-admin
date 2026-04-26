@@ -14,6 +14,7 @@ import fakultas from "./fakultas.module";
 import appSelector from "./appSelector.module";
 import kegiatanKemitraan from "./kegiatanKemitraan.module";
 import kemitraan from "./kemitraan.module";
+import dashboard from './dashboard.module';
 
 export default createStore({
   modules: {
@@ -32,5 +33,6 @@ export default createStore({
     appSelector,
     kegiatanKemitraan,
     kemitraan,
+    dashboard,
   },
 });

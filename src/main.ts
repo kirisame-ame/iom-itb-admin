@@ -31,7 +31,10 @@ async function bootstrap() {
 		console.error("Vue runtime error", error);
 	};
 
-	app.use(router).use(store).use(VueApexCharts).mount("#app");
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	app.use(router).use(store).use(VueApexCharts as any);
+	await router.isReady();
+	app.mount("#app");
 }
 
 bootstrap().catch((error) => {

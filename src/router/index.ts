@@ -26,6 +26,8 @@ import PengajuanBantuan from "@/views/PengajuanBantuanView.vue";
 import OrangtuaAsuh from "@/views/OrangtuaAsuhView.vue";
 import Kemitraan from "@/views/KemitraanView.vue";
 import KegiatanKemitraan from "@/views/KegiatanKemitraanView.vue";
+import ActivityEditorView from "@/views/ActivityEditorView.vue";
+import ActivityPreviewView from "@/views/ActivityPreviewView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -140,6 +142,18 @@ const routes: Array<RouteRecordRaw> = [
     name: "Chart",
     component: Chart,
   },
+  {
+    path: "/kegiatan/:id/edit",
+    name: "KegiatanEditor",
+    component: ActivityEditorView,
+    meta: { layout: "empty" },
+  },
+  {
+    path: "/kegiatan/:id/preview",
+    name: "KegiatanPreview",
+    component: ActivityPreviewView,
+    meta: { layout: "empty" },
+  },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];
 
@@ -147,6 +161,8 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+let authReady = false;
 
 router.beforeEach(async (to, _from, next) => {
   if (process.env.VUE_APP_DEV_BYPASS_AUTH === 'true') {
@@ -166,7 +182,6 @@ router.beforeEach(async (to, _from, next) => {
       next();
       return;
     }
-
     try {
       await store.dispatch(LOGIN);
     } catch (loginError) {
@@ -177,8 +192,13 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   try {
-    await store.dispatch(INIT_AUTH);
-    await store.dispatch(FETCH_JWT);
+    // Network calls run only once per session — not on every navigation.
+    if (!authReady) {
+      await store.dispatch(INIT_AUTH);
+      await store.dispatch(FETCH_JWT);
+      await store.dispatch(`appSelector/${FETCH_APPS}`);
+      authReady = true;
+    }
 
     if (isLoginRoute) {
       next({ name: "AppSelector" });
@@ -186,7 +206,6 @@ router.beforeEach(async (to, _from, next) => {
     }
 
     if (!isSelectorRoute) {
-      await store.dispatch(`appSelector/${FETCH_APPS}`);
       const apps = store.getters["appSelector/allApps"] || [];
       const selectedApp = store.getters["appSelector/selectedApp"];
       const selectedRole = store.getters["appSelector/selectedRole"];
@@ -224,6 +243,7 @@ router.beforeEach(async (to, _from, next) => {
 
     next();
   } catch (error) {
+    authReady = false;
     try {
       await store.dispatch(LOGOUT);
     } catch (logoutError) {

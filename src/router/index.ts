@@ -162,6 +162,8 @@ const router = createRouter({
   routes,
 });
 
+let authReady = false;
+
 router.beforeEach(async (to, _from, next) => {
   if (process.env.VUE_APP_DEV_BYPASS_AUTH === 'true') {
     if (to.name === 'Login' || to.name === 'AppSelector') {
@@ -180,7 +182,6 @@ router.beforeEach(async (to, _from, next) => {
       next();
       return;
     }
-
     try {
       await store.dispatch(LOGIN);
     } catch (loginError) {
@@ -191,8 +192,13 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   try {
-    await store.dispatch(INIT_AUTH);
-    await store.dispatch(FETCH_JWT);
+    // Network calls run only once per session — not on every navigation.
+    if (!authReady) {
+      await store.dispatch(INIT_AUTH);
+      await store.dispatch(FETCH_JWT);
+      await store.dispatch(`appSelector/${FETCH_APPS}`);
+      authReady = true;
+    }
 
     if (isLoginRoute) {
       next({ name: "AppSelector" });
@@ -200,7 +206,6 @@ router.beforeEach(async (to, _from, next) => {
     }
 
     if (!isSelectorRoute) {
-      await store.dispatch(`appSelector/${FETCH_APPS}`);
       const apps = store.getters["appSelector/allApps"] || [];
       const selectedApp = store.getters["appSelector/selectedApp"];
       const selectedRole = store.getters["appSelector/selectedRole"];
@@ -238,6 +243,7 @@ router.beforeEach(async (to, _from, next) => {
 
     next();
   } catch (error) {
+    authReady = false;
     try {
       await store.dispatch(LOGOUT);
     } catch (logoutError) {

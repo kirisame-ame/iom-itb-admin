@@ -1,3 +1,15 @@
+<style>
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+</style>
+
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
@@ -113,7 +125,7 @@
         <!-- Action Buttons (muncul saat hover) -->
         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <!-- Publish (hanya kalau draft) -->
-          <div v-if="activity.status === 'draft'" class="relative group/tooltip">
+          <div v-if="activity.status === 'draft'" class="relative tooltip-wrapper">
             <button
               @click.stop="publishActivity(activity)"
               class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -128,7 +140,7 @@
           </div>
 
           <!-- Preview -->
-          <div class="relative group/tooltip">
+          <div class="relative tooltip-wrapper">
             <button
               @click.stop="previewActivity(activity)"
               class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
@@ -144,7 +156,7 @@
           </div>
 
           <!-- Hapus -->
-          <div class="relative group/tooltip">
+          <div class="relative tooltip-wrapper">
             <button
               @click.stop="deleteActivity(activity)"
               class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -191,7 +203,8 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
-import { GET_ACTIVITIES, DELETE_ACTIVITY, POST_ACTIVITY, PUBLISH_ACTIVITY } from '@/store/activity.module';
+import { GET_ACTIVITIES, DELETE_ACTIVITY, POST_ACTIVITY, PUBLISH_ACTIVITY, GET_ACTIVITY_COUNTS } from '@/store/activity.module';
+
 
 const store = useStore();
 const router = useRouter();
@@ -203,11 +216,11 @@ const sort = ref('newest');
 const page = ref(1);
 const limit = ref(10);
 
-const filters = [
-  { label: 'Semua', value: 'all' },
-  { label: 'Draft', value: 'draft' },
-  { label: 'Published', value: 'published' },
-];
+const filters = computed(() => [
+  { label: 'Semua', value: 'all', count: totalAll.value },
+  { label: 'Draft', value: 'draft', count: totalDraft.value },
+  { label: 'Published', value: 'published', count: totalPublished.value },
+]);
 
 const activitiesData = computed(() => store.getters.activities);
 const activities = computed(() => activitiesData.value?.data || []);
@@ -216,10 +229,32 @@ const totalPages = computed(() => activitiesData.value?.pagination?.totalPages |
 const start = computed(() => activitiesData.value?.pagination?.start || 0);
 const end = computed(() => activitiesData.value?.pagination?.end || 0);
 
-// Hitung total per status untuk label filter
-const totalAll = computed(() => totalEntries.value);
+
 const totalDraft = ref(0);
 const totalPublished = ref(0);
+const totalAll = ref(0);
+
+const fetchCounts = async () => {
+  const counts = await store.dispatch(GET_ACTIVITY_COUNTS);
+  totalDraft.value = counts.draft;
+  totalPublished.value = counts.published;
+  totalAll.value = counts.total;
+};
+
+const fetchData = async () => {
+  isLoading.value = true;
+  await Promise.all([
+    store.dispatch(GET_ACTIVITIES, {
+      search: search.value,
+      page: page.value,
+      limit: limit.value,
+      status: activeFilter.value === 'all' ? undefined : activeFilter.value,
+      sort: sort.value,
+    }),
+    fetchCounts()
+  ]);
+  isLoading.value = false;
+};
 
 const getSortOrder = () => {
   switch (sort.value) {
@@ -228,18 +263,6 @@ const getSortOrder = () => {
     case 'za': return [['title', 'DESC']];
     default: return [['createdAt', 'DESC']];
   }
-};
-
-const fetchData = async () => {
-  isLoading.value = true;
-  await store.dispatch(GET_ACTIVITIES, {
-    search: search.value,
-    page: page.value,
-    limit: limit.value,
-    status: activeFilter.value === 'all' ? undefined : activeFilter.value,
-    sort: sort.value,
-  });
-  isLoading.value = false;
 };
 
 // Debounce search

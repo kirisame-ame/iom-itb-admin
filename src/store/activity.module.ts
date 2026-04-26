@@ -9,6 +9,8 @@ export const POST_ACTIVITY = "postActivity";
 export const PUT_ACTIVITY = "putActivity";
 export const DELETE_ACTIVITY = "deleteActivity";
 export const PUBLISH_ACTIVITY = "publishActivity";
+export const GET_ACTIVITY_COUNTS = "getActivityCounts";
+
 
 interface ActivityMedia {
   id?: number;
@@ -100,6 +102,14 @@ const actions = {
       ApiService.delete(`/activities/${params.id}`)
         .then(() => resolve())
         .catch((err: any) => reject(err));
+    });
+  },
+
+  [GET_ACTIVITY_COUNTS](context: VuexContext): Promise<any> {
+    return new Promise((resolve, reject) => {
+      ApiService.get<any>("/activities/counts")
+        .then(response => resolve(response.data))
+        .catch(err => reject(err));
     });
   },
 };

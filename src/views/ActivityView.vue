@@ -13,7 +13,10 @@
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-semibold text-gray-800">Kegiatan</h1>
+      <div class="pb-4">
+        <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Kegiatan</h1>
+        <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua post kegiatan</p>
+      </div>
       <button
         @click="createNew"
         class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"

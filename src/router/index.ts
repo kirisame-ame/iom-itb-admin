@@ -143,9 +143,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Chart,
   },
   {
-  path: "/kegiatan/:id/edit",
-  name: "KegiatanEditor",
-  component: ActivityEditorView,
+    path: "/kegiatan/:id/edit",
+    name: "KegiatanEditor",
+    component: ActivityEditorView,
   },
   {
     path: "/kegiatan/:id/preview",

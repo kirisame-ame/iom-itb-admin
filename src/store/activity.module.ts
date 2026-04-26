@@ -62,7 +62,7 @@ const actions = {
 
   [GET_ACTIVITY_BY_ID](context: VuexContext, id: number): Promise<Activity> {
     return new Promise((resolve, reject) => {
-      ApiService.get<any>(`/activities/${id}`)
+      ApiService.get<any>(`/activities/id/${id}`) // ubah dari /activities/${id}
         .then(response => {
           context.commit(SET_CURRENT_ACTIVITY, response.data);
           resolve(response.data);

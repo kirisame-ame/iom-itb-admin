@@ -259,12 +259,8 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-const createNew = async () => {
-  // Buat draft baru lalu langsung arahkan ke editor
-  const result = await store.dispatch(POST_ACTIVITY, {
-    data: { title: '', description: '', date: new Date().toISOString().split('T')[0], image: '', status: 'draft' }
-  });
-  router.push({ name: 'KegiatanEditor', params: { id: result.id } });
+const createNew = () => {
+  router.push({ name: 'KegiatanEditor', params: { id: 'new' } });
 };
 
 const goToEditor = (id: number) => {

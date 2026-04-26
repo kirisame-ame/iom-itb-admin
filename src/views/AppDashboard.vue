@@ -84,6 +84,7 @@
       <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
         <h3 class="text-slate-700 font-bold text-lg mb-4">Tren Pengajuan Masuk</h3>
         <apexchart 
+          :key="trenChartKey"
           type="line" 
           height="300" 
           :options="trenChartOptions" 
@@ -96,6 +97,7 @@
         <h3 class="text-slate-700 font-bold text-lg mb-4">Distribusi Status Bantuan</h3>
         <div class="flex-1 flex items-center justify-center">
           <apexchart 
+            :key="statusChartKey"
             type="donut" 
             height="320" 
             :options="statusChartOptions" 
@@ -259,89 +261,195 @@
 
 <script setup lang="ts">
 
-import { ref } from "vue"
-import VueApexCharts from "vue3-apexcharts"
+import { ref, onMounted } from "vue"
+import ApiService from "@/store/api.service"
 
+// ================= KPI =================
 const kpiData = ref({
-  totalPengajuanPending: { title: "Pengajuan Perlu Proses", value: 12, color: "text-orange-500" },
-  totalBantuanDisetujui: { title: "Bantuan Disetujui (Bulan Ini)", value: 45, color: "text-green-500" },
-  pesananMerchandise: { title: "Pesanan Merchandise Baru", value: 5, color: "text-blue-500" },
-  totalDonasi: { title: "Donasi Terkumpul", value: "Rp 25.000.000", color: "text-emerald-500" },
-  totalAnggota: { title: "Total Anggota", value: 1500, description: "+15 anggota baru bulan ini", color: "text-indigo-500" }
-});
+  totalPengajuanPending: { title: "Pengajuan Perlu Proses", value: 0 },
+  totalBantuanDisetujui: { title: "Bantuan Disetujui (Bulan Ini)", value: 0 },
+  pesananMerchandise: { title: "Pesanan Merchandise Baru", value: 0 },
+  totalDonasi: { title: "Donasi Terkumpul", value: "Rp 0" },
+  totalAnggota: { title: "Total Anggota", value: 0, description: "" }
+})
 
-const tPengajuan = ref([12, 19, 3, 5, 2, 0, 8]);
-const tLabels = ref(['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']);
+const trenChartKey = ref(0)
+const statusChartKey = ref(0)
 
-const trenChartSeries = ref([{ name: 'Pengajuan', data: tPengajuan.value }]);
+const trenChartSeries = ref<any[]>([])
 const trenChartOptions = ref({
   chart: { type: 'line', toolbar: { show: false } },
   stroke: { curve: 'smooth', width: 3 },
-  xaxis: { categories: tLabels.value },
+  xaxis: { categories: [] as string[] },
   colors: ['#3B82F6']
-});
+})
 
-const statusChartSeries = ref([45, 12, 5, 20]);
+const statusChartSeries = ref<number[]>([])
 const statusChartOptions = ref({
   chart: { type: 'donut' },
-  labels: ['Disetujui', 'Menunggu', 'Ditolak', 'Diproses'],
+  labels: [] as string[],
   colors: ['#10B981', '#F59E0B', '#EF4444', '#3B82F6'],
-  dataLabels: { enabled: true },
-  legend: { position: 'bottom' }
-});
+  legend: { show: true, position: 'bottom' }
+})
 
-const penerimaChartSeries = ref([{
-  name: 'Total Penerima Bantuan',
-  data: [120, 185, 240, 320]
-}]);
+const penerimaChartSeries = ref([{ name: 'Total Penerima Bantuan', data: [] as number[] }])
 const penerimaChartOptions = ref({
   chart: { type: 'bar', toolbar: { show: false } },
-  plotOptions: { 
-    bar: { 
-      borderRadius: 4, 
-      horizontal: false,
-      columnWidth: '50%'
-    } 
-  },
-  xaxis: { categories: ['2023', '2024', '2025', '2026'] },
-  colors: ['#8B5CF6'], // Ungu
+  plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
+  xaxis: { categories: [] as string[] },
+  colors: ['#8B5CF6'],
   dataLabels: { enabled: false }
-});
+})
 
-const recentSubmissions = ref([
-  { id: 1, name: "Ahmad Budi", nim: "13523101", type: "Bantuan UKT", date: "2026-04-25", status: "Menunggu" },
-  { id: 2, name: "Siti Rahma", nim: "13523102", type: "Bantuan Biaya Hidup", date: "2026-04-24", status: "Diproses" },
-  { id: 3, name: "Rizky Fauzi", nim: "13523103", type: "Bantuan UKT", date: "2026-04-23", status: "Disetujui" }
-]);
+const recentSubmissions = ref<any[]>([])
+const activityLogs = ref<any[]>([])
 
-const activityLogs = ref([
-  { id: 101, admin: "Dr. Ayi Purbasari", time: "10 menit yang lalu", oldStatus: "Menunggu", newStatus: "Diproses" },
-  { id: 102, admin: "Orvin Andika", time: "1 jam yang lalu", oldStatus: "Diproses", newStatus: "Disetujui" }
-]);
+const fetchDashboard = async () => {
+  try {
+    const statsRes: any = await ApiService.get('/dashboard/stats')
+    const stats = statsRes.data || statsRes
+
+    kpiData.value.totalPengajuanPending.value = stats.totalPending || 0
+    kpiData.value.totalBantuanDisetujui.value = stats.approvedThisMonth || 0
+    kpiData.value.pesananMerchandise.value = stats.pesananBaru || 0
+    kpiData.value.totalDonasi.value = "Rp " + formatNumber(stats.totalDonasi || 0)
+    kpiData.value.totalAnggota.value = stats.totalAnggota
+    kpiData.value.totalAnggota.description =
+      `+${stats.anggotaBaru} anggota baru bulan ini`
+
+    const chartRes: any = await ApiService.get('/dashboard/charts')
+    const charts = chartRes.data || chartRes
+
+    // generate 7 hari terakhir
+    const last7Days: Date[] = []
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      last7Days.push(d)
+    }
+
+    // mapping data backend ke object
+    const mapData: Record<string, number> = {}
+
+    charts.trenPengajuan?.forEach((x:any)=>{
+      mapData[x.date] = x.total
+    })
+
+    const seriesData = last7Days.map(d => {
+      const key = formatDateKey(d)
+      return mapData[key] || 0
+    })
+
+    const categories = last7Days.map(d => getDayName(d))
+
+    trenChartSeries.value = [{
+      name: 'Pengajuan',
+      data: seriesData
+    }]
+
+    trenChartOptions.value = {
+      ...trenChartOptions.value,
+      xaxis: {
+        categories
+      }
+    }
+
+
+    trenChartKey.value++
+
+    statusChartSeries.value =
+      charts.distribusiStatus?.map((x:any)=>x.total) || []
+
+    statusChartOptions.value = {
+      ...statusChartOptions.value,
+      labels: charts.distribusiStatus?.map((x:any)=>mapStatus(x.currentStatus)) || []
+    }
+
+    statusChartKey.value++
+
+    penerimaChartSeries.value = [{
+      name: 'Total Penerima Bantuan',
+      data: charts.penerimaPerTahun?.map((x:any)=>x.total) || []
+    }]
+
+    penerimaChartOptions.value = {
+      ...penerimaChartOptions.value,
+      xaxis: {
+        categories: charts.penerimaPerTahun?.map((x:any)=>x.year) || []
+      }
+    }
+
+    const recentRes: any = await ApiService.get('/dashboard/recent')
+    const recent = recentRes.data || recentRes
+
+    recentSubmissions.value = recent.pengajuanTerbaru?.map((x:any)=>({
+      id: x.id,
+      name: x.name,
+      nim: x.nim,
+      type: x.type,
+      date: formatDate(x.submittedAt),
+      status: mapStatus(x.pengajuanStatus?.currentStatus)
+    })) || []
+
+    activityLogs.value = recent.logAktivitas?.map((x:any)=>({
+      id: Math.random(),
+      admin: x.changedBy === 'SEEDER' ? 'Sistem' : x.changedBy,
+      time: formatDate(x.changedAt),
+      oldStatus: mapStatus(x.oldStatus),
+      newStatus: mapStatus(x.newStatus)
+    })) || []
+
+  } catch (err) {
+    console.error("Dashboard error:", err)
+  }
+}
+
+// helper
+function formatNumber(num:number){
+  return new Intl.NumberFormat('id-ID').format(num || 0)
+}
+
+function formatDate(date:string){
+  if (!date) return "-"
+  return new Date(date).toLocaleDateString('id-ID')
+}
+function formatDateKey(date: Date) {
+      return date.toISOString().split('T')[0]
+    }
+
+    // helper nama hari
+function getDayName(date: Date) {
+  const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab']
+  return days[date.getDay()]
+}
+
+function mapStatus(status:string){
+  const map:any = {
+    VERIFIKASI_BERKAS: 'Verifikasi Berkas',
+    DIPANGGIL_WAWANCARA: 'Wawancara',
+    KEPUTUSAN_DITERIMA: 'Disetujui',
+    KEPUTUSAN_DITOLAK: 'Ditolak',
+    TIDAK_DIKETAHUI: 'Tidak Diketahui'
+  }
+  return map[status] || status
+}
 
 const csvRows=ref<string[][]>([])
 
 function handleCsvUpload(event:Event){
-
 const file=(event.target as HTMLInputElement).files?.[0]
-
 if(!file)return
 
 const reader=new FileReader()
-
 reader.onload=(e)=>{
-
 const text=e.target?.result as string
-
 csvRows.value=text
 .trim()
 .split("\n")
 .map(line=>line.split(",").map(cell=>cell.trim()))
-
 }
-
 reader.readAsText(file)
-
 }
+onMounted(fetchDashboard)
 
 </script>

@@ -16,6 +16,7 @@
           <div class="px-5 py-6 text-gray-700 bg-gray-200 border-b max-h-[80vh] overflow-y-scroll">
             <InputSelect
               label="Status Pesanan / Pengiriman"
+              keyValue="status"
               :value="data?.status"
               :options="['waiting', 'on process', 'on delivery', 'arrived', 'done', 'canceled', 'denied']"
               @update="updateValue"

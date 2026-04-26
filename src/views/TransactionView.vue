@@ -1,319 +1,257 @@
 <template>
-  <div>
+  <div class="min-h-screen">
+    <Breadcrumb breadcrumb="transaksi-merchandise" />
 
-    <!-- Modal -->
-    <ModalForm
-      v-if="isOpened"
-      :id="currentId"
-      :title="`${currentId? 'Edit' : 'Add'} Merchandise`"
-      :data="dataUpdate"
-      @close="handleModalClose"
-    />
-
-    <div v-if="isImageModalOpen" @click="closeImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <img :src="selectedImage" alt="Payment Image" class="max-w-full max-h-full"/>
+    <div
+      v-if="isImageModalOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60"
+      @click="closeImageModal"
+    >
+      <img :src="selectedImage" alt="Bukti Bayar" class="max-w-full max-h-full rounded-md shadow-lg" />
     </div>
 
-    <!-- Table -->
-    <div class="mt-8">
-
-      <div class="mt-6">
-        <h2 class="text-xl font-semibold leading-tight text-gray-700">Transactions</h2>
-
-        <div class="flex flex-col mt-3 sm:flex-row justify-between">
-          <div class="flex items-center">
-          <div class="flex">
-            <div class="relative">
-              <select
-                class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-              >
-                <option>5</option>
-                <option>10</option>
-                <option>20</option>
-              </select>
-
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <div class="relative">
-              <select
-                class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
-              >
-                <option>All</option>
-                <option>Active</option>
-                <option>Inactive</option>
-              </select>
-
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
+    <div class="mt-8 space-y-5">
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-6 text-white shadow-sm">
+        <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
+        <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
+        <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
+              Merchandise IOM ITB
+            </p>
+            <h1 class="text-3xl font-bold tracking-tight md:text-4xl">Transaksi Merchandise</h1>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
+              Kelola pembayaran, bukti transfer, dan status pengiriman pesanan merchandise.
+            </p>
           </div>
-
-          <div class="relative block mt-2 sm:mt-0">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-              <svg
-                viewBox="0 0 24 24"
-                class="w-4 h-4 text-gray-500 fill-current"
-              >
-                <path
-                  d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                />
-              </svg>
-            </span>
-
-            <input
-              placeholder="Search"
-              class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-            />
+          <div class="rounded-2xl bg-white/10 px-4 py-3 text-sm text-blue-50">
+            <p class="text-xs uppercase tracking-wider text-blue-100">Status pesanan</p>
+            <p class="mt-1 font-semibold">Ubah dari dropdown, lalu klik Simpan.</p>
           </div>
         </div>
-          <button
-            class="flex justify-between items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
-            @click="openModal"
-          >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-[25px]">
-            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-          </svg>
-            Add
-          </button>
-        </div>
+      </section>
 
-        <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8">
-          <div
-            class="inline-block min-w-full overflow-hidden rounded-lg shadow"
-          >
-            <table class="min-w-full leading-normal">
-              <thead>
-                <tr>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Bukti
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Code
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Username
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Email
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    No Telp
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Address
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Merchandise Id
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Qty
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Payment
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Status Pesanan
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Created at
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Update at
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Settings
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(u, index) in computedData" :key="index">
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <div class="flex items-center">
-                      <div class="flex-shrink-0 w-10 h-10">
-                        <img
-                          v-if="isManualProof(u?.payment)"
-                          class="w-[50px] h-[50px] rounded-[4px] cursor-pointer hover:opacity-[0.8]"
-                          :src="u?.payment"
-                          alt="payment proof"
-                          @click="openImageModal(u?.payment)"
-                        />
-                        <div
-                          v-else
-                          class="flex items-center justify-center w-[50px] h-[50px] text-[10px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 rounded-[4px]"
-                        >
-                          {{ u?.paymentMethod === 'midtrans' ? 'MID' : '—' }}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.code }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.username }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.email }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.noTelp }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-pre-line" style="word-wrap: break-word">{{ u?.address }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.merchandiseId }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.qty }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.status }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ formatDate(u?.createdAt) }}
-                    </p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ formatDate(u?.updatedAt) }}
-                    </p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <div class="flex justify-around">
-                      <span class="text-yellow-500 flex justify-center">
-                        <span class="mx-2 px-2 rounded-md cursor-pointer" @click.prevent="editItem(u)"
-                          ><svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 text-green-700"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"
-                            />
-                            <path
-                              fill-rule="evenodd"
-                              d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                              clip-rule="evenodd"
-                            />
-                          </svg>
-                        </span>
-                          <button type="button" class="mx-2 px-2 rounded-md cursor-pointer" @click.prevent="deleteItem(u.id)">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-5 w-5 text-red-700"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div
-              class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Per halaman</label>
+            <select
+              v-model="limit"
+              @change="refreshFromFirstPage"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             >
-              <span class="text-xs text-gray-900 xs:text-sm"
-                >Showing 1 to 4 of 50 Entries</span
-              >
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+            </select>
+          </div>
 
-              <div class="inline-flex mt-2 xs:mt-0">
-                <button
-                  class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400"
-                >
-                  Prev
-                </button>
-                <button
-                  class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400"
-                >
-                  Next
-                </button>
-              </div>
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Metode Bayar</label>
+            <select
+              v-model="paymentMethod"
+              @change="refreshFromFirstPage"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option value="">Semua</option>
+              <option value="manual">Manual</option>
+              <option value="midtrans">Midtrans</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Status Bayar</label>
+            <select
+              v-model="paymentStatus"
+              @change="refreshFromFirstPage"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option value="">Semua</option>
+              <option value="pending">Pending</option>
+              <option value="settlement">Settlement</option>
+              <option value="expired">Expired</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Status Pesanan</label>
+            <select
+              v-model="orderStatus"
+              @change="refreshFromFirstPage"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option value="">Semua</option>
+              <option v-for="status in orderStatusOptions" :key="status" :value="status">
+                {{ formatStatus(status) }}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Cari</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-2.5">
+                <svg viewBox="0 0 24 24" class="w-4 h-4 text-slate-400 fill-current">
+                  <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z" />
+                </svg>
+              </span>
+              <input
+                v-model="search"
+                @input="onSearchInput"
+                placeholder="Kode, nama, email..."
+                class="block w-full rounded-lg border border-slate-200 bg-white py-2 pl-8 pr-3 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              />
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead>
+              <tr class="bg-blue-900">
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">No</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pesanan</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pembeli</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Alamat</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Total</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pembayaran</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status Pesanan</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Tanggal</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-100">
+              <tr v-if="isLoading">
+                <td v-for="c in 10" :key="c" class="px-4 py-4">
+                  <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
+                </td>
+              </tr>
+              <tr v-else-if="computedData.length === 0">
+                <td colspan="10" class="px-4 py-12 text-sm text-center text-slate-400 italic">Belum ada transaksi merchandise.</td>
+              </tr>
+              <tr
+                v-else
+                v-for="(u, index) in computedData"
+                :key="u.id"
+                class="transition-colors hover:bg-blue-50/40"
+              >
+                <td class="px-4 py-4 text-slate-500 align-middle">{{ startNumber + index }}</td>
+                <td class="px-4 py-4 align-middle">
+                  <p class="font-semibold text-slate-900 whitespace-nowrap">{{ u.code || '-' }}</p>
+                  <p class="mt-0.5 text-xs text-slate-500 whitespace-nowrap">
+                    {{ merchandiseName(u) }} x {{ u.qty || 0 }}
+                  </p>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                  <p class="font-medium text-slate-900 whitespace-nowrap">{{ u.username || '-' }}</p>
+                  <p class="text-xs text-slate-500 whitespace-nowrap">{{ u.email || '-' }}</p>
+                  <p class="text-xs text-slate-500 whitespace-nowrap">{{ u.noTelp || '-' }}</p>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                  <p class="max-w-[240px] text-slate-600 line-clamp-2" :title="u.address || '-'">
+                    {{ u.address || '-' }}
+                  </p>
+                </td>
+                <td class="px-4 py-4 text-right align-middle whitespace-nowrap">
+                  <p class="font-semibold text-slate-900">{{ formatNominal(u.grossAmount) }}</p>
+                  <p class="text-xs text-slate-500">{{ u.qty || 0 }} item</p>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                  <div class="space-y-1">
+                    <span :class="methodBadgeClass(u.paymentMethod)" class="inline-block px-2 py-0.5 text-xs font-medium rounded-full">
+                      {{ paymentMethodLabel(u.paymentMethod) }}
+                    </span>
+                    <br />
+                    <span :class="paymentStatusBadgeClass(u.paymentStatus)" class="inline-block px-2 py-0.5 text-xs font-medium rounded-full capitalize">
+                      {{ paymentStatusLabel(u.paymentStatus) }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                  <div class="min-w-[170px] space-y-2">
+                    <select
+                      v-model="statusDraft[u.id]"
+                      :disabled="savingStatus[u.id]"
+                      class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <option v-for="status in orderStatusOptions" :key="status" :value="status">
+                        {{ formatStatus(status) }}
+                      </option>
+                    </select>
+                    <span
+                      class="inline-block px-2 py-0.5 text-xs font-medium rounded-full"
+                      :class="orderStatusBadgeClass(statusDraft[u.id] || u.status)"
+                    >
+                      {{ formatStatus(statusDraft[u.id] || u.status) }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-4 py-4 text-slate-600 align-middle whitespace-nowrap">
+                  <p>{{ formatDate(u.createdAt) }}</p>
+                  <p class="text-xs text-slate-400">Update: {{ formatDate(u.updatedAt) }}</p>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                  <button
+                    v-if="isManualProof(u.payment)"
+                    class="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
+                    @click="openImageModal(u.payment || '')"
+                  >
+                    Lihat
+                  </button>
+                  <span
+                    v-else
+                    class="inline-flex h-8 min-w-[54px] items-center justify-center rounded-full bg-slate-100 px-3 text-xs font-semibold text-slate-500"
+                  >
+                    {{ u.paymentMethod === 'midtrans' ? 'MID' : '-' }}
+                  </span>
+                </td>
+                <td class="px-4 py-4 text-right align-middle whitespace-nowrap">
+                  <button
+                    type="button"
+                    :disabled="savingStatus[u.id] || !hasStatusChanged(u)"
+                    class="mr-2 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    @click.prevent="saveStatus(u)"
+                  >
+                    {{ savingStatus[u.id] ? 'Saving...' : 'Simpan' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100"
+                    @click.prevent="deleteItem(u.id)"
+                  >
+                    Hapus
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex flex-col items-center justify-between gap-2 border-t border-slate-100 px-6 py-4 sm:flex-row">
+          <span class="text-xs text-slate-500">
+            Menampilkan {{ pagination?.start || 0 }}-{{ pagination?.end || 0 }} dari {{ pagination?.totalEntries || 0 }} entri
+          </span>
+          <div class="inline-flex">
+            <button
+              class="rounded-l-lg border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              :disabled="page <= 1"
+              @click="() => { page = (pagination?.currentPage || 1) - 1; getData(); }"
+            >
+              Sebelumnya
+            </button>
+            <button
+              class="rounded-r-lg border-y border-r border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              :disabled="page >= (pagination?.totalPages || 1)"
+              @click="() => { page = (pagination?.currentPage || 1) + 1; getData(); }"
+            >
+              Berikutnya
+            </button>
           </div>
         </div>
       </div>
@@ -323,85 +261,149 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { GET_TRANSACTIONS, DELETE_TRANSACTION } from "@/store/transaction.module";
-import ModalForm from "../components/modal/FormTransaction.vue";
-import { useStore } from 'vuex'; // Impor useStore dari Vuex
+import { GET_TRANSACTIONS, DELETE_TRANSACTION, PUT_TRANSACTION } from '@/store/transaction.module';
+import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
 
-// Mengambil data tabel
-const store = useStore(); // Mengambil instance store
+type Merchandise = {
+  id?: number;
+  name?: string;
+  price?: number | string | null;
+};
 
-const isOpened = ref(false); 
-const dataUpdate = ref([]); 
-const currentId = ref(undefined); 
+type Transaction = {
+  id: number;
+  code?: string;
+  username?: string;
+  email?: string;
+  noTelp?: string;
+  address?: string;
+  merchandiseId?: number;
+  merchandises?: Merchandise;
+  qty?: number;
+  payment?: string | null;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  grossAmount?: number | string | null;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+const store = useStore();
+
+const isLoading = ref(true);
+const page = ref(1);
+const limit = ref(10);
+const search = ref('');
+const paymentMethod = ref('');
+const paymentStatus = ref('');
+const orderStatus = ref('');
 const isImageModalOpen = ref(false);
 const selectedImage = ref('');
+const statusDraft = ref<Record<number, string>>({});
+const savingStatus = ref<Record<number, boolean>>({});
+const orderStatusOptions = ['waiting', 'on process', 'on delivery', 'arrived', 'done', 'canceled', 'denied'];
+const notifyStatuses = new Set(['on process', 'on delivery', 'arrived', 'done', 'canceled', 'denied']);
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
-const openModal = () => {
-  isOpened.value = true; // Open the modal
-};
-
-const handleModalClose = async () => {
-  isOpened.value = false; // Close the modal
-  dataUpdate.value = [];
-  currentId.value = undefined
-  await getData();
-  // Emit an event if needed, e.g., refreshing data
-
-};
-
-// Contoh penggunaan computed
-const computedData = computed(() => {
-  const transactions = store.getters.transactions; // Menggunakan store di sini
-  return transactions || []; // Menghindari undefined
+const computedData = computed<Transaction[]>(() => {
+  const transactions = store.getters.transactions;
+  return Array.isArray(transactions) ? transactions : [];
 });
 
-// Fungsi untuk mengambil data
+const pagination = computed(() => store.getters.transactionPagination || {});
+const startNumber = computed(() => pagination.value?.start || 1);
+
 const getData = async () => {
-  const params = {
-    limit: 5,
-  };
-  const data = await store.dispatch(GET_TRANSACTIONS, params);
-  return data;
+  isLoading.value = true;
+
+  try {
+    const data = await store.dispatch(GET_TRANSACTIONS, {
+      data: {
+        page: page.value,
+        limit: limit.value,
+        search: search.value || undefined,
+        paymentMethod: paymentMethod.value || undefined,
+        paymentStatus: paymentStatus.value || undefined,
+        status: orderStatus.value || undefined,
+      },
+    });
+
+    (data || []).forEach((transaction: Transaction) => {
+      statusDraft.value[transaction.id] = transaction.status;
+    });
+
+    return data;
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-// Contoh penggunaan onMounted
-onMounted(async () => {
-  await getData(); // Memanggil fungsi untuk mengambil data
-  console.log('Komponen telah dimount, data siap digunakan');
-});
+const refreshFromFirstPage = () => {
+  page.value = 1;
+  getData();
+};
+
+const onSearchInput = () => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(refreshFromFirstPage, 350);
+};
+
+onMounted(getData);
 
 const openImageModal = (imageUrl: string) => {
-      selectedImage.value = imageUrl;
-      isImageModalOpen.value = true;
-    }
+  selectedImage.value = imageUrl;
+  isImageModalOpen.value = true;
+};
+
 const closeImageModal = () => {
-      isImageModalOpen.value = false;
-}
+  isImageModalOpen.value = false;
+};
 
 const isManualProof = (payment?: string | null) => Boolean(payment) && !String(payment).startsWith('midtrans:');
 
-const paymentMethodLabel = (paymentMethod?: string) => {
-  if (paymentMethod === 'midtrans') return 'Midtrans';
-  if (paymentMethod === 'manual') return 'Manual';
+const merchandiseName = (transaction: Transaction) => {
+  return transaction.merchandises?.name || `Merchandise #${transaction.merchandiseId || '-'}`;
+};
+
+const formatStatus = (status?: string) => {
+  if (!status) return '-';
+  return status.replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
+const formatNominal = (amount?: number | string | null) => {
+  if (amount == null || amount === '') return '-';
+  const value = Number(amount);
+  if (Number.isNaN(value)) return String(amount);
+  return `Rp ${value.toLocaleString('id-ID')}`;
+};
+
+const paymentMethodLabel = (method?: string) => {
+  if (method === 'midtrans') return 'Midtrans';
+  if (method === 'manual') return 'Manual';
   return '-';
 };
 
-const paymentStatusLabel = (paymentStatus?: string) => paymentStatus || 'pending';
+const paymentStatusLabel = (status?: string) => status || 'pending';
 
-const paymentStatusBadgeClass = (paymentStatus?: string) => {
-  switch (paymentStatus) {
+const methodBadgeClass = (method?: string) =>
+  method === 'midtrans' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700';
+
+const paymentStatusBadgeClass = (status?: string) => {
+  switch (status) {
     case 'settlement':
-      return 'bg-emerald-100 text-emerald-700';
+      return 'bg-green-100 text-green-700';
     case 'expired':
-      return 'bg-amber-100 text-amber-700';
+      return 'bg-gray-200 text-gray-700';
     case 'failed':
-      return 'bg-rose-100 text-rose-700';
+      return 'bg-red-100 text-red-700';
     case 'refunded':
-      return 'bg-slate-200 text-slate-700';
+      return 'bg-purple-100 text-purple-700';
     case 'pending':
     default:
-      return 'bg-blue-100 text-blue-700';
+      return 'bg-yellow-100 text-yellow-700';
   }
 };
 
@@ -409,80 +411,127 @@ const orderStatusBadgeClass = (status?: string) => {
   switch (status) {
     case 'done':
     case 'arrived':
-      return 'bg-emerald-100 text-emerald-700';
+      return 'bg-green-100 text-green-700';
     case 'on process':
     case 'on delivery':
-      return 'bg-sky-100 text-sky-700';
+      return 'bg-blue-100 text-blue-700';
     case 'canceled':
     case 'denied':
-      return 'bg-rose-100 text-rose-700';
+      return 'bg-red-100 text-red-700';
     case 'waiting':
     default:
       return 'bg-slate-100 text-slate-700';
   }
 };
 
-// Fungsi untuk memformat tanggal
-const formatDate = (dateString: string) => {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  };
-  
+const formatDate = (dateString?: string) => {
+  if (!dateString) return '-';
+
   const date = new Date(dateString);
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-  const formattedDate = date.toLocaleDateString('en-US', options)
-    .replace(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/g, (matched) => monthNames[new Date(`${matched} 1`).getMonth()]);
+  if (Number.isNaN(date.getTime())) return '-';
 
-  return formattedDate.replace('AM', 'AM').replace('PM', 'PM');
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+
+  return `${day} ${month} ${year}, ${hour}:${minute}`;
 };
 
-// Inside <script setup>
-const editItem = (item:any) => {
-  dataUpdate.value = { ...item }; // Copy current item's data to dataUpdate
-  currentId.value = item.id;
-  isOpened.value = true; // Open the modal
+const hasStatusChanged = (item: Transaction) => {
+  return Boolean(item?.id) && Boolean(statusDraft.value[item.id]) && statusDraft.value[item.id] !== item.status;
 };
 
-const statusBadgeClass = (status?: string) => {
-  if (status === 'done' || status === 'arrived') return 'bg-green-100 text-green-700';
-  if (status === 'on process' || status === 'on delivery') return 'bg-blue-100 text-blue-700';
-  if (status === 'canceled' || status === 'denied') return 'bg-red-100 text-red-700';
-  return 'bg-yellow-100 text-yellow-700';
+const getErrorMessage = (error: unknown) => {
+  const apiError = error as { response?: { data?: { message?: string } }; message?: string };
+  return apiError?.response?.data?.message || apiError?.message || 'Terjadi kesalahan.';
+};
+
+const saveStatus = async (item: Transaction) => {
+  const nextStatus = statusDraft.value[item.id];
+
+  if (!nextStatus || nextStatus === item.status) return;
+
+  const confirmation = await Swal.fire({
+    title: 'Update status pesanan?',
+    text: notifyStatuses.has(nextStatus)
+      ? 'Pembeli akan menerima notifikasi Email dan WhatsApp jika kontak tersedia.'
+      : 'Status pesanan akan diperbarui.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#4f46e5',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Ya, update',
+    cancelButtonText: 'Batal',
+  });
+
+  if (!confirmation.isConfirmed) {
+    statusDraft.value[item.id] = item.status;
+    return;
+  }
+
+  savingStatus.value[item.id] = true;
+
+  try {
+    await store.dispatch(PUT_TRANSACTION, {
+      id: item.id,
+      data: {
+        status: nextStatus,
+      },
+    });
+    await getData();
+    await Swal.fire({
+      title: 'Berhasil',
+      text: 'Status pesanan berhasil diperbarui.',
+      icon: 'success',
+      confirmButtonColor: '#4f46e5',
+    });
+  } catch (error) {
+    statusDraft.value[item.id] = item.status;
+    await Swal.fire({
+      title: 'Gagal update status',
+      text: getErrorMessage(error),
+      icon: 'error',
+      confirmButtonColor: '#4f46e5',
+    });
+  } finally {
+    savingStatus.value[item.id] = false;
+  }
 };
 
 const deleteItem = async (id: number) => {
-   await Swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
+  const confirmation = await Swal.fire({
+    title: 'Hapus transaksi?',
+    text: 'Data transaksi yang dihapus tidak bisa dikembalikan.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
-  }).then(async (result) => {
-          if (result.isConfirmed) {
-            const params = { id: id };
-            try {
-              Swal.fire({
-                title: "Deleted!",
-                text: "Your item has been deleted.",
-                icon: "success",
-                confirmButtonColor: '#4CAF50',  // Change the color of the "OK" button
-                confirmButtonText: "OK"
-              }).then(async () => {
-                await getData();
-              });
-              await store.dispatch(DELETE_TRANSACTION, params);
-            } catch (err) {
-              console.log(err);
-            }
-          }
-        });
+    confirmButtonText: 'Ya, hapus',
+    cancelButtonText: 'Batal',
+  });
+
+  if (!confirmation.isConfirmed) return;
+
+  try {
+    await store.dispatch(DELETE_TRANSACTION, { id });
+    await getData();
+    await Swal.fire({
+      title: 'Terhapus',
+      text: 'Transaksi berhasil dihapus.',
+      icon: 'success',
+      confirmButtonColor: '#4CAF50',
+      confirmButtonText: 'OK',
+    });
+  } catch (error) {
+    await Swal.fire({
+      title: 'Gagal hapus transaksi',
+      text: getErrorMessage(error),
+      icon: 'error',
+      confirmButtonColor: '#4f46e5',
+    });
+  }
 };
 </script>

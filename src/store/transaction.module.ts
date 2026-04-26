@@ -11,6 +11,7 @@ export const DELETE_TRANSACTION = "deleteTransaction";
 interface Transaction {
     id: number; // Use appropriate type for transaction ID
     code: string; // Transaction code
+    publicToken?: string; // Public order status token
     username: string; // User's name associated with the transaction
     email: string; // User's email
     noTelp: string; // User's phone number

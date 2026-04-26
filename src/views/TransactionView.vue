@@ -221,6 +221,14 @@
                     {{ savingStatus[u.id] ? 'Saving...' : 'Simpan' }}
                   </button>
                   <button
+                    v-if="u.publicToken"
+                    type="button"
+                    class="mr-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
+                    @click.prevent="copyTrackingLink(u)"
+                  >
+                    Salin Link
+                  </button>
+                  <button
                     type="button"
                     class="rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100"
                     @click.prevent="deleteItem(u.id)"
@@ -275,6 +283,7 @@ type Merchandise = {
 type Transaction = {
   id: number;
   code?: string;
+  publicToken?: string;
   username?: string;
   email?: string;
   noTelp?: string;
@@ -306,6 +315,7 @@ const statusDraft = ref<Record<number, string>>({});
 const savingStatus = ref<Record<number, boolean>>({});
 const orderStatusOptions = ['waiting', 'on process', 'on delivery', 'arrived', 'done', 'canceled', 'denied'];
 const notifyStatuses = new Set(['on process', 'on delivery', 'arrived', 'done', 'canceled', 'denied']);
+const publicAppBaseUrl = (process.env.VUE_APP_PUBLIC_APP_URL || 'https://iom-app.kirisame.jp.net').replace(/\/+$/, '');
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 const computedData = computed<Transaction[]>(() => {
@@ -444,9 +454,62 @@ const hasStatusChanged = (item: Transaction) => {
   return Boolean(item?.id) && Boolean(statusDraft.value[item.id]) && statusDraft.value[item.id] !== item.status;
 };
 
+const trackingUrl = (item: Transaction) => {
+  if (!item.publicToken) return '';
+  return `${publicAppBaseUrl}/order-status?token=${encodeURIComponent(item.publicToken)}`;
+};
+
 const getErrorMessage = (error: unknown) => {
   const apiError = error as { response?: { data?: { message?: string } }; message?: string };
   return apiError?.response?.data?.message || apiError?.message || 'Terjadi kesalahan.';
+};
+
+const writeClipboard = async (text: string) => {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.opacity = '0';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textArea);
+};
+
+const copyTrackingLink = async (item: Transaction) => {
+  const url = trackingUrl(item);
+  if (!url) {
+    await Swal.fire({
+      title: 'Link belum tersedia',
+      text: 'Transaksi lama perlu token publik sebelum link status bisa disalin.',
+      icon: 'warning',
+      confirmButtonColor: '#4f46e5',
+    });
+    return;
+  }
+
+  try {
+    await writeClipboard(url);
+    await Swal.fire({
+      title: 'Link tersalin',
+      text: 'Link status pesanan siap dikirim ke pembeli.',
+      icon: 'success',
+      timer: 1600,
+      showConfirmButton: false,
+    });
+  } catch (error) {
+    await Swal.fire({
+      title: 'Gagal menyalin link',
+      text: url,
+      icon: 'info',
+      confirmButtonColor: '#4f46e5',
+    });
+  }
 };
 
 const saveStatus = async (item: Transaction) => {

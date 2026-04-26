@@ -6,7 +6,7 @@
       <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
     </div>
 
-    <!-- TUGAS 2 & 3: KPI CARDS GRID (REVISI 5 CARDS) -->
+    <!-- KPI CARDS GRID -->
     <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6 mt-2 mb-8">
       
       <!-- Card 1: Pengajuan Perlu Proses -->

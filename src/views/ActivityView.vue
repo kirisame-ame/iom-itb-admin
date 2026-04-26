@@ -1,253 +1,186 @@
 <template>
   <div>
-    <!-- Modal -->
-    <ModalForm
-      v-if="isOpened"
-      :id="currentId"
-      :title="`${currentId? 'Edit' : 'Add'} ${title}`"
-      :data="dataUpdate"
-      @close="handleModalClose"
-    />
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-semibold text-gray-800">Kegiatan</h1>
+      <button
+        @click="createNew"
+        class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Tulis Kegiatan
+      </button>
+    </div>
 
-    <!-- Table -->
-    <div class="mt-8">
+    <!-- Filter, Search, Sort -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+      <!-- Filter Status -->
+      <div class="flex rounded-md overflow-hidden border border-gray-200 bg-white">
+        <button
+          v-for="f in filters"
+          :key="f.value"
+          @click="activeFilter = f.value; fetchData()"
+          :class="activeFilter === f.value
+            ? 'bg-blue-600 text-white'
+            : 'text-gray-600 hover:bg-gray-50'"
+          class="px-4 py-2 text-sm font-medium transition-colors"
+        >
+          {{ f.label }} ({{ f.value === 'all' ? totalAll : f.value === 'draft' ? totalDraft : totalPublished }})
+        </button>
+      </div>
 
-      <div class="mt-6">
-        <h2 class="text-xl font-semibold leading-tight text-gray-700">{{ title }}</h2>
+      <!-- Search -->
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input
+          v-model="search"
+          @input="debouncedFetch"
+          placeholder="Cari judul atau konten..."
+          class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+        />
+      </div>
 
-        <div class="flex flex-col mt-3 sm:flex-row justify-between">
-          <div class="flex items-center">
-          <div class="flex">
-            <div class="relative">
-              <select
-                class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                v-model="limit"
-                @change="getData"
-              >
-                <option :value="5">5</option>
-                <option :value="10">10</option>
-                <option :value="20">20</option>
-              </select>
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
+      <!-- Sort -->
+      <select
+        v-model="sort"
+        @change="fetchData"
+        class="px-3 py-2 border border-gray-200 rounded-md text-sm bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="newest">Terbaru</option>
+        <option value="oldest">Terlama</option>
+        <option value="az">A-Z</option>
+        <option value="za">Z-A</option>
+      </select>
+    </div>
 
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
+    <!-- Loading -->
+    <div v-if="isLoading" class="space-y-3">
+      <div v-for="i in 3" :key="i" class="h-24 bg-gray-100 rounded-xl animate-pulse"/>
+    </div>
 
-          <div class="relative block mt-2 sm:mt-0">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-              <svg
-                viewBox="0 0 24 24"
-                class="w-4 h-4 text-gray-500 fill-current"
-              >
-                <path
-                  d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                />
-              </svg>
-            </span>
-            <input
-              placeholder="Search"
-              class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-              v-model="search"
-              @input="getData"
-            />
+    <!-- Empty -->
+    <div v-else-if="activities.length === 0" class="text-center py-16 text-gray-400">
+      <svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <p class="text-sm">Belum ada kegiatan</p>
+    </div>
+
+    <!-- Activity Cards -->
+    <div v-else class="space-y-3">
+      <div
+        v-for="activity in activities"
+        :key="activity.id"
+        @click="goToEditor(activity.id)"
+        class="group relative flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:border-blue-300 hover:shadow-sm transition-all"
+      >
+        <!-- Thumbnail -->
+        <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+          <img
+            v-if="activity.image"
+            :src="activity.image"
+            :alt="activity.title"
+            class="w-full h-full object-cover"
+          />
+          <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
           </div>
         </div>
-          <button
-            class="flex justify-between items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
-            @click="openModal"
-          >
-          <IcPlus/>
-            Add
-          </button>
-        </div>
 
-        <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8">
-          <div
-            class="inline-block min-w-full overflow-hidden rounded-lg shadow"
-          >
-            <table class="min-w-full leading-normal">
-              <thead>
-                <tr v-if="isLoading">
-                  <td colspan="20" class="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    Loading...
-                  </td>
-                </tr>
-                <tr>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Gambar
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Judul
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Tanggal
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    URL Detail Kegiatan
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Deskripsi
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Created at
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Update at
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Settings
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-if="isLoading">
-                  <td colspan="20" class="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    Loading...
-                  </td>
-                </tr>
-                <tr v-else v-for="(u, index) in computedData" :key="index">
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <div class="flex items-center">
-                      <div class="flex-shrink-0 w-10 h-10">
-                        <img
-                          v-if="u?.image"
-                          class="w-[50px] h-[50px] rounded-[4px]"
-                          :src="u.image" 
-                          alt="activity image"
-                        />
-                        <img
-                          v-else
-                          class="w-[50px] h-[50px] rounded-[4px]"
-                          :src="require('@/assets/image/default.png')"
-                          alt="default image"
-                        />
-                      </div>
-                    </div>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.title }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.date }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 break-words w-[150px]">{{ u?.url }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-pre-line w-[300px]" style="word-wrap: break-word">{{ truncate(u?.description, 300) }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ formatDate(u?.createdAt) }}
-                    </p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ formatDate(u?.updatedAt) }}
-                    </p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <div class="flex justify-around">
-                      <span class="text-yellow-500 flex justify-center">
-                        <button class="mx-2 px-2 rounded-md cursor-pointer" @click.prevent="editItem(u)">
-                          <IcEdit/>
-                        </button>
-                          <button type="button" class="mx-2 px-2 rounded-md cursor-pointer" @click.prevent="deleteItem(u.id)">
-                             <IcTrash/>
-                          </button>
-                          <a :href="u?.url?.split(':')?.[1]?.length > 0 ? u.url :`https://iom-itb.id/kegiatan/${u.url}`" target="_blank" class="mx-2 px-2 rounded-md cursor-pointer w-[34px] text-blue-600">
-                          <IcLink/>
-                        </a>
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div
-              class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <h3 class="font-semibold text-gray-800 truncate">{{ activity.title || 'Tanpa Judul' }}</h3>
+          <div class="flex items-center gap-2 mt-1">
+            <span
+              :class="activity.status === 'published' ? 'text-green-600' : 'text-yellow-600'"
+              class="text-xs font-medium"
             >
-            <span class="text-xs text-gray-900 xs:text-sm"
-                >Showing {{ pagination?.start }} to {{ pagination?.end }} of {{ pagination?.totalEntries }}  Entries</span
-              >
-              <div class="inline-flex mt-2 xs:mt-0">
-                <button
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400"
-                    :disabled="page <= 1"
-                    @click="()=>{page = pagination?.currentPage - 1; getData()}"
-                  >
-                    Prev
-                  </button>
-                  <button
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400"
-                    :disabled="page >= pagination?.totalPages"
-                    @click="()=>{page = pagination?.currentPage + 1; getData()}"
-                  >
-                    Next
-                  </button>
-              </div>
+              {{ activity.status === 'published' ? 'Published' : 'Draft' }}
+            </span>
+            <span class="text-gray-300 text-xs">•</span>
+            <span class="text-xs text-gray-400">
+              {{ activity.status === 'published' ? 'Dipublikasikan' : 'Diperbarui' }}
+              {{ formatDate(activity.status === 'published' ? activity.createdAt : activity.updatedAt) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Action Buttons (muncul saat hover) -->
+        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <!-- Publish (hanya kalau draft) -->
+          <div v-if="activity.status === 'draft'" class="relative group/tooltip">
+            <button
+              @click.stop="publishActivity(activity)"
+              class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+            </button>
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
+              Publish
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <div class="relative group/tooltip">
+            <button
+              @click.stop="previewActivity(activity)"
+              class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
+              Preview
+            </div>
+          </div>
+
+          <!-- Hapus -->
+          <div class="relative group/tooltip">
+            <button
+              @click.stop="deleteActivity(activity)"
+              class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
+              Hapus
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div v-if="totalPages > 1" class="flex items-center justify-between mt-6">
+      <span class="text-sm text-gray-500">
+        Menampilkan {{ start }}–{{ end }} dari {{ totalEntries }} kegiatan
+      </span>
+      <div class="flex gap-1">
+        <button
+          @click="page--; fetchData()"
+          :disabled="page <= 1"
+          class="px-3 py-1.5 text-sm border border-gray-200 rounded-md disabled:opacity-40 hover:bg-gray-50 transition-colors"
+        >
+          Prev
+        </button>
+        <button
+          @click="page++; fetchData()"
+          :disabled="page >= totalPages"
+          class="px-3 py-1.5 text-sm border border-gray-200 rounded-md disabled:opacity-40 hover:bg-gray-50 transition-colors"
+        >
+          Next
+        </button>
       </div>
     </div>
   </div>
@@ -255,122 +188,128 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { GET_ACTIVITIES, DELETE_ACTIVITY } from "@/store/activity.module";
-import ModalForm from "../components/modal/FormActivity.vue";
-import { useStore } from 'vuex'; // Impor useStore dari Vuex
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
-import IcTrash from '@/assets/svg/ic-trash.vue';
-import IcEdit from '@/assets/svg/ic-edit.vue';
-import { truncate } from '@/utils';
-import IcLink from '@/assets/svg/ic-link.vue';
-import IcPlus from '@/assets/svg/ic-plus.vue';
+import { GET_ACTIVITIES, DELETE_ACTIVITY, POST_ACTIVITY, PUBLISH_ACTIVITY } from '@/store/activity.module';
 
-// Mengambil data tabel
-const store = useStore(); // Mengambil instance store
+const store = useStore();
+const router = useRouter();
 
-const isOpened = ref(false); 
-const isLoading = ref(true); 
-const dataUpdate = ref([]); 
-const currentId = ref(undefined); 
+const isLoading = ref(true);
+const search = ref('');
+const activeFilter = ref('all');
+const sort = ref('newest');
 const page = ref(1);
-const limit = ref(5);
-const search = ref(""); 
-const title = ref("Kegiatan"); 
+const limit = ref(10);
 
-const openModal = () => {
-  isOpened.value = true; // Open the modal
+const filters = [
+  { label: 'Semua', value: 'all' },
+  { label: 'Draft', value: 'draft' },
+  { label: 'Published', value: 'published' },
+];
+
+const activitiesData = computed(() => store.getters.activities);
+const activities = computed(() => activitiesData.value?.data || []);
+const totalEntries = computed(() => activitiesData.value?.pagination?.totalEntries || 0);
+const totalPages = computed(() => activitiesData.value?.pagination?.totalPages || 0);
+const start = computed(() => activitiesData.value?.pagination?.start || 0);
+const end = computed(() => activitiesData.value?.pagination?.end || 0);
+
+// Hitung total per status untuk label filter
+const totalAll = computed(() => totalEntries.value);
+const totalDraft = ref(0);
+const totalPublished = ref(0);
+
+const getSortOrder = () => {
+  switch (sort.value) {
+    case 'oldest': return [['createdAt', 'ASC']];
+    case 'az': return [['title', 'ASC']];
+    case 'za': return [['title', 'DESC']];
+    default: return [['createdAt', 'DESC']];
+  }
 };
 
-const handleModalClose = async () => {
-  isOpened.value = false; // Close the modal
-  dataUpdate.value = [];
-  currentId.value = undefined
-  await getData();
-};
-
-// Contoh penggunaan computed
-const computedData = computed(() => {
-  const activities = store.getters.activities; // Menggunakan store di sini
-  return activities?.data || []; // Menghindari undefined
-});
-
-const pagination = computed(() => {
-  const activities = store.getters.activities; // Menggunakan store di sini
-  return activities?.pagination || []; // Menghindari undefined
-});
-
-// Fungsi untuk mengambil data
-const getData = async () => {
-  const params = {
-      search: search.value,
-      limit: limit.value,
-      page: page.value,
-  };
-  const data = await store.dispatch(GET_ACTIVITIES, params);
+const fetchData = async () => {
+  isLoading.value = true;
+  await store.dispatch(GET_ACTIVITIES, {
+    search: search.value,
+    page: page.value,
+    limit: limit.value,
+    status: activeFilter.value === 'all' ? undefined : activeFilter.value,
+    sort: sort.value,
+  });
   isLoading.value = false;
-  return data;
 };
 
-// Contoh penggunaan onMounted
-onMounted(async () => {
-  await getData(); // Memanggil fungsi untuk mengambil data
-  console.log('Komponen telah dimount, data siap digunakan');
-});
-
-// Fungsi untuk memformat tanggal
-const formatDate = (dateString: string) => {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  };
-  
-  const date = new Date(dateString);
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-  const formattedDate = date.toLocaleDateString('en-US', options)
-    .replace(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/g, (matched) => monthNames[new Date(`${matched} 1`).getMonth()]);
-
-  return formattedDate.replace('AM', 'AM').replace('PM', 'PM');
+// Debounce search
+let searchTimer: any = null;
+const debouncedFetch = () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    page.value = 1;
+    fetchData();
+  }, 400);
 };
 
-// Inside <script setup>
-const editItem = (item:any) => {
-  dataUpdate.value = { ...item }; // Copy current item's data to dataUpdate
-  currentId.value = item.id; 
-  isOpened.value = true; // Open the modal
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('id-ID', {
+    day: 'numeric', month: 'short', year: 'numeric'
+  });
 };
 
-const deleteItem = async (id: number) => {
-   await Swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
+const createNew = async () => {
+  // Buat draft baru lalu langsung arahkan ke editor
+  const result = await store.dispatch(POST_ACTIVITY, {
+    data: { title: '', description: '', date: new Date().toISOString().split('T')[0], image: '', status: 'draft' }
+  });
+  router.push({ name: 'KegiatanEditor', params: { id: result.id } });
+};
+
+const goToEditor = (id: number) => {
+  router.push({ name: 'KegiatanEditor', params: { id } });
+};
+
+const previewActivity = (activity: any) => {
+  const route = router.resolve({ name: 'KegiatanPreview', params: { id: activity.id } });
+  window.open(route.href, '_blank');
+};
+
+const publishActivity = async (activity: any) => {
+  const result = await Swal.fire({
+    title: 'Publish kegiatan ini?',
+    text: 'Kegiatan akan dipublikasikan dan dapat dilihat publik.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#2563eb',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Ya, publish!',
+    cancelButtonText: 'Batal'
+  });
+  if (result.isConfirmed) {
+    await store.dispatch(PUBLISH_ACTIVITY, activity.id);
+    await fetchData();
+    Swal.fire({ title: 'Published!', icon: 'success', confirmButtonColor: '#2563eb' });
+  }
+};
+
+const deleteActivity = async (activity: any) => {
+  const result = await Swal.fire({
+    title: 'Hapus kegiatan ini?',
+    text: 'Data yang dihapus tidak dapat dikembalikan.',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
-  }).then(async (result) => {
-          if (result.isConfirmed) {
-            const params = { id: id };
-            await store.dispatch(DELETE_ACTIVITY, params);
-            try {
-              Swal.fire({
-                title: "Deleted!",
-                text: "Your item has been deleted.",
-                icon: "success",
-                confirmButtonColor: '#4CAF50',  // Change the color of the "OK" button
-                confirmButtonText: "OK"
-              }).then(async () => {
-                await getData();
-              });
-            } catch (err) {
-              console.log(err);
-            }
-          }
-        });
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Ya, hapus!',
+    cancelButtonText: 'Batal'
+  });
+  if (result.isConfirmed) {
+    await store.dispatch(DELETE_ACTIVITY, { id: activity.id });
+    await fetchData();
+  }
 };
+
+onMounted(fetchData);
 </script>

@@ -26,6 +26,8 @@ import PengajuanBantuan from "@/views/PengajuanBantuanView.vue";
 import OrangtuaAsuh from "@/views/OrangtuaAsuhView.vue";
 import Kemitraan from "@/views/KemitraanView.vue";
 import KegiatanKemitraan from "@/views/KegiatanKemitraanView.vue";
+import ActivityEditorView from "@/views/ActivityEditorView.vue";
+import ActivityPreviewView from "@/views/ActivityPreviewView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -139,6 +141,17 @@ const routes: Array<RouteRecordRaw> = [
     path: "/charts",
     name: "Chart",
     component: Chart,
+  },
+  {
+  path: "/kegiatan/:id/edit",
+  name: "KegiatanEditor",
+  component: ActivityEditorView,
+  },
+  {
+    path: "/kegiatan/:id/preview",
+    name: "KegiatanPreview",
+    component: ActivityPreviewView,
+    meta: { layout: "empty" },
   },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];

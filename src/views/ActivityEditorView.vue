@@ -96,6 +96,7 @@
               @update:content="autoSave"
               :options="quillOptions"
               class="min-h-[600px]"
+              ref="quillRef"
             />
           </div>
 
@@ -318,7 +319,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { QuillEditor } from '@vueup/vue-quill';
@@ -330,6 +331,7 @@ import Swal from 'sweetalert2';
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
+const quillRef = ref();
 
 const activityId = ref<number | null>(route.params.id === 'new' ? null : Number(route.params.id));
 const isSaving = ref(false);
@@ -625,6 +627,7 @@ const addMedia = () => {
 };
 
 onMounted(async () => {
+  // Load activity kalau bukan 'new'
   if (route.params.id !== 'new') {
     const activity = await store.dispatch(GET_ACTIVITY_BY_ID, Number(route.params.id));
     form.value = {
@@ -636,7 +639,32 @@ onMounted(async () => {
       media: activity.media || [],
     };
     lastUpdated.value = formatUpdatedAt(activity.updatedAt);
-    slugGenerated.value = true; // slug sudah ada, jangan di-generate ulang
+    slugGenerated.value = true;
+  }
+
+  await nextTick();
+  const quill = quillRef.value?.getQuill();
+  if (quill) {
+    quill.clipboard.addMatcher(Node.TEXT_NODE, (node: any, delta: any) => {
+      const urlRegex = /https?:\/\/[^\s]+/g;
+      const text = node.data;
+      if (urlRegex.test(text)) {
+        const ops: any[] = [];
+        let lastIndex = 0;
+        text.replace(urlRegex, (url: string, offset: number) => {
+          if (offset > lastIndex) {
+            ops.push({ insert: text.slice(lastIndex, offset) });
+          }
+          ops.push({ insert: url, attributes: { link: url } });
+          lastIndex = offset + url.length;
+        });
+        if (lastIndex < text.length) {
+          ops.push({ insert: text.slice(lastIndex) });
+        }
+        delta.ops = ops;
+      }
+      return delta;
+    });
   }
 });
 </script>

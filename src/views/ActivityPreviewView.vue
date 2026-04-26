@@ -1,3 +1,14 @@
+<style>
+.prose a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.prose a:hover {
+  color: #1d4ed8;
+}
+</style>
+
 <template>
   <div v-if="activity" class="min-h-screen bg-white">
     <!-- Header Preview Banner -->
@@ -55,6 +66,13 @@
             </svg>
           </button>
         </div>
+        
+        <p
+          v-if="allMedia[currentSlide]?.caption"
+          class="text-center text-xs text-gray-400 mt-2"
+        >
+          {{ allMedia[currentSlide].caption }}
+        </p>
 
         <!-- Dots -->
         <div v-if="allMedia.length > 1" class="flex justify-center gap-1.5 mt-3">

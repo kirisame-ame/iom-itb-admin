@@ -153,6 +153,9 @@
                   <span 
                     class="px-3 py-1 text-xs font-semibold rounded-full"
                     :class="{
+                      'bg-slate-100 text-slate-500': submission.status === 'Tidak Diketahui',
+                      'bg-indigo-50 text-indigo-600': submission.status === 'Verifikasi Berkas',
+                      'bg-purple-50 text-purple-600': submission.status === 'Wawancara',
                       'bg-yellow-50 text-yellow-600': submission.status === 'Menunggu',
                       'bg-blue-50 text-blue-600': submission.status === 'Diproses',
                       'bg-green-50 text-green-600': submission.status === 'Disetujui',
@@ -193,6 +196,10 @@
                     <span 
                       class="px-2 py-1 rounded"
                       :class="{
+                        'bg-slate-100 text-slate-500': log.newStatus === 'Tidak Diketahui',
+                        'bg-indigo-50 text-indigo-600': log.newStatus === 'Verifikasi Berkas',
+                        'bg-purple-50 text-purple-600': log.newStatus === 'Wawancara',
+                        'bg-yellow-50 text-yellow-600': log.newStatus === 'Menunggu',
                         'bg-blue-50 text-blue-600': log.newStatus === 'Diproses',
                         'bg-green-50 text-green-600': log.newStatus === 'Disetujui',
                         'bg-red-50 text-red-600': log.newStatus === 'Ditolak'

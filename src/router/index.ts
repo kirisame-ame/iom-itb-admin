@@ -10,6 +10,7 @@ import Transactions from "../views/TransactionView.vue";
 import Users from "../views/UserView.vue";
 import Members from "../views/MemberView.vue";
 import Donasi from "../views/DonasiView.vue";
+import PaymentDashboard from "../views/PaymentDashboardView.vue";
 import Fakultas from "../views/FakultasView.vue";
 import PendataanAnggota from "../views/PendataanAnggotaView.vue";
 import Login from "../views/AppLogin.vue";
@@ -91,6 +92,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/donasi",
     name: "Donasi",
     component: Donasi,
+  },
+  {
+    path: "/dashboard-pembayaran",
+    name: "Dashboard Pembayaran",
+    component: PaymentDashboard,
   },
   {
     path: "/fakultas",

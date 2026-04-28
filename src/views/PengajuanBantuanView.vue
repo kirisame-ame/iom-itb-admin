@@ -2,20 +2,20 @@
   <div class="min-h-screen">
 
     <div class="pb-4">
-      <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Pengajuan Bantuan</h1>
+      <h1 class="text-2xl font-bold tracking-tight text-blue-900 sm:text-3xl">Pengajuan Bantuan</h1>
       <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
     </div>
 
     <!-- Toolbar -->
-    <div class="flex flex-wrap items-center justify-between gap-3 py-4 border-b border-slate-100">
-      <div class="flex flex-wrap items-center gap-3">
+    <div class="flex flex-col gap-3 border-b border-slate-100 py-4 lg:flex-row lg:items-center lg:justify-between">
+      <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:w-auto lg:flex-wrap lg:items-center">
 
         <!-- Rows per page -->
         <div class="relative">
           <select
             v-model="limit"
             @change="() => { page = 1; getData() }"
-            class="appearance-none pl-3 pr-8 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+            class="w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-8 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 lg:w-auto"
           >
             <option :value="5">5</option>
             <option :value="10">10</option>
@@ -36,7 +36,7 @@
             v-model="search"
             @input="onSearchInput"
             placeholder="Cari..."
-            class="pl-9 pr-4 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg w-52 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-slate-400"
+            class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 lg:w-52"
           />
         </div>
 
@@ -45,7 +45,7 @@
           <select
             v-model="statusFilter"
             @change="() => { page = 1; getData() }"
-            class="appearance-none pl-3 pr-8 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+            class="w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-8 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 lg:w-auto"
           >
             <option value="">Semua Status</option>
             <option value="TIDAK_DIKETAHUI">Status Tidak Diketahui</option>
@@ -64,7 +64,7 @@
           <select
             v-model="sortOrder"
             @change="() => { page = 1; getData() }"
-            class="appearance-none pl-3 pr-8 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+            class="w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-8 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 lg:w-auto"
           >
             <option value="DESC">Terbaru</option>
             <option value="ASC">Terlama</option>
@@ -80,7 +80,7 @@
         href="https://docs.google.com/spreadsheets/d/1fX-pGRaiVNo37gx5YdIWZ4DTpp_RyZ1kYmL2dSeaHQ8/edit?usp=sharing"
         target="_blank"
         rel="noopener noreferrer"
-        class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors"
+        class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-500 sm:w-auto"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>

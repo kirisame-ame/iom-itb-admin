@@ -3,7 +3,7 @@
     <Breadcrumb breadcrumb="dashboard-pembayaran" />
 
     <div class="mt-8 space-y-5">
-      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-6 text-white shadow-sm">
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
         <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -11,7 +11,7 @@
             <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
               Keuangan IOM ITB
             </p>
-            <h1 class="text-3xl font-bold tracking-tight md:text-4xl">Dashboard Pembayaran</h1>
+            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Dashboard Pembayaran</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Pantau pembayaran iuran sukarela dan kontribusi sukarela berdasarkan status, metode, fakultas, dan tren harian.
             </p>
@@ -108,14 +108,14 @@
           <h2 class="text-base font-bold text-slate-900">Jenis Pembayaran</h2>
           <div class="mt-4 space-y-4">
             <div v-for="item in typeSummary" :key="item.type" class="rounded-xl bg-slate-50 p-4">
-              <div class="flex items-start justify-between gap-3">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p class="font-semibold text-slate-900">{{ formatDonationType(item.type) }}</p>
                   <p class="mt-1 text-xs text-slate-500">{{ item.count }} transaksi</p>
                 </div>
-                <p class="font-bold text-blue-800">{{ formatIDR(item.totalAmount) }}</p>
+                <p class="font-bold text-blue-800 sm:text-right">{{ formatIDR(item.totalAmount) }}</p>
               </div>
-              <div class="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500">
+              <div class="mt-3 grid grid-cols-1 gap-2 text-xs text-slate-500 sm:grid-cols-2">
                 <span>Lunas: {{ formatIDR(item.settledAmount) }}</span>
                 <span>Pending: {{ formatIDR(item.pendingAmount) }}</span>
               </div>
@@ -168,12 +168,12 @@
           <h2 class="text-base font-bold text-slate-900">Breakdown Fakultas</h2>
           <div class="mt-4 max-h-64 space-y-3 overflow-y-auto pr-1">
             <div v-for="item in facultySummary" :key="item.facultyId || item.facultyName" class="rounded-xl border border-slate-100 p-3">
-              <div class="flex items-center justify-between gap-3">
+              <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                 <div>
                   <p class="font-semibold text-slate-900">{{ item.facultyName }}</p>
                   <p class="text-xs text-slate-500">{{ item.count }} transaksi · kode {{ item.kodeUnik || '-' }}</p>
                 </div>
-                <p class="font-bold text-blue-800">{{ formatIDR(item.totalAmount) }}</p>
+                <p class="font-bold text-blue-800 sm:text-right">{{ formatIDR(item.totalAmount) }}</p>
               </div>
               <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
                 <div class="h-full rounded-full bg-emerald-500" :style="{ width: `${barWidth(item.totalAmount, maxFacultyAmount)}%` }"></div>
@@ -185,7 +185,7 @@
       </div>
 
       <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <div>
             <h2 class="text-base font-bold text-slate-900">Pembayaran Terbaru</h2>
             <p class="mt-1 text-xs text-slate-500">10 transaksi terbaru sesuai filter dashboard.</p>

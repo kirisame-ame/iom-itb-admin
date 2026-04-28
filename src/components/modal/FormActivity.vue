@@ -1,8 +1,8 @@
 <template>
   <div class="fixed z-[998] bg-black top-0 right-0 w-full h-screen opacity-[0.4]"></div>
-  <div class="fixed z-[999] flex justify-center items-center w-screen h-screen top-0 right-0" @click="closeModal">
-    <div ref="modalContent" @click.stop>
-      <div class="md:w-[500px] max-w-[500px] overflow-hidden bg-white border rounded-md shadow-md">
+  <div class="fixed z-[999] flex h-screen w-screen items-center justify-center p-4 top-0 right-0" @click="closeModal">
+    <div ref="modalContent" class="w-full max-w-[500px]" @click.stop>
+      <div class="w-full overflow-hidden bg-white border rounded-md shadow-md">
         <form @submit.prevent="handleSubmit">
           <div class="flex items-center justify-between px-5 py-3 text-gray-700 border-b">
             <h3 class="text-sm capitalize">{{ title }}</h3>

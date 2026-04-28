@@ -11,7 +11,7 @@
     />
 
     <div class="mt-8 space-y-5">
-      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-6 text-white shadow-sm">
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
         <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -19,13 +19,13 @@
             <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
               Katalog IOM ITB
             </p>
-            <h1 class="text-3xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola produk merchandise, stok, harga, dan tautan pembelian yang tampil pada halaman publik.
             </p>
           </div>
           <button
-            class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/70"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/70 sm:w-auto"
             @click="openModal"
           >
             <IcPlus />
@@ -49,8 +49,8 @@
         </div>
       </section>
 
-      <section class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div class="flex flex-wrap items-center gap-3">
+      <section class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+        <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-[auto,1fr] lg:w-auto lg:flex lg:flex-wrap lg:items-center">
           <div class="relative">
             <select
               v-model="limit"
@@ -74,7 +74,7 @@
             <input
               v-model="search"
               placeholder="Cari merchandise..."
-              class="w-64 rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 lg:w-64"
               @input="onSearchInput"
             />
           </div>

@@ -23,7 +23,8 @@
         inset-y-0
         left-0
         z-30
-        w-64
+        w-72
+        max-w-[calc(100vw-2rem)]
         overflow-y-auto
         transition
         duration-300
@@ -32,15 +33,15 @@
         lg:translate-x-0 lg:static lg:inset-0
       "
     >
-      <div class="flex items-center justify-center mt-8">
+      <div class="flex items-center justify-center px-4 mt-6 sm:mt-8">
         <div class="flex items-center">
          <!-- <img :src="require('@/assets/image/logo.webp')" alt="IOM-ITB" class="w-[60px]"> -->
 
-          <span class="text-2xl font-semibold text-white">IOM-Dashboard</span>
+          <span class="text-xl font-semibold text-white sm:text-2xl">IOM-Dashboard</span>
         </div>
       </div>
 
-      <nav class="mt-10">
+      <nav class="mt-8 pb-8 sm:mt-10">
         <p class="pl-4 text-xs font-semibold mb-4 text-gray-400">Menu Utama</p>
         <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"

@@ -4,16 +4,21 @@
       flex
       items-center
       justify-between
-      px-6
+      min-w-0
+      gap-3
+      px-3
       py-2
+      sm:px-4
+      lg:px-6
       bg-white
       border-b-4 border-indigo-600
     "
   >
-    <div class="flex items-center">
+    <div class="flex min-w-0 items-center">
       <button
         @click="isOpen = true"
-        class="text-gray-500 focus:outline-none lg:hidden"
+        class="mr-1 shrink-0 rounded-lg p-1.5 text-gray-500 hover:bg-slate-100 focus:outline-none lg:hidden"
+        aria-label="Buka menu"
       >
         <svg
           class="w-6 h-6"
@@ -31,9 +36,9 @@
         </svg>
       </button>
 
-      <div class="mx-4 lg:mx-0 flex items-center gap-1.5">
-        <div class="flex flex-col">
-          <h1 class="text-3xl lg:text-4xl font-bold text-[#003793] tracking-tight leading-none">
+      <div class="flex min-w-0 items-center gap-1.5 sm:mx-2 lg:mx-0">
+        <div class="flex min-w-0 flex-col">
+          <h1 class="truncate text-lg font-bold leading-none tracking-tight text-[#003793] sm:text-2xl lg:text-4xl">
             Dashboard Admin
           </h1>
           <p class="text-xs text-gray-600 mt-1.5 hidden sm:block">
@@ -42,15 +47,15 @@
         </div>
 
         <img
-          class="h-16 lg:h-20 object-contain ml-1 lg:ml-2"
+          class="ml-1 h-10 shrink-0 object-contain sm:h-14 lg:ml-2 lg:h-20"
           :src="require('@/assets/image/logo.webp')"
           alt="IOM Logo"
         />
       </div>
     </div>
 
-    <div class="flex items-center">
-      <div class="flex items-center">
+    <div class="flex shrink-0 items-center">
+      <div class="hidden items-center sm:flex">
         <div class="relative">
           <button
             @click="notificationOpen = !notificationOpen"
@@ -81,10 +86,11 @@
           <div
             v-show="notificationOpen"
             class="
-              absolute
-              right-0
+              fixed
+              right-3
               mt-2
-              w-80
+              w-[calc(100vw-1.5rem)]
+              max-w-xs
               bg-white
               rounded-lg
               shadow-xl
@@ -194,7 +200,7 @@
       
       <div class="relative">
         <div class="flex items-center gap-2">
-        {{ currentUser?.email }}
+        <span class="hidden max-w-[220px] truncate text-sm text-slate-600 md:inline">{{ currentUser?.email }}</span>
         <button
           @click="dropdownOpen = !dropdownOpen"
           class="
@@ -359,4 +365,3 @@ const logout = async () => {
   await store.dispatch(LOGOUT);
 };
 </script>
-

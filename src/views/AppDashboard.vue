@@ -1,16 +1,16 @@
 <template>
-  <div class="bg-slate-50 min-h-screen p-6">
+  <div class="min-h-screen bg-slate-50">
     <!-- ── Page Header ─────────────────────────────────────────── -->
     <div class="pb-4">
-      <h1 class="text-3xl font-bold text-blue-900 tracking-tight">Dashboard</h1>
+      <h1 class="text-2xl font-bold tracking-tight text-blue-900 sm:text-3xl">Dashboard</h1>
       <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
     </div>
 
     <!-- KPI CARDS GRID -->
-    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6 mt-2 mb-8">
+    <div class="mt-2 mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 xl:gap-6">
       
       <!-- Card 1: Pengajuan Perlu Proses -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalPengajuanPending.title }}</h3>
           <div class="p-2 bg-orange-50 text-orange-500 rounded-lg">
@@ -18,12 +18,12 @@
           </div>
         </div>
         <div class="mt-4">
-          <p class="text-3xl font-bold text-slate-800">{{ kpiData.totalPengajuanPending.value }}</p>
+          <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.totalPengajuanPending.value }}</p>
         </div>
       </div>
 
       <!-- Card 2: Bantuan Disetujui -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalBantuanDisetujui.title }}</h3>
           <div class="p-2 bg-green-50 text-green-500 rounded-lg">
@@ -31,12 +31,12 @@
           </div>
         </div>
         <div class="mt-4">
-          <p class="text-3xl font-bold text-slate-800">{{ kpiData.totalBantuanDisetujui.value }}</p>
+          <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.totalBantuanDisetujui.value }}</p>
         </div>
       </div>
 
       <!-- Card 3: Pesanan Merchandise -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.pesananMerchandise.title }}</h3>
           <div class="p-2 bg-blue-50 text-blue-500 rounded-lg">
@@ -44,12 +44,12 @@
           </div>
         </div>
         <div class="mt-4">
-          <p class="text-3xl font-bold text-slate-800">{{ kpiData.pesananMerchandise.value }}</p>
+          <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.pesananMerchandise.value }}</p>
         </div>
       </div>
 
       <!-- Card 4: Total Donasi -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalDonasi.title }}</h3>
           <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg">
@@ -62,7 +62,7 @@
       </div>
 
       <!-- Card 5: Total Anggota -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
+      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalAnggota.title }}</h3>
           <div class="p-2 bg-indigo-50 text-indigo-500 rounded-lg">
@@ -70,7 +70,7 @@
           </div>
         </div>
         <div class="mt-4">
-          <p class="text-3xl font-bold text-slate-800">{{ kpiData.totalAnggota.value }}</p>
+          <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.totalAnggota.value }}</p>
           <p class="text-xs text-green-500 mt-1 relative top-2 font-medium">{{ kpiData.totalAnggota.description }}</p>
         </div>
       </div>
@@ -78,10 +78,10 @@
     </div>
 
     <!-- TUGAS 4: GRAFIK (CHARTS) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
       
       <!-- Grafik Kiri (Tren Pengajuan) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+      <div class="rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
         <h3 class="text-slate-700 font-bold text-lg mb-4">Tren Pengajuan Masuk</h3>
         <apexchart 
           :key="trenChartKey"
@@ -93,7 +93,7 @@
       </div>
 
       <!-- Grafik Kanan (Distribusi Status) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col">
+      <div class="flex flex-col rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
         <h3 class="text-slate-700 font-bold text-lg mb-4">Distribusi Status Bantuan</h3>
         <div class="flex-1 flex items-center justify-center">
           <apexchart 
@@ -107,7 +107,7 @@
       </div>
 
       <!-- Grafik Bawah (Penerima Bantuan per Tahun) - Bar Chart -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 lg:col-span-2 flex flex-col">
+      <div class="flex flex-col rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6 lg:col-span-2">
         <h3 class="text-slate-700 font-bold text-lg mb-4">Penerima Bantuan per Tahun</h3>
         <div v-if="penerimaChartSeries[0]?.data?.length > 0" class="flex-1">
           <apexchart 
@@ -126,7 +126,7 @@
     </div>
 
     <!-- TABEL BAWAH: PENGAJUAN & LOG AKTIVITAS -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+    <div class="mb-6 grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
       
       <!-- Tabel Kiri: Pengajuan Bantuan Terbaru -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">

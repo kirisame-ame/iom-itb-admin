@@ -176,6 +176,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useStore } from 'vuex'
+import Swal from 'sweetalert2'
 import { UPDATE_STATUS_PENGAJUAN } from '@/store/pengajuanBantuan.module'
 import type { PengajuanBantuan, StatusPengajuan } from '@/store/pengajuanBantuan.module'
 
@@ -249,16 +250,23 @@ const handleSimpan = () => {
 
 const doSimpan = async () => {
   showSimpanConfirm.value = false
+  if (!props.item) return
+
   isSaving.value          = true
   try {
     await store.dispatch(`pengajuanBantuan/${UPDATE_STATUS_PENGAJUAN}`, {
-      tallySubmissionId: props.item!.tallySubmissionId,
+      tallySubmissionId: props.item.tallySubmissionId,
       status: formStatus.value,
       keterangan: formKeterangan.value,
     })
     emit('saved')
-  } catch (e) {
-    console.error(e)
+  } catch (error: unknown) {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Gagal menyimpan',
+      text: error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan perubahan.',
+      confirmButtonColor: '#2563eb',
+    })
   } finally {
     isSaving.value = false
   }

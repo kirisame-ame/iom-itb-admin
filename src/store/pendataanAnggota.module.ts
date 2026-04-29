@@ -2,6 +2,7 @@ import ApiService from './api.service'
 import type { Module } from 'vuex'
 
 export const GET_PENDATAAN_ANGGOTA = 'GET_PENDATAAN_ANGGOTA'
+export const SEND_WHATSAPP_PENDATAAN_ANGGOTA = 'SEND_WHATSAPP_PENDATAAN_ANGGOTA'
 
 interface TallySubmission {
   id: number
@@ -87,6 +88,13 @@ const pendataanAnggotaModule: Module<State, any> = {
       } finally {
         commit(SET_LOADING, false)
       }
+    },
+
+    async [SEND_WHATSAPP_PENDATAAN_ANGGOTA](_ctx, tallySubmissionId: string) {
+      return ApiService.post(
+        `/tally-submissions/form/pendaftaran_anggota/${tallySubmissionId}/whatsapp`,
+        {},
+      )
     },
   },
 }

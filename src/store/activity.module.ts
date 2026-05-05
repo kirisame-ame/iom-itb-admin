@@ -53,7 +53,7 @@ type VuexContext = ActionContext<State, any>;
 const actions = {
   [GET_ACTIVITIES](context: VuexContext, params: Record<string, any>): Promise<any> {
     return new Promise((resolve, reject) => {
-      ApiService.get<any>("/activities", params)
+      ApiService.get<any>("/activities/admin/all", params) // UBAH
         .then(response => {
           context.commit(SET_ACTIVITIES, response);
           resolve(response);
@@ -64,7 +64,7 @@ const actions = {
 
   [GET_ACTIVITY_BY_ID](context: VuexContext, id: number): Promise<Activity> {
     return new Promise((resolve, reject) => {
-      ApiService.get<any>(`/activities/id/${id}`) // ubah dari /activities/${id}
+      ApiService.get<any>(`/activities/admin/id/${id}`) // UBAH
         .then(response => {
           context.commit(SET_CURRENT_ACTIVITY, response.data);
           resolve(response.data);
@@ -107,7 +107,7 @@ const actions = {
 
   [GET_ACTIVITY_COUNTS](context: VuexContext): Promise<any> {
     return new Promise((resolve, reject) => {
-      ApiService.get<any>("/activities/counts")
+      ApiService.get<any>("/activities/admin/counts") 
         .then(response => resolve(response.data))
         .catch(err => reject(err));
     });

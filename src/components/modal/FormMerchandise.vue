@@ -20,6 +20,7 @@
             <InputTextArea label="description" :value="data?.description" @update="updateValue" :required="true" />
             <InputImageCostume label="image" :value="data?.image" @update="updateValue" :required="true" />
             <InputText label="link" :value="data?.link" @update="updateValue" />
+            <InputSelect label="kategori" :value="data?.kategori" :options="['Stiker', 'Busana', 'ATK']" @update="updateValue" />
           </div>
 
           <div class="flex items-center justify-between px-5 py-3">
@@ -46,6 +47,7 @@ import { useStore } from 'vuex';
 import { POST_MERCHANDISE, PUT_MERCHANDISE } from "@/store/merchandise.module";
 import { POST_IMAGE } from "@/store/upload.module";
 import InputImageCostume from '../input/InputImageCostume.vue';
+import InputSelect from '../input/InputSelect.vue';
 
 export default defineComponent({
   components: {
@@ -54,6 +56,7 @@ export default defineComponent({
     InputNumber,
     InputPrice,
     InputImageCostume,
+    InputSelect,
   },
   props: {
     title: {
@@ -89,8 +92,35 @@ export default defineComponent({
       formData.data[params.key] = params.value;
     };
 
+    const isValidUrl = (val: string): boolean => {
+      try { new URL(val); return true; } catch { return false; }
+    };
+
     const handleSubmit = async () => {
       isLoading.value = true;
+
+      const errors: string[] = [];
+
+      const imageVal = formData.data.image;
+      if (typeof imageVal === 'string' && imageVal.trim() !== '') {
+        if (!isValidUrl(imageVal)) {
+          errors.push('Image URL tidak valid. Masukkan URL yang benar (contoh: https://example.com/gambar.jpg).');
+        }
+      }
+
+      const link = formData.data.link;
+      if (link && link.trim() !== '') {
+        if (!isValidUrl(link)) {
+          errors.push('Link tidak valid. Masukkan URL yang benar (contoh: https://example.com/...).');
+        }
+      }
+
+      if (errors.length > 0) {
+        alert(errors.join('\n'));
+        isLoading.value = false;
+        return;
+      }
+
       try {
         if(formData?.data?.image){
           if(typeof formData?.data?.image !== "string") {

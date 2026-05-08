@@ -125,6 +125,11 @@
                   <th
                     class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                   >
+                    Kategori
+                  </th>
+                  <th
+                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                  >
                     Created at
                   </th>
                   <th
@@ -185,6 +190,11 @@
                     class="px-5 py-5 text-sm bg-white border-b border-gray-200"
                   >
                     <p class="text-gray-900 whitespace-pre-line" style="word-wrap: break-word">{{ u?.description }}</p>
+                  </td>
+                  <td
+                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                  >
+                    <p class="text-gray-900 whitespace-nowrap">{{ u?.kategori || '-' }}</p>
                   </td>
                   <td
                     class="px-5 py-5 text-sm bg-white border-b border-gray-200"

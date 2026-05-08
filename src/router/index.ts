@@ -23,6 +23,7 @@ import KeycloakService from "@/services/keycloak";
 import DanaBantuan from "@/views/DanaBantuan.vue";
 import PengajuanBantuan from "@/views/PengajuanBantuanView.vue";
 import OrangtuaAsuh from "@/views/OrangtuaAsuhView.vue";
+import Broadcast from "@/views/BroadcastView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -126,6 +127,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/charts",
     name: "Chart",
     component: Chart,
+  },
+  {
+    path: "/broadcast",
+    name: "Broadcast",
+    component: Broadcast,
   },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];

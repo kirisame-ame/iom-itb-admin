@@ -52,6 +52,29 @@
           <span class="mx-4">Dashboard</span>
         </router-link>
 
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
+          :class="[$route.name === 'Panduan Admin' ? activeClass : inactiveClass]"
+          to="/panduan-admin"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6.75v10.5m0-10.5C10.832 5.91 9.332 5.25 7.5 5.25S4.168 5.91 3 6.75v10.5c1.168-.84 2.668-1.5 4.5-1.5s3.332.66 4.5 1.5m0-10.5c1.168-.84 2.668-1.5 4.5-1.5s3.332.66 4.5 1.5v10.5c-1.168-.84-2.668-1.5-4.5-1.5s-3.332.66-4.5 1.5"
+            />
+          </svg>
+
+          <span class="mx-4">Panduan Admin</span>
+        </router-link>
+
         <p class="pl-4 my-2 text-xs font-semibold mb-4 text-gray-400">
           Menu Lainnya
         </p>

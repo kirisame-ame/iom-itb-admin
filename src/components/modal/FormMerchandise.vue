@@ -26,6 +26,28 @@
             <InputTextArea label="description" :value="data?.description" @update="updateValue" :required="true" />
             <InputImageCostume label="image" :value="data?.image" @update="updateValue" />
             <InputText label="link" :value="data?.link" @update="updateValue" />
+
+            <!-- Kategori dinamis -->
+            <div class="relative mt-2 rounded-md shadow-sm">
+              <label class="text-sm capitalize">Kategori</label>
+              <select
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
+                :value="selectedKategori"
+                @change="onKategoriChange"
+              >
+                <option value="">-- Pilih Kategori --</option>
+                <option v-for="k in kategoriOptions" :key="k" :value="k">{{ k }}</option>
+                <option value="__new__">+ Tambah Kategori Baru...</option>
+              </select>
+              <input
+                v-if="showNewKategori"
+                v-model="newKategoriInput"
+                type="text"
+                placeholder="Nama kategori baru"
+                class="mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                @input="updateValue({ key: 'kategori', value: newKategoriInput })"
+              />
+            </div>
           </div>
 
           <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
@@ -43,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import InputText from '@/components/input/InputText.vue';
 import InputTextArea from '@/components/input/InputTextArea.vue';
 import InputNumber from '@/components/input/InputNumber.vue';
@@ -82,6 +104,32 @@ export default defineComponent({
     const modalContent = ref(null);
     const isLoading = ref(false);
 
+    const kategoriOptions = ref<string[]>(['Stiker', 'Busana', 'ATK']);
+    const selectedKategori = ref<string>(props.data?.kategori || '');
+    const showNewKategori = ref(false);
+    const newKategoriInput = ref('');
+
+    onMounted(async () => {
+      try {
+        const res: any = await ApiService.get('/merchandises/categories');
+        if (res?.data) kategoriOptions.value = res.data;
+      } catch { /* fallback ke default */ }
+    });
+
+    const onKategoriChange = (e: Event) => {
+      const val = (e.target as HTMLSelectElement).value;
+      if (val === '__new__') {
+        showNewKategori.value = true;
+        selectedKategori.value = '__new__';
+        formData.data['kategori'] = '';
+      } else {
+        showNewKategori.value = false;
+        newKategoriInput.value = '';
+        selectedKategori.value = val;
+        formData.data['kategori'] = val || null;
+      }
+    };
+
     const closeModal = () => {
       isLoading.value = false;
       emit('close');
@@ -94,6 +142,10 @@ export default defineComponent({
 
     const updateValue = (params: { key: string; value: any }) => {
       formData.data[params.key] = params.value;
+    };
+
+    const isValidUrl = (val: string): boolean => {
+      try { new URL(val); return true; } catch { return false; }
     };
 
     const handleSubmit = async () => {
@@ -168,7 +220,12 @@ export default defineComponent({
       closeModal,
       handleSubmit,
       updateValue,
-      isLoading
+      isLoading,
+      kategoriOptions,
+      selectedKategori,
+      showNewKategori,
+      newKategoriInput,
+      onKategoriChange,
     };
   },
 });

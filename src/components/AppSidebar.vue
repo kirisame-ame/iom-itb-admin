@@ -178,6 +178,7 @@ const navGroups: NavGroup[] = [
     items: [
       { name: "Kegiatan", label: "Kegiatan", to: "/kegiatan", icon: "calendar" },
       { name: "Merchandise", label: "Merchandise", to: "/merchandise", icon: "bag" },
+      { name: "Merchandise Dashboard", label: "Dashboard Merchandise", to: "/merchandise-dashboard", icon: "chart" },
       { name: "Transactions", label: "Transaksi Merchandise", to: "/transactions", icon: "card" },
     ],
   },

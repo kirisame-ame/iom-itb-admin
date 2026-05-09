@@ -30,6 +30,7 @@ import KegiatanKemitraan from "@/views/KegiatanKemitraanView.vue";
 import ActivityEditorView from "@/views/ActivityEditorView.vue";
 import ActivityPreviewView from "@/views/ActivityPreviewView.vue";
 import AdminGuideView from "@/views/AdminGuideView.vue";
+import MerchandiseDashboard from "@/views/MerchandiseDashboardView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -138,6 +139,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/transactions",
     name: "Transactions",
     component: Transactions,
+  },
+  {
+    path: "/merchandise-dashboard",
+    name: "Merchandise Dashboard",
+    component: MerchandiseDashboard,
   },
   {
     path: "/modal",

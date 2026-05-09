@@ -23,34 +23,34 @@
               <InputSelect
                 label="Mitra"
                 keyValue="kemitraanId"
-                :value="data?.kemitraanId"
+                :value="formData.data.kemitraanId"
                 :options="kemitraanOptions"
                 @update="updateValue"
                 :required="true"
               />
-              <InputText label="Nama Kegiatan" keyValue="name" :value="data?.name" @update="updateValue" :required="true" />
-              <InputTextArea label="Deskripsi" keyValue="description" :value="data?.description" @update="updateValue" />
+              <InputText label="Nama Kegiatan" keyValue="name" :value="formData.data.name" @update="updateValue" :required="true" />
+              <InputTextArea label="Deskripsi" keyValue="description" :value="formData.data.description" @update="updateValue" />
             </div>
 
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Pelaksanaan</p>
               <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <InputText label="Lokasi" keyValue="location" :value="data?.location" @update="updateValue" />
+                <InputText label="Lokasi" keyValue="location" :value="formData.data.location" @update="updateValue" />
                 <InputSelect
                   label="Status"
                   keyValue="status"
-                  :value="data?.status || 'planned'"
+                  :value="formData.data.status"
                   :options="statusOptions"
                   @update="updateValue"
                 />
-                <InputDate label="Tanggal Mulai" keyValue="startDate" :value="data?.startDate" @update="updateValue" />
-                <InputDate label="Tanggal Selesai" keyValue="endDate" :value="data?.endDate" @update="updateValue" />
+                <InputDate label="Tanggal Mulai" keyValue="startDate" :value="formData.data.startDate" @update="updateValue" />
+                <InputDate label="Tanggal Selesai" keyValue="endDate" :value="formData.data.endDate" @update="updateValue" />
               </div>
             </div>
 
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Media</p>
-              <InputImage label="Gambar" keyValue="image" :value="data?.image" @update="updateValue" />
+              <InputImage label="Gambar" keyValue="image" :value="formData.data.image" @update="updateValue" />
             </div>
           </div>
 
@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from "vue";
+import { defineComponent, ref, onMounted, computed, reactive, watch } from "vue";
 import InputText from "@/components/input/InputText.vue";
 import InputTextArea from "@/components/input/InputTextArea.vue";
 import InputImage from "@/components/input/InputImage.vue";
@@ -82,6 +82,19 @@ import {
 } from "@/store/kegiatanKemitraan.module";
 import { GET_KEMITRAAN } from "@/store/kemitraan.module";
 import { showError } from "@/utils/swal";
+
+interface KemitraanOption {
+  id?: number | string;
+  name?: string;
+}
+
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
 
 export default defineComponent({
   components: {
@@ -113,9 +126,14 @@ export default defineComponent({
 
     const statusOptions = ref(["planned", "ongoing", "completed", "cancelled"]);
 
-    const kemitraanOptions = computed<string[]>(() => {
-      const list = store.getters.kemitraan || [];
-      return list.map((k: any) => k?.name).filter(Boolean);
+    const kemitraanOptions = computed(() => {
+      const list = (store.getters.kemitraan || []) as KemitraanOption[];
+      return list
+        .filter((k) => k?.id && k?.name)
+        .map((k) => ({
+          label: k.name,
+          value: Number(k.id),
+        }));
     });
 
     const closeModal = () => {
@@ -123,18 +141,26 @@ export default defineComponent({
       emit("close");
     };
 
-    const formData = {
+    const formData = reactive({
       id: "",
-      data: {} as Record<string, any>,
-    };
+      data: {
+        ...props.data,
+        status: props.data?.status || "planned",
+        kemitraanId: props.data?.kemitraanId ? Number(props.data.kemitraanId) : "",
+      } as Record<string, unknown>,
+    });
 
-    const updateValue = (params: { key: string; value: any }) => {
-      formData.data[params.key] = params.value;
+    const updateValue = (params: { key: string; value: unknown }) => {
+      formData.data[params.key] = params.key === "kemitraanId" ? Number(params.value) : params.value;
     };
 
     const handleSubmit = async () => {
       isLoading.value = true;
       try {
+        if (!Number.isInteger(Number(formData.data.kemitraanId)) || Number(formData.data.kemitraanId) <= 0) {
+          throw new Error("Mitra wajib dipilih dari daftar yang tersedia");
+        }
+        formData.data.kemitraanId = Number(formData.data.kemitraanId);
         if (props?.id) {
           formData.id = props?.id;
           await store.dispatch(PUT_KEGIATAN_KEMITRAAN, formData);
@@ -142,8 +168,9 @@ export default defineComponent({
           await store.dispatch(POST_KEGIATAN_KEMITRAAN, formData);
         }
         closeModal();
-      } catch (error: any) {
-        showError("Gagal", error?.response?.data?.message || "Gagal menyimpan kegiatan kemitraan");
+      } catch (error: unknown) {
+        const apiError = error as ApiError;
+        showError("Gagal", apiError?.response?.data?.message || (error instanceof Error ? error.message : "Gagal menyimpan kegiatan kemitraan"));
         isLoading.value = false;
       }
     };
@@ -156,8 +183,15 @@ export default defineComponent({
       }
     });
 
+    watch(kemitraanOptions, (options) => {
+      if (!formData.data.kemitraanId && options.length) {
+        formData.data.kemitraanId = options[0].value;
+      }
+    }, { immediate: true });
+
     return {
       modalContent,
+      formData,
       closeModal,
       handleSubmit,
       updateValue,

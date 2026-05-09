@@ -10,6 +10,8 @@ import Transactions from "../views/TransactionView.vue";
 import Users from "../views/UserView.vue";
 import Members from "../views/MemberView.vue";
 import Donasi from "../views/DonasiView.vue";
+import PaymentDashboard from "../views/PaymentDashboardView.vue";
+import Fakultas from "../views/FakultasView.vue";
 import PendataanAnggota from "../views/PendataanAnggotaView.vue";
 import Login from "../views/AppLogin.vue";
 import Modal from "../views/AppModal.vue";
@@ -23,6 +25,10 @@ import KeycloakService from "@/services/keycloak";
 import DanaBantuan from "@/views/DanaBantuan.vue";
 import PengajuanBantuan from "@/views/PengajuanBantuanView.vue";
 import OrangtuaAsuh from "@/views/OrangtuaAsuhView.vue";
+import Kemitraan from "@/views/KemitraanView.vue";
+import KegiatanKemitraan from "@/views/KegiatanKemitraanView.vue";
+import ActivityEditorView from "@/views/ActivityEditorView.vue";
+import ActivityPreviewView from "@/views/ActivityPreviewView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -82,15 +88,20 @@ const routes: Array<RouteRecordRaw> = [
     name: "Members",
     component: Members,
   },
-  // {
-  //   path: "/10-donasi-terakhir",
-  //   name: "Donasi Trakhir",
-  //   component: DonasiTerakhir,
-  // },
   {
     path: "/donasi",
     name: "Donasi",
     component: Donasi,
+  },
+  {
+    path: "/dashboard-pembayaran",
+    name: "Dashboard Pembayaran",
+    component: PaymentDashboard,
+  },
+  {
+    path: "/fakultas",
+    name: "Fakultas",
+    component: Fakultas,
   },
   {
     path: "/dana-bantuan",
@@ -113,6 +124,16 @@ const routes: Array<RouteRecordRaw> = [
     component: PendataanAnggota,
   },
   {
+    path: "/kemitraan",
+    name: "Kemitraan",
+    component: Kemitraan,
+  },
+  {
+    path: "/kegiatan-kemitraan",
+    name: "Kegiatan Kemitraan",
+    component: KegiatanKemitraan,
+  },
+  {
     path: "/transactions",
     name: "Transactions",
     component: Transactions,
@@ -127,6 +148,18 @@ const routes: Array<RouteRecordRaw> = [
     name: "Chart",
     component: Chart,
   },
+  {
+    path: "/kegiatan/:id/edit",
+    name: "KegiatanEditor",
+    component: ActivityEditorView,
+    meta: { layout: "empty" },
+  },
+  {
+    path: "/kegiatan/:id/preview",
+    name: "KegiatanPreview",
+    component: ActivityPreviewView,
+    meta: { layout: "empty" },
+  },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];
 
@@ -135,7 +168,18 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
+let authReady = false;
+
+router.beforeEach(async (to, _from, next) => {
+  if (process.env.VUE_APP_DEV_BYPASS_AUTH === 'true') {
+    if (to.name === 'Login' || to.name === 'AppSelector') {
+      next({ name: 'Dashboard' });
+      return;
+    }
+    next();
+    return;
+  }
+
   const isLoginRoute = to.name === "Login";
   const isSelectorRoute = to.name === "AppSelector";
 
@@ -144,7 +188,6 @@ router.beforeEach(async (to, from, next) => {
       next();
       return;
     }
-
     try {
       await store.dispatch(LOGIN);
     } catch (loginError) {
@@ -155,8 +198,13 @@ router.beforeEach(async (to, from, next) => {
   }
 
   try {
-    await store.dispatch(INIT_AUTH);
-    await store.dispatch(FETCH_JWT);
+    // Network calls run only once per session — not on every navigation.
+    if (!authReady) {
+      await store.dispatch(INIT_AUTH);
+      await store.dispatch(FETCH_JWT);
+      await store.dispatch(`appSelector/${FETCH_APPS}`);
+      authReady = true;
+    }
 
     if (isLoginRoute) {
       next({ name: "AppSelector" });
@@ -164,7 +212,6 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (!isSelectorRoute) {
-      await store.dispatch(`appSelector/${FETCH_APPS}`);
       const apps = store.getters["appSelector/allApps"] || [];
       const selectedApp = store.getters["appSelector/selectedApp"];
       const selectedRole = store.getters["appSelector/selectedRole"];
@@ -202,6 +249,7 @@ router.beforeEach(async (to, from, next) => {
 
     next();
   } catch (error) {
+    authReady = false;
     try {
       await store.dispatch(LOGOUT);
     } catch (logoutError) {

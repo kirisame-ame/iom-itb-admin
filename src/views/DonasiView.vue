@@ -1,234 +1,213 @@
 <template>
-  <div>
+  <div class="min-h-screen">
+    <Breadcrumb :breadcrumb="title" />
 
-    <!-- Modal -->
     <ModalForm
       v-if="isOpened"
       :id="currentId"
-      :title="`${currentId ? 'Edit' : 'Add'} ${title}`"
+      :title="`${currentId ? 'Edit' : 'Tambah'} ${title}`"
       :data="dataUpdate"
       @close="handleModalClose"
     />
 
-
-    <div v-if="isImageModalOpen" @click="closeImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <img :src="selectedImage" alt="Payment Image" class="max-w-full max-h-full"/>
+    <div
+      v-if="isImageModalOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60"
+      @click="closeImageModal"
+    >
+      <img :src="selectedImage" alt="Bukti Bayar" class="max-w-full max-h-full rounded-md shadow-lg" />
     </div>
 
-    <!-- Table -->
-    <div class="mt-8">
+    <div class="mt-8 space-y-5">
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
+        <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
+        <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
+        <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
+              Keuangan IOM ITB
+            </p>
+            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Donasi manual dan online Midtrans tercatat dalam satu daftar.</p>
+          </div>
+        <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
+          <button
+            type="button"
+            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
+            @click="openAddModal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+            </svg>
+            Tambah Donasi
+          </button>
+          <a
+            :href="excelUrl"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:bg-emerald-400 hover:shadow-xl sm:w-auto"
+          >
+            Excel
+            <IcLink class="w-4 h-4" />
+          </a>
+        </div>
+      </div>
+      </section>
 
-      <div class="mt-6">
-        <h2 class="text-xl font-semibold leading-tight text-gray-700">{{ title }}</h2>
-
-        <div class="flex flex-col mt-3 sm:flex-row justify-between">
-          <div class="flex items-center">
-          <div class="flex">
-            <div class="relative">
-              <select
-                class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                v-model="limit"
-                @change="getData"
-              >
-                <option :value="5">5</option>
-                <option :value="10">10</option>
-                <option :value="20">20</option>
-                <option :value="1000">1000</option>
-              </select>
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Per halaman</label>
+            <select
+              v-model="limit"
+              @change="() => { page = 1; getData() }"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+            </select>
           </div>
 
-          <div class="relative block mt-2 sm:mt-0">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-              <svg
-                viewBox="0 0 24 24"
-                class="w-4 h-4 text-gray-500 fill-current"
-              >
-                <path
-                  d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                />
-              </svg>
-            </span>
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Metode</label>
+            <select
+              v-model="paymentMethod"
+              @change="() => { page = 1; getData() }"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option value="">Semua</option>
+              <option value="manual">Manual</option>
+              <option value="midtrans">Midtrans</option>
+            </select>
+          </div>
 
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Status</label>
+            <select
+              v-model="paymentStatus"
+              @change="() => { page = 1; getData() }"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option value="">Semua</option>
+              <option value="pending">Pending</option>
+              <option value="settlement">Settlement</option>
+              <option value="expired">Expired</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Jenis Donasi</label>
+            <select
+              v-model="donationType"
+              @change="() => { page = 1; getData() }"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option value="">Semua</option>
+              <option value="iuran_sukarela">Iuran Sukarela</option>
+              <option value="kontribusi_anggota">Kontribusi Anggota</option>
+              <option value="kontribusi_donatur">Kontribusi Donatur</option>
+              <option value="pembelian_merchandise">Pembelian Merchandise</option>
+              <option value="kontribusi_sukarela">Kontribusi Sukarela</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-xs text-slate-500">Cari Nama</label>
             <input
-              placeholder="Search"
-              class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
               v-model="search"
-              @input="getData"
+              @input="onSearchInput"
+              placeholder="Ketik nama..."
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             />
           </div>
         </div>
-          <a
-            class="flex justify-between items-center gap-2 px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:bg-green-500"
-            href="https://docs.google.com/spreadsheets/d/13w3FcIz4jjIBcf7DvG_83FmU8NBss_MkGt4lM7U6x6k/edit?usp=sharing"
-            target="_blank"
-          >
-          Excel
-          <IcLink class="w-[18px]"/>
-        </a>
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead>
+              <tr class="bg-blue-900">
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">No</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Tanggal</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Donatur</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Jenis</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Fakultas</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Kode</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Nominal</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Metode</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-100">
+              <tr v-if="isLoading">
+                <td v-for="c in 10" :key="c" class="px-4 py-4">
+                  <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
+                </td>
+              </tr>
+              <tr v-else-if="computedData.length === 0">
+                <td colspan="10" class="px-4 py-12 text-sm text-center text-slate-400 italic">Belum ada donasi.</td>
+              </tr>
+              <tr
+                v-else
+                v-for="(u, index) in computedData"
+                :key="u.id"
+                class="transition-colors hover:bg-blue-50/40"
+              >
+                <td class="px-4 py-3 text-gray-500 align-middle">{{ startNumber + index }}</td>
+                <td class="px-4 py-3 text-gray-700 align-middle whitespace-nowrap">{{ formatDate(u.date || u.createdAt) }}</td>
+                <td class="px-4 py-3 align-middle">
+                  <p class="font-medium text-gray-900 whitespace-nowrap">{{ u.name || '-' }}</p>
+                  <p v-if="u.email" class="text-xs text-gray-500 whitespace-nowrap">{{ u.email }}</p>
+                  <p v-if="u.noWhatsapp" class="text-xs text-gray-500 whitespace-nowrap">{{ u.noWhatsapp }}</p>
+                </td>
+                <td class="px-4 py-3 text-gray-700 align-middle">{{ formatDonationType(u.donationType) }}</td>
+                <td class="px-4 py-3 text-gray-700 align-middle whitespace-nowrap">{{ u.faculty?.name || '-' }}</td>
+                <td class="px-4 py-3 font-mono text-xs text-gray-600 align-middle">{{ u.kodeUnik || u.faculty?.kodeUnik || '-' }}</td>
+                <td class="px-4 py-3 font-medium text-right text-gray-900 align-middle whitespace-nowrap">{{ formatNominal(u.grossAmount || u.amount) }}</td>
+                <td class="px-4 py-3 align-middle">
+                  <span :class="methodBadgeClass(u.paymentMethod)" class="inline-block px-2 py-0.5 text-xs font-medium rounded-full capitalize">
+                    {{ u.paymentMethod === 'midtrans' ? 'Midtrans' : 'Manual' }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 align-middle">
+                  <span :class="statusBadgeClass(u.paymentStatus)" class="inline-block px-2 py-0.5 text-xs font-medium rounded-full capitalize">
+                    {{ u.paymentStatus || 'pending' }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 align-middle">
+                  <button
+                    v-if="u.proof"
+                    class="text-sm font-medium text-indigo-600 hover:underline"
+                    @click="openImageModal(u.proof)"
+                  >Lihat</button>
+                  <span v-else class="text-gray-400">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8">
-          <div
-            class="inline-block min-w-full overflow-hidden rounded-lg shadow"
-          >
-            <table class="min-w-full leading-normal">
-              <thead>
-                <tr>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    No
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Bukti Bayar
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Nama
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Email
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    No HP / WA
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Tanda Terima
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Tanggal Kirim
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-if="isLoading">
-                  <td colspan="20" class="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    Loading...
-                  </td>
-                </tr>
-                <tr v-else v-for="(u, index) in computedData" :key="index">
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["no"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <div class="flex items-center">
-                      <div class="flex-shrink-0 w-10 h-10">
-                        <img
-                          v-if="u?.['Upload Bukti Bayar']"
-                          class="w-[50px] h-[50px] rounded-[4px] cursor-pointer hover:opacity-[0.8]"
-                          :src="u?.['Upload Bukti Bayar']"
-                          alt="profile pic"
-                          @click="openImageModal(u?.['Upload Bukti Bayar'])"
-                        />
-                        <img
-                          v-else
-                          class="w-[50px] h-[50px] rounded-[4px] cursor-pointer hover:opacity-[0.8]"
-                          :src="require('@/assets/image/default.png')"
-                          alt="profile pic"
-                          @click="openImageModal(u?.['Upload Bukti Bayar'])"
-                        />
-                      </div>
-                    </div>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["Nama"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["Email"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200 max-w-[200px]"
-                  >
-                    <p class="text-gray-900 break-words">{{ u?.["No HP / WA"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-pre-line" style="word-wrap: break-word">{{ u?.[" Tanda Terima"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ formatDate(u?.["Submitted at"]) }}
-                    </p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div
-              class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
-            >
-            <span class="text-xs text-gray-900 xs:text-sm"
-            >Showing {{ pagination?.start }} to {{ pagination?.end }} of {{ pagination?.totalEntries }}  Entries</span
-          >
-
-              <div class="inline-flex mt-2 xs:mt-0">
-                <button
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400"
-                    :disabled="page <= 1"
-                    @click="()=>{page = pagination?.currentPage - 1; getData()}"
-                  >
-                    Prev
-                  </button>
-                  <button
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400"
-                    :disabled="page >= pagination?.totalPages"
-                    @click="()=>{page = pagination?.currentPage + 1; getData()}"
-                  >
-                    Next
-                  </button>
-              </div>
-            </div>
+        <div class="flex flex-col items-center justify-between gap-2 border-t border-slate-100 px-6 py-4 sm:flex-row">
+          <span class="text-xs text-slate-500">
+            Menampilkan {{ pagination?.start || 0 }}–{{ pagination?.end || 0 }} dari {{ pagination?.totalEntries || 0 }} entri
+          </span>
+          <div class="inline-flex">
+            <button
+              class="rounded-l-lg border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              :disabled="page <= 1"
+              @click="() => { page = (pagination?.currentPage || 1) - 1; getData(); }"
+            >Sebelumnya</button>
+            <button
+              class="rounded-r-lg border-y border-r border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              :disabled="page >= (pagination?.totalPages || 1)"
+              @click="() => { page = (pagination?.currentPage || 1) + 1; getData(); }"
+            >Berikutnya</button>
           </div>
         </div>
       </div>
@@ -238,40 +217,47 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { GET_DONASI, DELETE_DONASI } from "@/store/donasi.module";
-// TODO: wtf is merchandise form doing here???
-import ModalForm from "../components/modal/FormMerchandise.vue";
-import { useStore } from 'vuex';
-import Swal from 'sweetalert2';
-import { formatDate, formattedPrice } from '@/utils';
+import { GET_DONASI } from '@/store/donasi.module';
+import ModalForm from '@/components/modal/FormDonation.vue';
 import IcLink from '@/assets/svg/ic-link.vue';
+import { useStore } from 'vuex';
+import { formatDate } from '@/utils';
+import Breadcrumb from '@/components/AppBreadcrumb.vue';
 
-// Mengambil data tabel
-const store = useStore(); // Mengambil instance store
+const excelUrl =
+  'https://docs.google.com/spreadsheets/d/13w3FcIz4jjIBcf7DvG_83FmU8NBss_MkGt4lM7U6x6k/edit?usp=sharing';
 
-const isOpened = ref(false); 
-const isLoading = ref(true); 
-const dataUpdate = ref([]); 
-const currentId = ref(undefined); 
+const store = useStore();
+
+const isLoading = ref(true);
 const page = ref(1);
-const limit = ref(5);
-const search = ref(""); 
+const limit = ref(10);
+const search = ref('');
+const paymentMethod = ref('');
+const paymentStatus = ref('');
+const donationType = ref('');
 const isImageModalOpen = ref(false);
 const selectedImage = ref('');
 const title = ref('Donasi');
 
-const openModal = () => {
-  isOpened.value = true; // Open the modal
+const isOpened = ref(false);
+const currentId = ref<string | undefined>(undefined);
+const dataUpdate = ref<Record<string, any>>({});
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+const openAddModal = () => {
+  currentId.value = undefined;
+  dataUpdate.value = {};
+  isOpened.value = true;
 };
 
 const handleModalClose = async () => {
-  isOpened.value = false; // Close the modal
-  dataUpdate.value = [];
-  currentId.value = undefined
+  isOpened.value = false;
+  currentId.value = undefined;
+  dataUpdate.value = {};
   await getData();
 };
 
-// Contoh penggunaan computed
 const computedData = computed(() => {
   const donasi = store.getters.donasi;
   return donasi?.data || [];
@@ -279,70 +265,76 @@ const computedData = computed(() => {
 
 const pagination = computed(() => {
   const donasi = store.getters.donasi;
-  return donasi?.pagination || [];
+  return donasi?.pagination || {};
 });
+
+const startNumber = computed(() => pagination.value?.start || 1);
+
+const formatDonationType = (t?: string) => {
+  if (!t) return '-';
+  return t.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+};
+
+const formatNominal = (amount?: number | string | null) => {
+  if (amount == null || amount === '') return '-';
+  const n = Number(amount);
+  if (Number.isNaN(n)) return String(amount);
+  return `Rp ${n.toLocaleString('id-ID')}`;
+};
+
+const methodBadgeClass = (method?: string) =>
+  method === 'midtrans' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-700';
+
+const statusBadgeClass = (status?: string) => {
+  switch (status) {
+    case 'settlement':
+      return 'bg-green-100 text-green-700';
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-700';
+    case 'expired':
+      return 'bg-gray-200 text-gray-700';
+    case 'failed':
+      return 'bg-red-100 text-red-700';
+    case 'refunded':
+      return 'bg-purple-100 text-purple-700';
+    default:
+      return 'bg-gray-100 text-gray-600';
+  }
+};
 
 const getData = async () => {
-  const params = {
-    data:{
-      search: search.value,
-      limit: limit.value,
-      page: page.value,
-    } 
-  };
-  const data = await store.dispatch(GET_DONASI, params);
-  isLoading.value = false;
-  return data;
+  isLoading.value = true;
+  try {
+    await store.dispatch(GET_DONASI, {
+      data: {
+        search: search.value,
+        limit: limit.value,
+        page: page.value,
+        paymentMethod: paymentMethod.value || undefined,
+        paymentStatus: paymentStatus.value || undefined,
+        donationType: donationType.value || undefined,
+      },
+    });
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-// Contoh penggunaan onMounted
-onMounted(async () => {
-  await getData(); // Memanggil fungsi untuk mengambil data
-  console.log('Komponen telah dimount, data siap digunakan');
-});
+const onSearchInput = () => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    page.value = 1;
+    getData();
+  }, 350);
+};
+
+onMounted(getData);
 
 const openImageModal = (imageUrl: string) => {
-      selectedImage.value = imageUrl;
-      isImageModalOpen.value = true;
-    }
-const closeImageModal = () => {
-      isImageModalOpen.value = false;
-}
-
-// Inside <script setup>
-const editItem = (item:any) => {
-  dataUpdate.value = { ...item }; // Copy current item's data to dataUpdate
-  currentId.value = item.id; 
-  isOpened.value = true; // Open the modal
+  selectedImage.value = imageUrl;
+  isImageModalOpen.value = true;
 };
-
-const deleteItem = async (id: number) => {
-   await Swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
-  }).then(async (result) => {
-          if (result.isConfirmed) {
-            const params = { id: id };
-            try {
-              Swal.fire({
-                title: "Deleted!",
-                text: "Your item has been deleted.",
-                icon: "success",
-                confirmButtonColor: '#4CAF50',  // Change the color of the "OK" button
-                confirmButtonText: "OK"
-              }).then(async () => {
-                await getData();
-              });
-              await store.dispatch(DELETE_DONASI, params);
-            } catch (err) {
-              console.log(err);
-            }
-          }
-        });
+const closeImageModal = () => {
+  isImageModalOpen.value = false;
 };
 </script>

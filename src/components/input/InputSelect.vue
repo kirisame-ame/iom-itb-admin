@@ -8,8 +8,7 @@
           v-model="inputValue"
           :required="required"
           >
-          <option value="" disabled>-- Pilih --</option>
-          <option v-for="(v,i) in options.filter((o:any) => o !== '')" :key="i" :value="v">{{ v }}</option>
+          <option v-for="(v,i) in options" :key="i" :value="optionValue(v)" >{{ optionLabel(v) }}</option>
         </select>
     </div>
 </template>
@@ -32,7 +31,7 @@ export default defineComponent({
       required: false,
     },
     value: {
-      type: String,
+      type: [String, Number, Boolean],
       required: false,
       default: ''  // Menyediakan nilai default jika tidak ada value
     },
@@ -59,9 +58,27 @@ export default defineComponent({
       emit('update', { key:  props.keyValue || props.label, value: inputValue.value });
     };
 
+    const optionLabel = (option: unknown) => {
+      if (option && typeof option === 'object') {
+        const record = option as Record<string, unknown>;
+        return record.label ?? record.name ?? record.value ?? '';
+      }
+      return option;
+    };
+
+    const optionValue = (option: unknown) => {
+      if (option && typeof option === 'object') {
+        const record = option as Record<string, unknown>;
+        return record.value ?? record.id ?? '';
+      }
+      return option;
+    };
+
     return {
       inputValue,
-      updateValue
+      updateValue,
+      optionLabel,
+      optionValue
     };
   }
 });

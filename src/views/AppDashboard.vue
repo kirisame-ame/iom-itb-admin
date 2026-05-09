@@ -575,44 +575,51 @@ const fetchDashboard = async () => {
     let totalOTADonasiAmount = 0
 
     try {
-      // Hit Bankes Mock API to aggregate data
-      const bankesRes: any = await ApiService.get('/bankes-mock/mahasiswa')
-      const bankesData = bankesRes.data?.data || []
+      // Hit Bankes Asli API to aggregate data
+      const responseBankes = await fetch('http://195.110.58.17:13000/api/dashboard/bankes')
+      const bankesRes = await responseBankes.json()
+      const bankesData = bankesRes.data || []
       
-      // Count pending
-      totalBankesPending = bankesData.filter((mhs: any) => mhs.applicationStatus === 'pending').length
+      // Count pending (Logika baru berdasarkan bankesStatus: 'unverified')
+      totalBankesPending = bankesData.filter((mhs: any) => mhs.bankesStatus === 'unverified').length
       
-      // Count approved (accepted)
-      totalBankesApproved = bankesData.filter((mhs: any) => mhs.applicationStatus === 'accepted').length
+      // Count approved / verified (Logika baru berdasarkan bankesStatus: 'verified')
+      totalBankesApproved = bankesData.filter((mhs: any) => mhs.bankesStatus === 'verified').length
 
-      // Karena mock data sedikit, kita simulasikan ota juga jika ada sisa (Atau di-set 0 untuk dummy)
+      // Hitungan dummy pendings OTA (bisa disesuaikan lagi nanti)
       totalOTAPending = bankesData.length > 2 ? 1 : 0 
       totalOTAApproved = 0 
     } catch (e) {
-      console.warn("Failed to fetch Bankes mock data:", e)
+      console.warn("Failed to fetch Bankes data:", e)
     }
 
     try {
-      // Hit OTA Mock API to aggregate total donasi
-      const otaRes: any = await ApiService.get('/bankes-mock/ota')
-      const otaData = otaRes.data?.data || []
+      // Hit OTA-KU API.
+      const response = await fetch('http://195.110.58.17:13000/api/dashboard/ota')
+      const otaRes = await response.json()
+      const otaData = otaRes.data || []
       
-      // Sum the funds from all OTAs
+      // Sum the funds from all OTAs (Asumsi tim merek mengeluarkan property 'funds')
       totalOTADonasiAmount = otaData.reduce((sum: number, ota: any) => sum + (ota.funds || 0), 0)
 
-      // Hitung Kapasitas OTA (Mocking: Asumsi 1 Anak Asuh sudah terpakai)
+      // Hitung Kapasitas OTA
       const totalCapacity = otaData.reduce((sum: number, ota: any) => sum + (ota.maxCapacity || 0), 0)
-      const usedCapacity = otaData.length > 0 ? 1 : 0
+      const usedCapacity = otaData.reduce((sum: number, ota: any) => sum + (ota.usedCapacity || 0), 0)
       otaCapacityChartSeries.value = [usedCapacity, Math.max(0, totalCapacity - usedCapacity)]
 
       // Hitung Status Tagihan Donatur
-      // Kita mock: dari semua OTA, 1 orang lunas, sisanya menunggak
-      const lunasCount = otaData.length > 0 ? 1 : 0
-      const nunggakCount = Math.max(0, otaData.length - 1)
+      let lunasCount = 0
+      let nunggakCount = 0
+      
+      otaData.forEach((ota: any) => {
+        if (ota.paymentStatus === 'lunas') lunasCount++
+        else if (ota.paymentStatus === 'menunggak') nunggakCount++
+      })
+      
       otaBillingChartSeries.value = [{ name: 'Jumlah Donatur', data: [lunasCount, nunggakCount] }]
 
     } catch (e) {
-      console.warn("Failed to fetch OTA mock data:", e)
+      console.warn("Failed to fetch OTA-KU data:", e)
     }
 
     // Apply Pendings

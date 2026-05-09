@@ -29,6 +29,7 @@ import Kemitraan from "@/views/KemitraanView.vue";
 import KegiatanKemitraan from "@/views/KegiatanKemitraanView.vue";
 import ActivityEditorView from "@/views/ActivityEditorView.vue";
 import ActivityPreviewView from "@/views/ActivityPreviewView.vue";
+import AdminGuideView from "@/views/AdminGuideView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -159,6 +160,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "KegiatanPreview",
     component: ActivityPreviewView,
     meta: { layout: "empty" },
+  },
+  {
+    path: "/panduan-admin",
+    name: "Panduan Admin",
+    component: AdminGuideView,
   },
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];

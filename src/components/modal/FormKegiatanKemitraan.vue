@@ -96,6 +96,8 @@ interface ApiError {
   };
 }
 
+type KegiatanKemitraanFormValue = string | number | File | null | undefined;
+
 export default defineComponent({
   components: {
     InputText,
@@ -154,6 +156,22 @@ export default defineComponent({
       formData.data[params.key] = params.key === "kemitraanId" ? Number(params.value) : params.value;
     };
 
+    const buildPayload = () => {
+      const image = formData.data.image;
+      if (!(image instanceof File)) return formData.data;
+
+      const payload = new FormData();
+      Object.entries(formData.data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        if (key === "image") {
+          payload.append(key, value as File);
+          return;
+        }
+        payload.append(key, String(value as KegiatanKemitraanFormValue));
+      });
+      return payload;
+    };
+
     const handleSubmit = async () => {
       isLoading.value = true;
       try {
@@ -161,11 +179,12 @@ export default defineComponent({
           throw new Error("Mitra wajib dipilih dari daftar yang tersedia");
         }
         formData.data.kemitraanId = Number(formData.data.kemitraanId);
+        const payload = buildPayload();
         if (props?.id) {
           formData.id = props?.id;
-          await store.dispatch(PUT_KEGIATAN_KEMITRAAN, formData);
+          await store.dispatch(PUT_KEGIATAN_KEMITRAAN, { id: formData.id, data: payload });
         } else {
-          await store.dispatch(POST_KEGIATAN_KEMITRAAN, formData);
+          await store.dispatch(POST_KEGIATAN_KEMITRAAN, { data: payload });
         }
         closeModal();
       } catch (error: unknown) {
@@ -194,6 +213,7 @@ export default defineComponent({
       formData,
       closeModal,
       handleSubmit,
+      buildPayload,
       updateValue,
       isLoading,
       statusOptions,

@@ -21,15 +21,15 @@
             />
           </div>
           <div class="min-w-0">
-            <p class="text-base font-semibold leading-tight text-white">IOM ITB</p>
-            <p class="mt-0.5 text-xs font-normal leading-snug text-blue-100">Admin Dashboard</p>
+            <p class="text-[17px] font-semibold leading-tight text-white">IOM ITB</p>
+            <p class="mt-0.5 text-sm font-normal leading-snug text-blue-100">Admin Dashboard</p>
           </div>
         </div>
       </div>
 
       <nav class="mt-4 pb-7">
         <div v-for="group in navGroups" :key="group.label" class="mt-5 first:mt-0">
-          <p class="mb-1.5 px-5 text-sm font-semibold tracking-normal text-blue-100">
+          <p class="mb-1.5 px-5 text-[13px] font-semibold tracking-normal text-blue-100">
             {{ group.label }}
           </p>
 
@@ -37,7 +37,7 @@
             v-for="item in group.items"
             :key="item.to"
             :to="item.to"
-            class="sidebar-link mt-0.5 flex items-center border-l-4 px-5 py-2.5 text-[14px] font-normal duration-200"
+            class="sidebar-link mt-0.5 flex items-center border-l-4 px-5 py-2.5 text-[15px] font-normal duration-200"
             :class="[
               $route.name === item.name
                 ? 'sidebar-link--active border-white bg-white/15 font-semibold shadow-inner'
@@ -45,7 +45,7 @@
             ]"
           >
             <svg
-              class="h-[18px] w-[18px] shrink-0"
+              class="h-5 w-5 shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

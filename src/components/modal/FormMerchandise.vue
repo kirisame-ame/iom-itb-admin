@@ -20,7 +20,28 @@
             <InputTextArea label="description" :value="data?.description" @update="updateValue" :required="true" />
             <InputImageCostume label="image" :value="data?.image" @update="updateValue" :required="true" />
             <InputText label="link" :value="data?.link" @update="updateValue" />
-            <InputSelect label="kategori" :value="data?.kategori" :options="['Stiker', 'Busana', 'ATK']" @update="updateValue" />
+
+            <!-- Kategori dinamis -->
+            <div class="relative mt-2 rounded-md shadow-sm">
+              <label class="text-sm capitalize">Kategori</label>
+              <select
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
+                :value="selectedKategori"
+                @change="onKategoriChange"
+              >
+                <option value="">-- Pilih Kategori --</option>
+                <option v-for="k in kategoriOptions" :key="k" :value="k">{{ k }}</option>
+                <option value="__new__">+ Tambah Kategori Baru...</option>
+              </select>
+              <input
+                v-if="showNewKategori"
+                v-model="newKategoriInput"
+                type="text"
+                placeholder="Nama kategori baru"
+                class="mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                @input="updateValue({ key: 'kategori', value: newKategoriInput })"
+              />
+            </div>
           </div>
 
           <div class="flex items-center justify-between px-5 py-3">
@@ -38,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import InputText from '@/components/input/InputText.vue';
 import InputTextArea from '@/components/input/InputTextArea.vue';
 import InputNumber from '@/components/input/InputNumber.vue';
@@ -47,7 +68,7 @@ import { useStore } from 'vuex';
 import { POST_MERCHANDISE, PUT_MERCHANDISE } from "@/store/merchandise.module";
 import { POST_IMAGE } from "@/store/upload.module";
 import InputImageCostume from '../input/InputImageCostume.vue';
-import InputSelect from '../input/InputSelect.vue';
+import ApiService from '@/store/api.service';
 
 export default defineComponent({
   components: {
@@ -56,7 +77,6 @@ export default defineComponent({
     InputNumber,
     InputPrice,
     InputImageCostume,
-    InputSelect,
   },
   props: {
     title: {
@@ -77,6 +97,32 @@ export default defineComponent({
     const store = useStore();
     const modalContent = ref(null);
     const isLoading = ref(false);
+
+    const kategoriOptions = ref<string[]>(['Stiker', 'Busana', 'ATK']);
+    const selectedKategori = ref<string>(props.data?.kategori || '');
+    const showNewKategori = ref(false);
+    const newKategoriInput = ref('');
+
+    onMounted(async () => {
+      try {
+        const res: any = await ApiService.get('/merchandises/categories');
+        if (res?.data) kategoriOptions.value = res.data;
+      } catch { /* fallback ke default */ }
+    });
+
+    const onKategoriChange = (e: Event) => {
+      const val = (e.target as HTMLSelectElement).value;
+      if (val === '__new__') {
+        showNewKategori.value = true;
+        selectedKategori.value = '__new__';
+        formData.data['kategori'] = '';
+      } else {
+        showNewKategori.value = false;
+        newKategoriInput.value = '';
+        selectedKategori.value = val;
+        formData.data['kategori'] = val || null;
+      }
+    };
 
     const closeModal = () => {
       isLoading.value = false;
@@ -147,7 +193,12 @@ export default defineComponent({
       closeModal,
       handleSubmit,
       updateValue,
-      isLoading
+      isLoading,
+      kategoriOptions,
+      selectedKategori,
+      showNewKategori,
+      newKategoriInput,
+      onKategoriChange,
     };
   },
 });

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import KeycloakService from "@/services/keycloak";
 
 // Define types for the ApiService instance
@@ -7,6 +7,7 @@ interface ApiServiceType {
   api2: AxiosInstance | null; // Upload API
   init(): void;
   setHeader(): void;
+  getRequestConfig(params: object): AxiosRequestConfig;
   query<T>(resource: string, params?: object): Promise<T>;
   get<T>(resource: string, params?: { session?: string }): Promise<T>;
   post<T>(resource: string, params: object): Promise<T>;
@@ -58,6 +59,12 @@ const ApiService: ApiServiceType = {
     }
   },
 
+  getRequestConfig(params: object) {
+    return params instanceof FormData
+      ? {}
+      : { headers: { "Content-Type": "application/json" } };
+  },
+
   // Query method for main API
   async query<T>(resource: string, params?: object): Promise<T> {
     if (!this.api1) {
@@ -85,11 +92,7 @@ const ApiService: ApiServiceType = {
     if (!this.api1) {
       return Promise.reject(new Error("ApiService is not initialized"));
     }
-      const response = await this.api1.post<T>(resource, params, {
-        headers: {
-          "Content-Type": "application/json", // Use JSON content type for main API
-        },
-      });
+      const response = await this.api1.post<T>(resource, params, this.getRequestConfig(params));
       return response.data;
   },
 
@@ -127,11 +130,7 @@ const ApiService: ApiServiceType = {
       return Promise.reject(new Error("ApiService is not initialized"));
     }
     
-    const response = await this.api1.put<T>(resource, params, {
-      headers: {
-        "Content-Type": "application/json", // Use JSON content type
-      },
-    });
+    const response = await this.api1.put<T>(resource, params, this.getRequestConfig(params));
 
     return response.data;
   },

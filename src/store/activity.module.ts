@@ -1,107 +1,126 @@
 import ApiService from "./api.service";
 import { ActionContext } from "vuex";
 
-// Constants for actions and mutations
 export const GET_ACTIVITIES = "getActivities";
 export const SET_ACTIVITIES = "setActivities";
+export const GET_ACTIVITY_BY_ID = "getActivityById";
+export const SET_CURRENT_ACTIVITY = "setCurrentActivity";
 export const POST_ACTIVITY = "postActivity";
 export const PUT_ACTIVITY = "putActivity";
 export const DELETE_ACTIVITY = "deleteActivity";
+export const PUBLISH_ACTIVITY = "publishActivity";
+export const GET_ACTIVITY_COUNTS = "getActivityCounts";
 
-// Define the type for Activity
+
+interface ActivityMedia {
+  id?: number;
+  type: 'image' | 'youtube';
+  value: string;
+  order: number;
+  caption?: string;
+}
+
 interface Activity {
-    id: number;
-    name: string;
-    description: string;
-    location: string;
-    startDate: string;
-    endDate: string;
-    image: Blob;
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  image: string;
+  url: string;
+  status: 'draft' | 'published';
+  media: ActivityMedia[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Define the state type
 interface State {
-    activities: Activity[];
+  activities: any;
+  currentActivity: Activity | null;
 }
 
-// Define the initial state
 const state: State = {
-    activities: [],
+  activities: [],
+  currentActivity: null,
 };
 
-// Define getters
 const getters = {
-    activities(state: State): Activity[] {
-        return state.activities; // Return the list of activities
-    },
+  activities: (state: State) => state.activities,
+  currentActivity: (state: State) => state.currentActivity,
 };
 
-// Define the VuexContext type (with a generic RootState)
 type VuexContext = ActionContext<State, any>;
 
 const actions = {
-    [GET_ACTIVITIES](context: VuexContext, params: Record<string, any>): Promise<any> {
-        return new Promise((resolve, reject) => {
-            ApiService.get<{ data: any }>("/activities", params)
-                .then(response => {
-                    context.commit(SET_ACTIVITIES, response);
-                    resolve(response);
-                })
-                .catch(err => {
-                    console.error("Error fetching activities:", err);
-                    reject(err);
-                });
-        });
-    },
-    [POST_ACTIVITY](context: VuexContext, params: Record<string, any>): Promise<Activity[]> {
-        return new Promise((resolve, reject) => {
-            ApiService.post<{ data: Activity[] }>("/activities", params.data)
-                .then(({ data }) => {
-                    resolve(data);
-                })
-                .catch((err) => {
-                    console.error("Error creating activity:", err);
-                    reject(err);
-                });
-        });
-    },
-    [PUT_ACTIVITY](context: VuexContext, params: Record<string, any>): Promise<Activity[]> {
-        return new Promise((resolve, reject) => {
-            ApiService.put<{ data: Activity[] }>(`/activities/${params.id}`, params.data)
-                .then(({ data }) => {
-                    resolve(data);
-                })
-                .catch((err) => {
-                    console.error("Error updating activity:", err);
-                    reject(err);
-                });
-        });
-    },
-    [DELETE_ACTIVITY](context: VuexContext, params: Record<string, any>): Promise<void> {
-        return new Promise((resolve, reject) => {
-            ApiService.delete(`/activities/${params.id}`)
-                .then(() => {
-                    resolve();
-                })
-                .catch((err) => {
-                    console.error("Error deleting activity:", err);
-                    reject(err);
-                });
-        });
-    },
+  [GET_ACTIVITIES](context: VuexContext, params: Record<string, any>): Promise<any> {
+    return new Promise((resolve, reject) => {
+      ApiService.get<any>("/activities", params)
+        .then(response => {
+          context.commit(SET_ACTIVITIES, response);
+          resolve(response);
+        })
+        .catch(err => reject(err));
+    });
+  },
+
+  [GET_ACTIVITY_BY_ID](context: VuexContext, id: number): Promise<Activity> {
+    return new Promise((resolve, reject) => {
+      ApiService.get<any>(`/activities/id/${id}`) // ubah dari /activities/${id}
+        .then(response => {
+          context.commit(SET_CURRENT_ACTIVITY, response.data);
+          resolve(response.data);
+        })
+        .catch(err => reject(err));
+    });
+  },
+
+  [POST_ACTIVITY](context: VuexContext, params: Record<string, any>): Promise<Activity> {
+    return new Promise((resolve, reject) => {
+      ApiService.post<any>("/activities", params.data)
+        .then(({ data }: any) => resolve(data))
+        .catch((err: any) => reject(err));
+    });
+  },
+
+  [PUT_ACTIVITY](context: VuexContext, params: Record<string, any>): Promise<Activity> {
+    return new Promise((resolve, reject) => {
+      ApiService.put<any>(`/activities/${params.id}`, params.data)
+        .then(({ data }: any) => resolve(data))
+        .catch((err: any) => reject(err));
+    });
+  },
+
+  [PUBLISH_ACTIVITY](context: VuexContext, id: number): Promise<Activity> {
+    return new Promise((resolve, reject) => {
+      ApiService.put<any>(`/activities/${id}`, { status: 'published' })
+        .then(({ data }: any) => resolve(data))
+        .catch((err: any) => reject(err));
+    });
+  },
+
+  [DELETE_ACTIVITY](context: VuexContext, params: Record<string, any>): Promise<void> {
+    return new Promise((resolve, reject) => {
+      ApiService.delete(`/activities/${params.id}`)
+        .then(() => resolve())
+        .catch((err: any) => reject(err));
+    });
+  },
+
+  [GET_ACTIVITY_COUNTS](context: VuexContext): Promise<any> {
+    return new Promise((resolve, reject) => {
+      ApiService.get<any>("/activities/counts")
+        .then(response => resolve(response.data))
+        .catch(err => reject(err));
+    });
+  },
 };
 
-// Define mutations
 const mutations = {
-    [SET_ACTIVITIES](state: State, data: Activity[]): void {
-        state.activities = data; // Set the state with the fetched activities data
-    },
+  [SET_ACTIVITIES](state: State, data: any): void {
+    state.activities = data;
+  },
+  [SET_CURRENT_ACTIVITY](state: State, data: Activity): void {
+    state.currentActivity = data;
+  },
 };
 
-// Export the Vuex store module
-export default {
-    state,
-    getters,
-    actions,
-    mutations,
-};
+export default { state, getters, actions, mutations };

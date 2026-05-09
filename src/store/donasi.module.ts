@@ -1,39 +1,50 @@
 import ApiService from "./api.service";
 import { ActionContext } from "vuex";
 
-// Constants for actions and mutations
 export const GET_DONASI = "getDonasi";
 export const SET_DONASI = "setDonasi";
 export const POST_DONASI = "postDonasi";
 export const PUT_DONASI = "putDonasi";
 export const DELETE_DONASI = "deleteDonasi";
 
-// TODO: ini yg bakal kepake yg donasi.modul atau yg donasiterhir.module ya (atau both ngaco)
-
-// Define the state type
-interface State {
-    donasi: any[];
+interface Donasi {
+    id: number;
+    name: string;
+    email: string;
+    noWhatsapp: string;
+    amount?: number;
+    grossAmount?: number;
+    donationType?: string;
+    facultyId?: number | null;
+    faculty?: { id: number; name: string; kodeUnik: string } | null;
+    kodeUnik?: string | null;
+    paymentMethod?: "manual" | "midtrans";
+    paymentStatus?: "pending" | "settlement" | "expired" | "failed" | "refunded";
+    proof?: string;
+    date?: string;
+    createdAt?: string;
 }
 
-// Define the initial state
+interface State {
+    donasi: { data: Donasi[]; pagination?: any } | any;
+}
+
 const state: State = {
-    donasi: [],
+    donasi: { data: [] },
 };
 
-// Define getters
 const getters = {
-    donasi(state: State): any[] {
-        return state.donasi; // Return the list of donasi
+    donasi(state: State): any {
+        return state.donasi;
     },
 };
 
-// Define the VuexContext type (with a generic RootState)
 type VuexContext = ActionContext<State, any>;
 
 const actions = {
     [GET_DONASI](context: VuexContext, params: Record<string, any>): Promise<any> {
         return new Promise((resolve, reject) => {
-            ApiService.get<{ data: any }>("/donasi", params.data)
+            ApiService.get<{ data: Donasi[] }>("/donations/admin", params.data)
                 .then(response => {
                     context.commit(SET_DONASI, response);
                     resolve(response);
@@ -44,52 +55,44 @@ const actions = {
                 });
         });
     },
-    [POST_DONASI](context: VuexContext, params: Record<string, any>): Promise<any[]> {
+    [POST_DONASI](_context: VuexContext, params: Record<string, any>): Promise<any> {
         return new Promise((resolve, reject) => {
-            ApiService.post<{ data: any[] }>("/donasi", params.data)
-                .then(({ data }) => {
-                    resolve(data);
-                })
+            ApiService.post<{ data: any }>("/donations", params.data)
+                .then(({ data }) => resolve(data))
                 .catch((err) => {
-                    console.error("Error creating activity:", err);
+                    console.error("Error creating donation:", err);
                     reject(err);
                 });
         });
     },
-    [PUT_DONASI](context: VuexContext, params: Record<string, any>): Promise<any[]> {
+    [PUT_DONASI](_context: VuexContext, params: Record<string, any>): Promise<any> {
         return new Promise((resolve, reject) => {
-            ApiService.put<{ data: any[] }>(`/donasi/${params.id}`, params.data)
-                .then(({ data }) => {
-                    resolve(data);
-                })
+            ApiService.put<{ data: any }>(`/donations/${params.id}`, params.data)
+                .then(({ data }) => resolve(data))
                 .catch((err) => {
-                    console.error("Error updating activity:", err);
+                    console.error("Error updating donation:", err);
                     reject(err);
                 });
         });
     },
-    [DELETE_DONASI](context: VuexContext, params: Record<string, any>): Promise<void> {
+    [DELETE_DONASI](_context: VuexContext, params: Record<string, any>): Promise<void> {
         return new Promise((resolve, reject) => {
-            ApiService.delete(`/donasi/${params.id}`)
-                .then(() => {
-                    resolve();
-                })
+            ApiService.delete(`/donations/${params.id}`)
+                .then(() => resolve())
                 .catch((err) => {
-                    console.error("Error deleting activity:", err);
+                    console.error("Error deleting donation:", err);
                     reject(err);
                 });
         });
     },
 };
 
-// Define mutations
 const mutations = {
-    [SET_DONASI](state: State, data: any[]): void {
-        state.donasi = data; // Set the state with the fetched donasi data
+    [SET_DONASI](state: State, data: any): void {
+        state.donasi = data;
     },
 };
 
-// Export the Vuex store module
 export default {
     state,
     getters,

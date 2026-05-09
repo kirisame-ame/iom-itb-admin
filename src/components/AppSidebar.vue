@@ -23,7 +23,8 @@
         inset-y-0
         left-0
         z-30
-        w-64
+        w-72
+        max-w-[calc(100vw-2rem)]
         overflow-y-auto
         transition
         duration-300
@@ -32,15 +33,15 @@
         lg:translate-x-0 lg:static lg:inset-0
       "
     >
-      <div class="flex items-center justify-center mt-8">
+      <div class="flex items-center justify-center px-4 mt-6 sm:mt-8">
         <div class="flex items-center">
          <!-- <img :src="require('@/assets/image/logo.webp')" alt="IOM-ITB" class="w-[60px]"> -->
 
-          <span class="text-2xl font-semibold text-white">IOM-Dashboard</span>
+          <span class="text-xl font-semibold text-white sm:text-2xl">IOM-Dashboard</span>
         </div>
       </div>
 
-      <nav class="mt-10">
+      <nav class="mt-8 pb-8 sm:mt-10">
         <p class="pl-4 text-xs font-semibold mb-4 text-gray-400">Menu Utama</p>
         <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
@@ -73,7 +74,7 @@
           <span class="mx-4">Merchandise</span>
         </router-link>
 
-        <!-- <router-link
+        <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
           :class="[$route.name === 'Transactions' ? activeClass : inactiveClass]"
           to="/transactions"
@@ -82,8 +83,8 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
         </svg>
 
-          <span class="mx-4">Transactions</span>
-        </router-link> -->
+          <span class="mx-4">Transaksi Merchandise</span>
+        </router-link>
 
         <!-- <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
@@ -103,15 +104,6 @@
           <span class="mx-4">Members</span>
         </router-link> -->
 
-        <!-- <router-link
-          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
-          :class="[$route.name === 'Donasi Trakhir' ? activeClass : inactiveClass]"
-          to="/10-donasi-terakhir"
-        >
-          <IcUser/>
-          <span class="mx-4">10 Donasi Terakhir</span>
-        </router-link> -->
-
         <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
           :class="[$route.name === 'Donasi' ? activeClass : inactiveClass]"
@@ -119,6 +111,24 @@
         >
           <IcUser/>
           <span class="mx-4">Donasi</span>
+        </router-link>
+
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
+          :class="[$route.name === 'Dashboard Pembayaran' ? activeClass : inactiveClass]"
+          to="/dashboard-pembayaran"
+        >
+          <IcCard/>
+          <span class="mx-4">Dashboard Pembayaran</span>
+        </router-link>
+
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
+          :class="[$route.name === 'Fakultas' ? activeClass : inactiveClass]"
+          to="/fakultas"
+        >
+          <IcUser/>
+          <span class="mx-4">Fakultas</span>
         </router-link>
 
         <router-link
@@ -159,13 +169,20 @@
 
         <router-link
           class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
-          :class="[$route.name === 'Broadcast' ? activeClass : inactiveClass]"
-          to="/broadcast"
+          :class="[$route.name === 'Kemitraan' ? activeClass : inactiveClass]"
+          to="/kemitraan"
         >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
-          <span class="mx-4">Broadcast</span>
+          <IcBag/>
+          <span class="mx-4">Kemitraan</span>
+        </router-link>
+
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4"
+          :class="[$route.name === 'Kegiatan Kemitraan' ? activeClass : inactiveClass]"
+          to="/kegiatan-kemitraan"
+        >
+          <IcGrafic/>
+          <span class="mx-4">Kegiatan Kemitraan</span>
         </router-link>
 
         <!-- <router-link

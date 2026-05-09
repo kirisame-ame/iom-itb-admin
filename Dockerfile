@@ -1,5 +1,5 @@
 # ─── Stage 1: Build ───────────────────────────────────────────────────────────
-FROM node:current-alpine AS builder
+FROM node:25-alpine3.23 AS builder
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ ENV VUE_APP_KEYCLOAK_CLIENT_ID=${VUE_APP_KEYCLOAK_CLIENT_ID}
 RUN npm run build
 
 # ─── Stage 2: Serve ───────────────────────────────────────────────────────────
-FROM nginx:1.27-alpine AS production
+FROM nginx:1.29.8-alpine3.23 AS production
 
 COPY --from=builder /app/dist /.static
 

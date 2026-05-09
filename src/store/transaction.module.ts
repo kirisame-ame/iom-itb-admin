@@ -11,6 +11,7 @@ export const DELETE_TRANSACTION = "deleteTransaction";
 interface Transaction {
     id: number; // Use appropriate type for transaction ID
     code: string; // Transaction code
+    publicToken?: string; // Public order status token
     username: string; // User's name associated with the transaction
     email: string; // User's email
     noTelp: string; // User's phone number
@@ -18,23 +19,48 @@ interface Transaction {
     merchandiseId: number; // Related merchandise ID
     qty: number; // Quantity of merchandise
     payment: string | null; // Payment image path or null
+    paymentMethod?: "manual" | "midtrans";
+    paymentStatus?: "pending" | "settlement" | "expired" | "failed" | "refunded";
+    midtransOrderId?: string | null;
+    midtransTransactionId?: string | null;
+    paymentType?: string | null;
     status: string; // Current status of the transaction (e.g., waiting, completed)
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+interface Pagination {
+    currentPage?: number;
+    totalPages?: number;
+    start?: number;
+    end?: number;
+    totalEntries?: number;
+}
+
+interface TransactionListResponse {
+    data?: Transaction[];
+    pagination?: Pagination;
 }
 
 // Define type for state
 interface State {
     transactions: Transaction[];
+    transactionPagination: Pagination;
 }
 
 // Define initial state
 const state: State = {
     transactions: [],
+    transactionPagination: {},
 };
 
 // Define getters
 const getters = {
     transactions(state: State): Transaction[] {
         return state.transactions; // Return transaction data
+    },
+    transactionPagination(state: State): Pagination {
+        return state.transactionPagination;
     },
 };
 
@@ -44,11 +70,10 @@ type VuexContext = ActionContext<State, any>;
 const actions = {
     [GET_TRANSACTIONS](context: VuexContext, params: Record<string, any>): Promise<Transaction[]> {
         return new Promise((resolve, reject) => {
-            ApiService.get<{ data: Transaction[] }>("/transactions", params.data)
+            ApiService.get<TransactionListResponse>("/transactions", params.data)
                 .then(response => {
-                    const { data } = response;
-                    context.commit(SET_TRANSACTIONS, data);
-                    resolve(data);
+                    context.commit(SET_TRANSACTIONS, response);
+                    resolve(response.data || []);
                 })
                 .catch(err => {
                     console.error("Error fetching transactions:", err);
@@ -90,8 +115,15 @@ const actions = {
 };
 
 const mutations = {
-    [SET_TRANSACTIONS](state: State, data: Transaction[]): void {
-        state.transactions = data; // Ensure the data sent matches the expected format
+    [SET_TRANSACTIONS](state: State, response: TransactionListResponse | Transaction[]): void {
+        if (Array.isArray(response)) {
+            state.transactions = response;
+            state.transactionPagination = {};
+            return;
+        }
+
+        state.transactions = response.data || [];
+        state.transactionPagination = response.pagination || {};
     },
 };
 

@@ -16,7 +16,7 @@
       <div v-if="mode === 'url'" class="mt-4">
         <InputText
           type="text"
-          label="imagu Url"
+          label="image Url"
           keyValue="imageUrl"
           placeholder="Enter image URL"
           :value="imageUrl || ''"
@@ -37,8 +37,15 @@
       </div>
   
       <!-- Preview Gambar -->
-      <div v-if="imageUrl" class="mt-4">
+      <div v-if="imageUrl" class="mt-4 flex items-start gap-3">
         <img :src="imageUrl" alt="Image preview" class="rounded-md shadow-lg w-32 h-32 object-cover" />
+        <button
+          type="button"
+          @click="removeImage"
+          class="mt-1 px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
+        >
+          Hapus Gambar
+        </button>
       </div>
     </div>
   </template>
@@ -93,6 +100,12 @@
         imageUrl.value = params.value;
         emit('update', { key: props.keyValue || props.label, value: imageUrl.value });
       };
+
+      const removeImage = () => {
+        imageUrl.value = null;
+        mode.value = 'upload';
+        emit('update', { key: props.keyValue || props.label, value: '' });
+      };
   
       // Watcher untuk mendeteksi perubahan pada mode dan mengupdate value
       watch(mode, (newMode) => {
@@ -107,7 +120,8 @@
         mode,
         imageUrl,
         onFileChange,
-        updateValue
+        updateValue,
+        removeImage
       };
     }
   });

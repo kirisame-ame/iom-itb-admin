@@ -45,12 +45,6 @@
             Ikatan Orang Tua Mahasiswa Institut Teknologi Bandung
           </p>
         </div>
-
-        <img
-          class="ml-1 h-10 shrink-0 object-contain sm:h-14 lg:ml-2 lg:h-20"
-          :src="require('@/assets/image/logo.webp')"
-          alt="IOM Logo"
-        />
       </div>
     </div>
 

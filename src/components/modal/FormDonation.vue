@@ -5,9 +5,8 @@
       <form @submit.prevent="handleSubmit" class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl">
         <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-blue-700">Donasi</p>
-            <h3 class="mt-1 text-lg font-bold capitalize text-slate-900">{{ title }}</h3>
-            <p class="mt-1 text-sm text-slate-500">Catat data donatur, nominal, kanal notifikasi, dan bukti bayar.</p>
+            <h3 class="text-lg font-bold capitalize text-slate-900">{{ title }}</h3>
+            <p class="mt-1 text-sm text-slate-500">Catat donasi manual, nominal, kanal notifikasi, dan bukti transfer jika ada.</p>
           </div>
           <button type="button" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" @click="closeModal">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -187,8 +186,8 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-start">
               <div class="md:pt-2">
-                <label class="text-sm font-semibold text-slate-700">Bukti Bayar</label>
-                <p class="mt-0.5 text-xs text-slate-400">URL bukti atau unggah gambar baru.</p>
+                <label class="text-sm font-semibold text-slate-700">Bukti Transfer Manual</label>
+                <p class="mt-0.5 text-xs text-slate-400">Opsional untuk donasi manual. Midtrans memakai status transaksi.</p>
               </div>
               <div class="space-y-3">
                 <div class="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">

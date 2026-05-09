@@ -578,7 +578,7 @@ const adminDocumentation: AdminDocumentation[] = [
     category: "Keuangan",
     route: "/donasi",
     summary:
-      "Menu Donasi digunakan untuk melihat, memfilter, menambah, mengubah, dan memeriksa bukti donasi. Data pembayaran mendukung metode manual dan Midtrans.",
+      "Menu Donasi digunakan untuk melihat, memfilter, menambah, mengubah, dan memeriksa bukti donasi manual. Data pembayaran mendukung metode manual dan Midtrans.",
     tableColumns: [
       { title: "No", description: "Nomor urut data pada halaman aktif." },
       { title: "Tanggal", description: "Tanggal uang masuk atau tanggal data dibuat." },
@@ -589,7 +589,7 @@ const adminDocumentation: AdminDocumentation[] = [
       { title: "Nominal", description: "Nominal donasi dalam format rupiah." },
       { title: "Metode", description: "Manual atau Midtrans." },
       { title: "Status", description: "Status pembayaran." },
-      { title: "Bukti", description: "Tombol Lihat untuk membuka bukti bayar." },
+      { title: "Bukti Manual", description: "Tombol Lihat untuk membuka bukti bayar manual. Midtrans divalidasi dari status transaksi." },
     ],
     filters: [
       { title: "Per halaman", description: "Pilihan 5, 10, 20, atau 50 data per halaman." },
@@ -610,11 +610,11 @@ const adminDocumentation: AdminDocumentation[] = [
       { title: "Notifikasi melalui?", description: "Checkbox whatsapp dan email. Wajib dipilih." },
       { title: "Sembunyikan nama?", description: "Checkbox untuk menyembunyikan nama donatur." },
       { title: "Hamba Allah?", description: "Checkbox untuk menandai donatur sebagai Hamba Allah." },
-      { title: "Bukti Bayar", description: "Upload gambar bukti bayar." },
+      { title: "Bukti Transfer Manual", description: "Upload gambar bukti bayar manual jika ada. Tidak dipakai untuk Midtrans." },
     ],
     buttons: [
       { title: "Tambah Donasi", description: "Membuka form donasi manual." },
-      { title: "Lihat", description: "Membuka bukti bayar pada kolom Bukti." },
+      { title: "Lihat", description: "Membuka bukti bayar manual pada kolom Bukti Manual." },
       { title: "Batal", description: "Menutup form donasi." },
       { title: "Simpan", description: "Menyimpan data donasi baru atau perubahan data donasi." },
       { title: "Sebelumnya / Berikutnya", description: "Berpindah halaman data donasi." },
@@ -637,7 +637,7 @@ const adminDocumentation: AdminDocumentation[] = [
       { title: "Buka menu Donasi", description: "Klik menu Donasi pada sidebar." },
       { title: "Filter data", description: "Atur Per halaman, Metode, Status, Jenis Donasi, atau Cari Nama." },
       { title: "Tambah donasi manual", description: "Klik Tambah Donasi, isi semua field yang diperlukan, lalu klik Simpan." },
-      { title: "Periksa bukti bayar", description: "Klik Lihat pada kolom Bukti." },
+      { title: "Periksa bukti bayar manual", description: "Klik Lihat pada kolom Bukti Manual untuk donasi manual. Donasi Midtrans mengikuti status transaksi." },
       { title: "Pindah halaman", description: "Gunakan tombol Sebelumnya atau Berikutnya." },
     ],
   },

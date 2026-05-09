@@ -15,7 +15,7 @@
       class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60"
       @click="closeImageModal"
     >
-      <img :src="selectedImage" alt="Bukti Bayar" class="max-w-full max-h-full rounded-md shadow-lg" />
+      <img :src="selectedImage" alt="Bukti bayar manual" class="max-w-full max-h-full rounded-md shadow-lg" />
     </div>
 
     <div class="mt-8 space-y-5">
@@ -154,7 +154,7 @@
                 <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Nominal</th>
                 <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Metode</th>
                 <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti Manual</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
@@ -194,8 +194,14 @@
                   </span>
                 </td>
                 <td class="px-4 py-3 align-middle">
+                  <span
+                    v-if="u.paymentMethod === 'midtrans'"
+                    class="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700"
+                  >
+                    Midtrans
+                  </span>
                   <button
-                    v-if="u.proof"
+                    v-else-if="u.proof"
                     class="text-sm font-medium text-indigo-600 hover:underline"
                     @click="openImageModal(u.proof)"
                   >Lihat</button>

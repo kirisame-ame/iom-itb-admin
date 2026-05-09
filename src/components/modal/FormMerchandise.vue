@@ -75,6 +75,7 @@ import { POST_MERCHANDISE, PUT_MERCHANDISE } from "@/store/merchandise.module";
 import { POST_IMAGE } from "@/store/upload.module";
 import InputImageCostume from '../input/InputImageCostume.vue';
 import { showError } from '@/utils/swal';
+import ApiService from '@/store/api.service';
 
 export default defineComponent({
   components: {

@@ -24,25 +24,24 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">Relasi IOM ITB</p>
             <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Kemitraan</h1>
-            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Kelola mitra institusi, deskripsi kerja sama, dan dokumen MoU.</p>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Kelola mitra institusi, kontak internal, deskripsi kerja sama, dan dokumen MoU.</p>
           </div>
-        <button
-          class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl"
-          @click="openModal"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-          </svg>
-          Tambah Kemitraan
-        </button>
-      </div>
+          <button
+            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
+            @click="openModal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+            </svg>
+            Tambah Kemitraan
+          </button>
+        </div>
       </section>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div class="flex flex-wrap items-end gap-3">
-          <div class="flex-1 min-w-[220px]">
+        <div class="grid gap-3 lg:grid-cols-3">
+          <div class="lg:col-span-2">
             <label class="block mb-1 text-xs text-slate-500">Cari</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-2.5">
@@ -58,27 +57,47 @@
               />
             </div>
           </div>
+          <div class="rounded-xl bg-slate-50 px-4 py-3">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Kontak Internal</p>
+            <p class="mt-1 text-sm text-slate-600">Nama dan telepon PIC dipakai untuk koordinasi admin.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ card.title }}</p>
+          <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
+          <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
         </div>
       </div>
 
       <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Daftar Kemitraan</h2>
+            <p class="mt-1 text-xs text-slate-500">Informasi mitra dan dokumen kerja sama yang dikelola admin.</p>
+          </div>
+          <span class="text-xs text-slate-500">{{ computedData.length }} data tampil</span>
+        </div>
+
         <div class="overflow-x-auto">
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Logo</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Nama Mitra</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">PIC</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Telepon PIC</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Deskripsi</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">MoU</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Dibuat</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Logo</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Nama Mitra</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">PIC</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Telepon PIC</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Deskripsi</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">MoU</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Dibuat</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
               <tr v-if="isLoading">
-                <td v-for="c in 8" :key="c" class="px-5 py-4">
+                <td v-for="c in 8" :key="c" class="px-4 py-3">
                   <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
                 </td>
               </tr>
@@ -91,34 +110,34 @@
                 :key="k.id || index"
                 class="transition-colors hover:bg-blue-50/40"
               >
-                <td class="px-5 py-4 align-middle">
+                <td class="px-4 py-3 align-middle">
                   <img
                     v-if="k?.image"
                     :src="k.image"
                     alt="logo"
-                    class="w-12 h-12 object-cover rounded-xl border border-slate-200 cursor-pointer shadow-sm hover:opacity-80"
+                    class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer shadow-sm hover:opacity-80"
                     @click="openImageModal(k.image)"
                   />
                   <div
                     v-else
-                    class="flex items-center justify-center w-12 h-12 text-xs font-medium text-slate-400 bg-slate-100 border border-slate-200 rounded-xl"
+                    class="flex items-center justify-center w-10 h-10 text-xs font-medium text-slate-400 bg-slate-100 border border-slate-200 rounded-lg"
                   >
                     {{ initials(k?.name) }}
                   </div>
                 </td>
-                <td class="px-5 py-4 align-middle">
+                <td class="px-4 py-3 align-middle">
                   <p class="font-semibold text-slate-900 whitespace-nowrap">{{ k?.name || '-' }}</p>
                 </td>
-                <td class="px-5 py-4 align-middle">
+                <td class="px-4 py-3 align-middle">
                   <p class="text-slate-700 whitespace-nowrap">{{ k?.picName || '-' }}</p>
                 </td>
-                <td class="px-5 py-4 align-middle">
+                <td class="px-4 py-3 align-middle">
                   <p class="text-slate-700 whitespace-nowrap">{{ k?.picPhone || '-' }}</p>
                 </td>
-                <td class="px-5 py-4 align-middle max-w-md">
+                <td class="px-4 py-3 align-middle max-w-md">
                   <p class="text-slate-600 truncate" :title="k?.description || ''">{{ k?.description || '-' }}</p>
                 </td>
-                <td class="px-5 py-4 align-middle">
+                <td class="px-4 py-3 align-middle">
                   <a
                     v-if="k?.mou"
                     :href="k.mou"
@@ -133,10 +152,10 @@
                   </a>
                   <span v-else class="text-gray-400">—</span>
                 </td>
-                <td class="px-5 py-4 text-slate-500 align-middle whitespace-nowrap">{{ formatDate(k?.createdAt) }}</td>
-                <td class="px-5 py-4 text-right align-middle whitespace-nowrap">
-                  <button class="mr-3 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100" @click="editItem(k)">Edit</button>
-                  <button class="rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100" @click="deleteItem(k.id)">Hapus</button>
+                <td class="px-4 py-3 text-slate-500 align-middle whitespace-nowrap">{{ formatDate(k?.createdAt) }}</td>
+                <td class="px-4 py-3 text-right align-middle whitespace-nowrap">
+                  <button class="mr-2 rounded-lg bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100" @click="editItem(k)">Edit</button>
+                  <button class="rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100" @click="deleteItem(k.id)">Hapus</button>
                 </td>
               </tr>
             </tbody>
@@ -144,7 +163,7 @@
         </div>
 
         <div class="flex items-center justify-between border-t border-slate-100 px-6 py-4">
-          <span class="text-xs text-slate-500">Total: {{ computedData.length }} kemitraan</span>
+          <span class="text-xs text-slate-500">Menampilkan {{ computedData.length }} kemitraan</span>
         </div>
       </div>
     </div>
@@ -186,6 +205,36 @@ const computedData = computed<any[]>(() => {
   const list = store.getters.kemitraan;
   if (Array.isArray(list)) return list;
   return list?.data || [];
+});
+
+const kpiCards = computed(() => {
+  const items = computedData.value;
+  const withPic = items.filter((item) => item?.picName || item?.picPhone).length;
+  const withMou = items.filter((item) => item?.mou).length;
+  const withLogo = items.filter((item) => item?.image).length;
+
+  return [
+    {
+      title: 'Total Mitra',
+      value: String(items.length),
+      description: 'Mitra yang tampil pada daftar',
+    },
+    {
+      title: 'Kontak PIC',
+      value: String(withPic),
+      description: 'Mitra dengan kontak internal',
+    },
+    {
+      title: 'Dokumen MoU',
+      value: String(withMou),
+      description: 'Mitra dengan dokumen kerja sama',
+    },
+    {
+      title: 'Logo Mitra',
+      value: String(withLogo),
+      description: 'Mitra dengan logo terunggah',
+    },
+  ];
 });
 
 const getData = async () => {

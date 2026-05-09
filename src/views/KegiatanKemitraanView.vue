@@ -24,25 +24,24 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">Program Mitra</p>
             <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Kegiatan Kemitraan</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Daftar kegiatan yang terhubung dengan mitra institusi.</p>
           </div>
-        <button
-          class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl"
-          @click="openModal"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-          </svg>
-          Tambah Kegiatan
-        </button>
-      </div>
+          <button
+            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
+            @click="openModal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+            </svg>
+            Tambah Kegiatan
+          </button>
+        </div>
       </section>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div class="flex flex-wrap items-end gap-3">
-          <div class="flex-1 min-w-[220px]">
+        <div class="grid gap-3 lg:grid-cols-5">
+          <div class="lg:col-span-3">
             <label class="block mb-1 text-xs text-slate-500">Cari</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-2.5">
@@ -59,39 +58,60 @@
             </div>
           </div>
 
-          <div class="min-w-[160px]">
+          <div class="lg:col-span-1">
             <label class="block mb-1 text-xs text-slate-500">Status</label>
             <select
               v-model="statusFilter"
               class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             >
               <option value="">Semua</option>
-              <option value="planned">Planned</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="planned">Direncanakan</option>
+              <option value="ongoing">Berlangsung</option>
+              <option value="completed">Selesai</option>
+              <option value="cancelled">Dibatalkan</option>
             </select>
+          </div>
+
+          <div class="rounded-xl bg-slate-50 px-4 py-3 lg:col-span-1">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Jadwal</p>
+            <p class="mt-1 text-sm text-slate-600">Pantau lokasi, periode, dan status kegiatan.</p>
           </div>
         </div>
       </div>
 
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ card.title }}</p>
+          <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
+          <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
+        </div>
+      </div>
+
       <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Daftar Kegiatan</h2>
+            <p class="mt-1 text-xs text-slate-500">Kegiatan kemitraan, lokasi, periode, dan status pelaksanaan.</p>
+          </div>
+          <span class="text-xs text-slate-500">{{ filteredData.length }} data tampil</span>
+        </div>
+
         <div class="overflow-x-auto">
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Gambar</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Kegiatan</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Mitra</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Lokasi</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Periode</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status</th>
-                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Gambar</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Kegiatan</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Mitra</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Lokasi</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Periode</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status</th>
+                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
               <tr v-if="isLoading">
-                <td v-for="c in 7" :key="c" class="px-5 py-4">
+                <td v-for="c in 7" :key="c" class="px-4 py-3">
                   <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
                 </td>
               </tr>
@@ -104,41 +124,41 @@
                 :key="k.id || index"
                 class="transition-colors hover:bg-blue-50/40"
               >
-                <td class="px-5 py-4 align-middle">
+                <td class="px-4 py-3 align-middle">
                   <img
                     v-if="k?.image"
                     :src="k.image"
                     alt="gambar"
-                    class="w-12 h-12 object-cover rounded-xl border border-slate-200 cursor-pointer shadow-sm hover:opacity-80"
+                    class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer shadow-sm hover:opacity-80"
                     @click="openImageModal(k.image)"
                   />
                   <div
                     v-else
-                    class="flex items-center justify-center w-12 h-12 text-xs text-slate-400 bg-slate-100 border border-slate-200 rounded-xl"
+                    class="flex items-center justify-center w-10 h-10 text-xs text-slate-400 bg-slate-100 border border-slate-200 rounded-lg"
                   >
                     —
                   </div>
                 </td>
-                <td class="px-5 py-4 align-middle">
+                <td class="px-4 py-3 align-middle">
                   <p class="font-semibold text-slate-900 whitespace-nowrap">{{ k?.name || '-' }}</p>
                   <p v-if="k?.description" class="max-w-xs mt-0.5 text-xs text-slate-500 truncate" :title="k.description">{{ k.description }}</p>
                 </td>
-                <td class="px-5 py-4 align-middle">
+                <td class="px-4 py-3 align-middle">
                   <span class="text-slate-700 whitespace-nowrap">{{ k?.kemitraan?.name || '-' }}</span>
                 </td>
-                <td class="px-5 py-4 text-slate-600 align-middle whitespace-nowrap">{{ k?.location || '-' }}</td>
-                <td class="px-5 py-4 align-middle whitespace-nowrap">
+                <td class="px-4 py-3 text-slate-600 align-middle whitespace-nowrap">{{ k?.location || '-' }}</td>
+                <td class="px-4 py-3 align-middle whitespace-nowrap">
                   <p class="text-slate-900">{{ formatDate(k?.startDate) }}</p>
                   <p class="text-xs text-slate-500">s/d {{ formatDate(k?.endDate) }}</p>
                 </td>
-                <td class="px-5 py-4 align-middle">
-                  <span :class="statusClass(k?.status)" class="inline-block px-2 py-0.5 text-xs font-medium rounded-full capitalize">
-                    {{ k?.status || '—' }}
+                <td class="px-4 py-3 align-middle">
+                  <span :class="statusClass(k?.status)" class="inline-block px-2 py-0.5 text-xs font-medium rounded-full">
+                    {{ statusLabel(k?.status) }}
                   </span>
                 </td>
-                <td class="px-5 py-4 text-right align-middle whitespace-nowrap">
-                  <button class="mr-3 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100" @click="editItem(k)">Edit</button>
-                  <button class="rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100" @click="deleteItem(k.id)">Hapus</button>
+                <td class="px-4 py-3 text-right align-middle whitespace-nowrap">
+                  <button class="mr-2 rounded-lg bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100" @click="editItem(k)">Edit</button>
+                  <button class="rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100" @click="deleteItem(k.id)">Hapus</button>
                 </td>
               </tr>
             </tbody>
@@ -146,7 +166,7 @@
         </div>
 
         <div class="flex items-center justify-between border-t border-slate-100 px-6 py-4">
-          <span class="text-xs text-slate-500">Total: {{ filteredData.length }} kegiatan</span>
+          <span class="text-xs text-slate-500">Menampilkan {{ filteredData.length }} kegiatan</span>
         </div>
       </div>
     </div>
@@ -197,6 +217,36 @@ const filteredData = computed(() =>
   computedData.value.filter((k) => !statusFilter.value || k?.status === statusFilter.value)
 );
 
+const kpiCards = computed(() => {
+  const items = filteredData.value;
+  const planned = items.filter((item) => item?.status === 'planned').length;
+  const ongoing = items.filter((item) => item?.status === 'ongoing').length;
+  const completed = items.filter((item) => item?.status === 'completed').length;
+
+  return [
+    {
+      title: 'Total Kegiatan',
+      value: String(items.length),
+      description: 'Kegiatan yang tampil pada daftar',
+    },
+    {
+      title: 'Direncanakan',
+      value: String(planned),
+      description: 'Kegiatan yang masih dalam rencana',
+    },
+    {
+      title: 'Berjalan',
+      value: String(ongoing),
+      description: 'Kegiatan yang sedang berlangsung',
+    },
+    {
+      title: 'Selesai',
+      value: String(completed),
+      description: 'Kegiatan yang sudah selesai',
+    },
+  ];
+});
+
 const getData = async () => {
   isLoading.value = true;
   try {
@@ -231,6 +281,18 @@ const formatDate = (dateString?: string) => {
   return `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
 };
 
+const statusLabels: Record<string, string> = {
+  planned: 'Direncanakan',
+  ongoing: 'Berlangsung',
+  completed: 'Selesai',
+  cancelled: 'Dibatalkan',
+};
+
+const statusLabel = (status?: string) => {
+  if (!status) return '—';
+  return statusLabels[status.toLowerCase()] || status;
+};
+
 const statusClass = (status?: string) => {
   switch ((status || '').toLowerCase()) {
     case 'ongoing':
@@ -242,7 +304,7 @@ const statusClass = (status?: string) => {
     case 'cancelled':
       return 'bg-red-100 text-red-700';
     default:
-      return 'bg-gray-100 text-gray-600';
+      return 'bg-slate-100 text-slate-600';
   }
 };
 

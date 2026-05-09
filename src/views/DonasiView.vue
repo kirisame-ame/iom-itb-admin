@@ -24,34 +24,31 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
-              Keuangan IOM ITB
-            </p>
             <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Donasi manual dan online Midtrans tercatat dalam satu daftar.</p>
           </div>
-        <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
-          <button
-            type="button"
-            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
-            @click="openAddModal"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-            </svg>
-            Tambah Donasi
-          </button>
-          <a
-            :href="excelUrl"
-            target="_blank"
-            rel="noopener"
-            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:bg-emerald-400 hover:shadow-xl sm:w-auto"
-          >
-            Excel
-            <IcLink class="w-4 h-4" />
-          </a>
+          <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
+            <button
+              type="button"
+              class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
+              @click="openAddModal"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+              </svg>
+              Tambah Donasi
+            </button>
+            <a
+              :href="excelUrl"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:bg-emerald-400 hover:shadow-xl sm:w-auto"
+            >
+              Excel
+              <IcLink class="w-4 h-4" />
+            </a>
+          </div>
         </div>
-      </div>
       </section>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -127,7 +124,23 @@
         </div>
       </div>
 
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ card.title }}</p>
+          <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
+          <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
+        </div>
+      </div>
+
       <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Daftar Donasi</h2>
+            <p class="mt-1 text-xs text-slate-500">Transaksi donasi sesuai filter daftar.</p>
+          </div>
+          <span class="text-xs text-slate-500">Halaman {{ pagination?.currentPage || page }} dari {{ pagination?.totalPages || 1 }}</span>
+        </div>
+
         <div class="overflow-x-auto">
           <table class="min-w-full text-sm">
             <thead>
@@ -224,6 +237,26 @@ import { useStore } from 'vuex';
 import { formatDate } from '@/utils';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
 
+interface DonationRow {
+  id?: string | number;
+  date?: string;
+  createdAt?: string;
+  name?: string;
+  email?: string;
+  noWhatsapp?: string;
+  donationType?: string;
+  faculty?: {
+    name?: string;
+    kodeUnik?: string;
+  };
+  kodeUnik?: string;
+  grossAmount?: number | string | null;
+  amount?: number | string | null;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  proof?: string;
+}
+
 const excelUrl =
   'https://docs.google.com/spreadsheets/d/13w3FcIz4jjIBcf7DvG_83FmU8NBss_MkGt4lM7U6x6k/edit?usp=sharing';
 
@@ -242,7 +275,7 @@ const title = ref('Donasi');
 
 const isOpened = ref(false);
 const currentId = ref<string | undefined>(undefined);
-const dataUpdate = ref<Record<string, any>>({});
+const dataUpdate = ref<Partial<DonationRow>>({});
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 const openAddModal = () => {
@@ -258,7 +291,7 @@ const handleModalClose = async () => {
   await getData();
 };
 
-const computedData = computed(() => {
+const computedData = computed<DonationRow[]>(() => {
   const donasi = store.getters.donasi;
   return donasi?.data || [];
 });
@@ -269,6 +302,49 @@ const pagination = computed(() => {
 });
 
 const startNumber = computed(() => pagination.value?.start || 1);
+const settlementCount = computed(() =>
+  computedData.value.filter((item) => item?.paymentStatus === 'settlement').length
+);
+const pendingCount = computed(() =>
+  computedData.value.filter((item) => item?.paymentStatus === 'pending').length
+);
+const manualCount = computed(() =>
+  computedData.value.filter((item) => item?.paymentMethod !== 'midtrans').length
+);
+const displayedAmountTotal = computed(() =>
+  computedData.value.reduce((total, item) => {
+    const amount = Number(item?.grossAmount || item?.amount || 0);
+    return Number.isNaN(amount) ? total : total + amount;
+  }, 0)
+);
+
+const kpiCards = computed(() => [
+  {
+    title: 'Total Data',
+    value: String(pagination.value?.totalEntries || computedData.value.length),
+    description: `${computedData.value.length} donasi ditampilkan`,
+  },
+  {
+    title: 'Sudah Lunas',
+    value: String(settlementCount.value),
+    description: 'Transaksi settlement di halaman ini',
+  },
+  {
+    title: 'Menunggu',
+    value: String(pendingCount.value),
+    description: 'Transaksi pending di halaman ini',
+  },
+  {
+    title: 'Manual',
+    value: String(manualCount.value),
+    description: 'Input manual di halaman ini',
+  },
+  {
+    title: 'Nominal Halaman',
+    value: formatNominal(displayedAmountTotal.value),
+    description: 'Akumulasi nominal yang sedang tampil',
+  },
+]);
 
 const formatDonationType = (t?: string) => {
   if (!t) return '-';
@@ -283,7 +359,7 @@ const formatNominal = (amount?: number | string | null) => {
 };
 
 const methodBadgeClass = (method?: string) =>
-  method === 'midtrans' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-700';
+  method === 'midtrans' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700';
 
 const statusBadgeClass = (status?: string) => {
   switch (status) {
@@ -292,13 +368,13 @@ const statusBadgeClass = (status?: string) => {
     case 'pending':
       return 'bg-yellow-100 text-yellow-700';
     case 'expired':
-      return 'bg-gray-200 text-gray-700';
+      return 'bg-slate-200 text-slate-700';
     case 'failed':
       return 'bg-red-100 text-red-700';
     case 'refunded':
       return 'bg-purple-100 text-purple-700';
     default:
-      return 'bg-gray-100 text-gray-600';
+      return 'bg-slate-100 text-slate-600';
   }
 };
 

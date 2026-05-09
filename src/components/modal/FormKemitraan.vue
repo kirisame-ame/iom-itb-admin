@@ -36,6 +36,22 @@
               placeholder="mis. PT Example"
             />
 
+            <label class="mt-4 block mb-1 text-xs font-medium text-slate-600">Nama PIC</label>
+            <input
+              v-model="form.picName"
+              type="text"
+              class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              placeholder="mis. Budi Santoso"
+            />
+
+            <label class="mt-4 block mb-1 text-xs font-medium text-slate-600">Nomor Telepon PIC</label>
+            <input
+              v-model="form.picPhone"
+              type="tel"
+              class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              placeholder="mis. 08123456789"
+            />
+
             <label class="mt-4 block mb-1 text-xs font-medium text-slate-600">Deskripsi</label>
             <textarea
               v-model="form.description"
@@ -106,6 +122,24 @@ import { useStore } from 'vuex';
 import { POST_KEMITRAAN, PUT_KEMITRAAN } from '@/store/kemitraan.module';
 import { showError } from '@/utils/swal';
 
+interface KemitraanFormData {
+  name?: string;
+  picName?: string;
+  picPhone?: string;
+  description?: string;
+  image?: string;
+  mou?: string;
+}
+
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
 export default defineComponent({
   props: {
     title: { type: String, required: true },
@@ -117,11 +151,14 @@ export default defineComponent({
     const modalContent = ref(null);
     const isLoading = ref(false);
 
+    const initialData = props.data as KemitraanFormData;
     const form = reactive({
-      name: (props.data as any)?.name || '',
-      description: (props.data as any)?.description || '',
-      image: (props.data as any)?.image || '',
-      mou: (props.data as any)?.mou || '',
+      name: initialData.name || '',
+      picName: initialData.picName || '',
+      picPhone: initialData.picPhone || '',
+      description: initialData.description || '',
+      image: initialData.image || '',
+      mou: initialData.mou || '',
     });
 
     const logoFile = ref<File | null>(null);
@@ -153,17 +190,21 @@ export default defineComponent({
       emit('close');
     };
 
-    const buildPayload = (): FormData | Record<string, any> => {
+    const buildPayload = (): FormData | Record<string, string> => {
       if (logoFile.value || mouFile.value) {
         const fd = new FormData();
         fd.append('name', form.name || '');
-        if (form.description) fd.append('description', form.description);
+        fd.append('picName', form.picName || '');
+        fd.append('picPhone', form.picPhone || '');
+        fd.append('description', form.description || '');
         if (logoFile.value) fd.append('logo', logoFile.value);
         if (mouFile.value) fd.append('file', mouFile.value);
         return fd;
       }
       return {
         name: form.name,
+        picName: form.picName,
+        picPhone: form.picPhone,
         description: form.description,
       };
     };
@@ -178,8 +219,9 @@ export default defineComponent({
           await store.dispatch(POST_KEMITRAAN, { data: payload });
         }
         closeModal();
-      } catch (error: any) {
-        showError('Gagal', error?.response?.data?.message || error?.message || 'Gagal menyimpan');
+      } catch (error: unknown) {
+        const apiError = error as ApiError;
+        showError('Gagal', apiError?.response?.data?.message || apiError?.message || 'Gagal menyimpan');
         isLoading.value = false;
       }
     };

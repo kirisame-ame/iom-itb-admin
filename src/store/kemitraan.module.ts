@@ -12,6 +12,8 @@ export const DELETE_KEMITRAAN = "deleteKemitraan";
 interface Kemitraan {
     id: number;
     name: string;
+    picName?: string;
+    picPhone?: string;
     type?: string;
     description?: string;
     logo?: string;

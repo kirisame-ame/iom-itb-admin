@@ -53,7 +53,7 @@
               <input
                 v-model="searchQuery"
                 @input="onSearch"
-                placeholder="Cari nama mitra..."
+                placeholder="Cari nama mitra, PIC, atau nomor telepon..."
                 class="block w-full rounded-lg border border-slate-200 bg-white py-2 pl-8 pr-3 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
             </div>
@@ -68,6 +68,8 @@
               <tr class="bg-blue-900">
                 <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Logo</th>
                 <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Nama Mitra</th>
+                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">PIC</th>
+                <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Telepon PIC</th>
                 <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Deskripsi</th>
                 <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">MoU</th>
                 <th class="px-5 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Dibuat</th>
@@ -76,12 +78,12 @@
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
               <tr v-if="isLoading">
-                <td v-for="c in 6" :key="c" class="px-5 py-4">
+                <td v-for="c in 8" :key="c" class="px-5 py-4">
                   <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
                 </td>
               </tr>
               <tr v-else-if="computedData.length === 0">
-                <td colspan="6" class="px-5 py-12 text-sm text-center text-slate-400 italic">Belum ada data kemitraan.</td>
+                <td colspan="8" class="px-5 py-12 text-sm text-center text-slate-400 italic">Belum ada data kemitraan.</td>
               </tr>
               <tr
                 v-else
@@ -106,6 +108,12 @@
                 </td>
                 <td class="px-5 py-4 align-middle">
                   <p class="font-semibold text-slate-900 whitespace-nowrap">{{ k?.name || '-' }}</p>
+                </td>
+                <td class="px-5 py-4 align-middle">
+                  <p class="text-slate-700 whitespace-nowrap">{{ k?.picName || '-' }}</p>
+                </td>
+                <td class="px-5 py-4 align-middle">
+                  <p class="text-slate-700 whitespace-nowrap">{{ k?.picPhone || '-' }}</p>
                 </td>
                 <td class="px-5 py-4 align-middle max-w-md">
                   <p class="text-slate-600 truncate" :title="k?.description || ''">{{ k?.description || '-' }}</p>

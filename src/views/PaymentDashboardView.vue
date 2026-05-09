@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen">
-    <Breadcrumb breadcrumb="dashboard-pembayaran" />
+  <div :class="isEmbed ? '' : 'min-h-screen'">
+    <Breadcrumb v-if="!isEmbed" breadcrumb="dashboard-pembayaran" />
 
-    <div class="mt-8 space-y-5">
-      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
+    <div :class="isEmbed ? 'mt-0 space-y-5' : 'mt-8 space-y-5'">
+      <section v-if="!isEmbed" class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
         <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -251,6 +251,13 @@ import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
 import { GET_PAYMENT_DASHBOARD } from '@/store/paymentDashboard.module';
+
+const props = defineProps({
+  isEmbed: {
+    type: Boolean,
+    default: false
+  }
+});
 
 type SummaryItem = Record<string, any>;
 

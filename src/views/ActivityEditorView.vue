@@ -1,5 +1,6 @@
 <template>
   <div class="h-screen flex flex-col overflow-hidden">
+    <ToastNotification ref="toast" />
 
     <!-- Top Bar -->
     <div class="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between gap-4">
@@ -154,6 +155,46 @@
             </div>
           </div>
 
+          <!-- Contributors -->
+          <div class="p-5 border-b border-gray-100">
+            <h3 class="text-sm font-semibold text-gray-700 mb-1">Kontributor</h3>
+            <p class="text-xs text-gray-400 mb-3">Minimal 1 saat publish</p>
+
+            <div class="flex flex-col gap-2 mb-3">
+              <div
+                v-for="(contributor, index) in form.contributors"
+                :key="index"
+                class="flex items-center gap-2"
+              >
+                <input
+                  :value="contributor"
+                  @input="updateContributor(index, ($event.target as HTMLInputElement).value)"
+                  @blur="autoSave"
+                  placeholder="Nama kontributor..."
+                  class="flex-1 px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  @click="removeContributor(index)"
+                  class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <button
+              @click="addContributor"
+              class="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Tambah Kontributor
+            </button>
+          </div>
+
           <!-- Tags -->
           <div class="p-5">
             <h3 class="text-sm font-semibold text-gray-700 mb-1">Tags</h3>
@@ -224,6 +265,8 @@ import { GET_ACTIVITY_BY_ID, PUT_ACTIVITY, POST_ACTIVITY, GET_TAGS } from '@/sto
 import { POST_ACTIVITY_IMAGE } from '@/store/upload.module';
 import Swal from 'sweetalert2';
 import RichTextEditor from '@/components/input/RichTextEditor.vue';
+import ToastNotification from '@/components/modal/ToastNotification.vue';
+
 
 const route = useRoute();
 const router = useRouter();
@@ -233,6 +276,8 @@ const activityId = ref<number | null>(route.params.id === 'new' ? null : Number(
 const isSaving = ref(false);
 const saveStatus = ref('');
 const lastUpdated = ref('');
+
+const toast = ref<InstanceType<typeof ToastNotification> | null>(null);
 
 const thumbnailMode = ref<'upload' | 'url'>('url');
 const thumbnailUrlInput = ref('');
@@ -269,8 +314,8 @@ const form = ref({
   image: '',
   status: 'draft' as 'draft' | 'published',
   tags: [] as string[],
+  contributors: [] as string[],   
 });
-
 
 const generateSlug = (title: string) => {
   return title
@@ -354,11 +399,15 @@ const saveAsDraft = async () => {
 
 const publish = async () => {
   if (!form.value.title) {
-    Swal.fire({ title: 'Judul wajib diisi', icon: 'warning', confirmButtonColor: '#2563eb' });
+    toast.value?.add('error', 'Judul wajib diisi sebelum publish.');
     return;
   }
   if (!form.value.image) {
-    Swal.fire({ title: 'Thumbnail wajib diisi sebelum publish', icon: 'warning', confirmButtonColor: '#2563eb' });
+    toast.value?.add('error', 'Thumbnail wajib diisi sebelum publish.');
+    return;
+  }
+  if (form.value.contributors.filter(c => c.trim()).length === 0) {
+    toast.value?.add('error', 'Minimal 1 kontributor wajib diisi sebelum publish.');
     return;
   }
 
@@ -378,13 +427,19 @@ const publish = async () => {
   try {
     const result = await store.dispatch(PUT_ACTIVITY, {
       id: activityId.value,
-      data: { ...form.value, status: 'published', date: new Date().toISOString().split('T')[0] }
+      data: {
+        ...form.value,
+        status: 'published',
+        date: new Date().toISOString().split('T')[0],
+        contributors: form.value.contributors.filter(c => c.trim()), // ✅ buang yang kosong
+      }
     });
     form.value.status = 'published';
     if (result?.updatedAt) lastUpdated.value = formatUpdatedAt(result.updatedAt);
-    Swal.fire({ title: 'Berhasil dipublish!', icon: 'success', confirmButtonColor: '#2563eb' });
-  } catch {
-    Swal.fire({ title: 'Gagal publish', icon: 'error', confirmButtonColor: '#2563eb' });
+    toast.value?.add('success', 'Kegiatan berhasil dipublish!');
+  } catch (err: any) {
+    const msg = err?.response?.data?.message || 'Gagal publish';
+    toast.value?.add('error', msg);
   } finally {
     isSaving.value = false;
   }
@@ -492,6 +547,21 @@ const removeTag = (index: number) => {
   autoSave();
 };
 
+const addContributor = () => {
+  form.value.contributors.push('');
+  autoSave();
+};
+
+const removeContributor = (index: number) => {
+  form.value.contributors.splice(index, 1);
+  autoSave();
+};
+
+const updateContributor = (index: number, value: string) => {
+  form.value.contributors[index] = value;
+  autoSave();
+};
+
 onMounted(async () => {
   // Load activity kalau bukan 'new'
   if (route.params.id !== 'new') {
@@ -503,6 +573,7 @@ onMounted(async () => {
       image: activity.image || '',
       status: activity.status || 'draft',
       tags: (activity.tags || []).map((t: any) => t.name), 
+      contributors: activity.contributors || [],
     };
     lastUpdated.value = formatUpdatedAt(activity.updatedAt);
   }

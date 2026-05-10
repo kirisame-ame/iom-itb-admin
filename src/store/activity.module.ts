@@ -27,6 +27,7 @@ interface Activity {
   url: string;
   status: 'draft' | 'published';
   tags: Tag[];
+  contributors: string[];
   createdAt: string;
   updatedAt: string;
 }

@@ -61,7 +61,17 @@
         <div class="md:sticky md:top-[41px]">
           <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Artikel ini ditulis oleh</p>
           <ul class="mb-5 space-y-1">
-            <li class="text-sm text-gray-600 flex items-center gap-2">
+            <template v-if="activity.contributors?.length > 0">
+              <li
+                v-for="(contributor, index) in activity.contributors"
+                :key="index"
+                class="text-sm text-gray-600 flex items-center gap-2"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0"/>
+                {{ contributor }}
+              </li>
+            </template>
+            <li v-else class="text-sm text-gray-600 flex items-center gap-2">
               <span class="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0"/>
               IOM ITB
             </li>

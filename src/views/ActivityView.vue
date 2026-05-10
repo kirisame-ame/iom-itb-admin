@@ -56,7 +56,7 @@
         <input
           v-model="search"
           @input="debouncedFetch"
-          placeholder="Cari judul atau konten..."
+          placeholder="Cari berdasarkan judul, tag kategori, atau konten..."
           class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
         />
       </div>
@@ -114,7 +114,7 @@
         <!-- Info -->
         <div class="flex-1 min-w-0">
           <h3 class="font-semibold text-gray-800 truncate">{{ activity.title || 'Tanpa Judul' }}</h3>
-          <div class="flex items-center gap-2 mt-1">
+          <div class="flex items-center gap-2 mt-1 flex-wrap">
             <span
               :class="activity.status === 'published' ? 'text-green-600' : 'text-yellow-600'"
               class="text-xs font-medium"
@@ -126,6 +126,16 @@
               {{ activity.status === 'published' ? 'Dipublikasikan' : 'Diperbarui' }}
               {{ formatDate(activity.status === 'published' ? activity.createdAt : activity.updatedAt) }}
             </span>
+            <template v-if="activity.tags?.length > 0">
+              <span class="text-gray-300 text-xs">•</span>
+              <span
+                v-for="tag in activity.tags"
+                :key="tag.id"
+                class="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-600"
+              >
+                {{ tag.name }}
+              </span>
+            </template>
           </div>
         </div>
 

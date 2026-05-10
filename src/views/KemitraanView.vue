@@ -24,7 +24,7 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Kemitraan</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">Kemitraan</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Kelola mitra institusi, kontak internal, deskripsi kerja sama, dan dokumen MoU.</p>
           </div>
           <button
@@ -42,7 +42,7 @@
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-3 lg:grid-cols-3">
           <div class="lg:col-span-2">
-            <label class="block mb-1 text-xs text-slate-500">Cari</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Cari</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-2.5">
                 <svg viewBox="0 0 24 24" class="w-4 h-4 text-slate-400 fill-current">
@@ -58,7 +58,7 @@
             </div>
           </div>
           <div class="rounded-xl bg-slate-50 px-4 py-3">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Kontak Internal</p>
+            <p class="text-sm font-semibold text-slate-500">Kontak Internal</p>
             <p class="mt-1 text-sm text-slate-600">Nama dan telepon PIC dipakai untuk koordinasi admin.</p>
           </div>
         </div>
@@ -66,7 +66,7 @@
 
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ card.title }}</p>
+          <p class="text-sm font-semibold text-slate-500">{{ card.title }}</p>
           <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
           <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
         </div>
@@ -78,21 +78,20 @@
             <h2 class="text-base font-bold text-slate-900">Daftar Kemitraan</h2>
             <p class="mt-1 text-xs text-slate-500">Informasi mitra dan dokumen kerja sama yang dikelola admin.</p>
           </div>
-          <span class="text-xs text-slate-500">{{ computedData.length }} data tampil</span>
         </div>
 
         <div class="overflow-x-auto">
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Logo</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Nama Mitra</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">PIC</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Telepon PIC</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Deskripsi</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">MoU</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Dibuat</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Logo</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Nama Mitra</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">PIC</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Telepon PIC</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Deskripsi</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">MoU</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Dibuat</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
@@ -154,7 +153,7 @@
                 </td>
                 <td class="px-4 py-3 text-slate-500 align-middle whitespace-nowrap">{{ formatDate(k?.createdAt) }}</td>
                 <td class="px-4 py-3 text-right align-middle whitespace-nowrap">
-                  <button class="mr-2 rounded-lg bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100" @click="editItem(k)">Edit</button>
+                  <button class="mr-2 rounded-lg bg-blue-50 px-2.5 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100" @click="editItem(k)">Edit</button>
                   <button class="rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100" @click="deleteItem(k.id)">Hapus</button>
                 </td>
               </tr>
@@ -162,9 +161,6 @@
           </table>
         </div>
 
-        <div class="flex items-center justify-between border-t border-slate-100 px-6 py-4">
-          <span class="text-xs text-slate-500">Menampilkan {{ computedData.length }} kemitraan</span>
-        </div>
       </div>
     </div>
   </div>

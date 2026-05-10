@@ -2,7 +2,7 @@
   <div>
     <button
       @click="open = true"
-      class="px-6 py-2 mt-3 font-medium tracking-wide text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
+      class="px-6 py-2 mt-3 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
     >
       Open Modal
     </button>
@@ -75,7 +75,7 @@
             </button>
             <button
               @click="open = false"
-              class="px-6 py-3 font-medium tracking-wide text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
+              class="px-6 py-3 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none"
             >
               Action
             </button>

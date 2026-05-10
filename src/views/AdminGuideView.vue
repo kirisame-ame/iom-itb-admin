@@ -6,7 +6,7 @@
 
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">
+            <h1 class="text-2xl font-bold md:text-4xl">
               Panduan Penggunaan Fitur Admin
             </h1>
             <p class="mt-2 max-w-3xl text-sm leading-relaxed text-blue-100">
@@ -16,7 +16,7 @@
           </div>
 
           <div class="rounded-2xl bg-white/10 px-4 py-3 text-sm text-blue-50">
-            <p class="text-xs uppercase tracking-wider text-blue-100">Total Dokumentasi</p>
+            <p class="text-sm font-medium text-blue-100">Total Dokumentasi</p>
             <p class="mt-1 text-xl font-bold">{{ filteredDocumentation.length }} Menu</p>
           </div>
         </div>
@@ -25,7 +25,7 @@
       <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-4 lg:grid-cols-[1fr_260px]">
           <div>
-            <label for="search" class="mb-2 block text-sm font-semibold text-slate-700">
+            <label for="search" class="mb-2 block text-sm font-semibold text-slate-900">
               Cari dokumentasi
             </label>
             <div class="relative">
@@ -45,7 +45,7 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-semibold text-slate-700">
+            <label class="mb-2 block text-sm font-semibold text-slate-900">
               Kategori
             </label>
             <AppSelect
@@ -59,7 +59,7 @@
       <div class="grid gap-6 lg:grid-cols-[310px_1fr]">
         <aside class="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-6">
           <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+            <h2 class="text-base font-semibold text-slate-700">
               Daftar Menu
             </h2>
 
@@ -99,7 +99,7 @@
           </div>
 
           <div v-else class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center">
-            <p class="text-sm font-semibold text-slate-700">Tidak ada hasil</p>
+            <p class="text-sm font-semibold text-slate-900">Tidak ada hasil</p>
             <p class="mt-1 text-xs leading-5 text-slate-500">
               Coba ubah kata kunci atau kategori.
             </p>
@@ -130,7 +130,7 @@
                 </router-link>
               </div>
 
-              <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">
                 {{ selectedFeature.title }}
               </h2>
 

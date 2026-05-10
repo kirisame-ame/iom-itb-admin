@@ -6,7 +6,7 @@
       <div class="w-full max-w-[640px] overflow-hidden rounded-lg border-2 border-slate-200 bg-white shadow-2xl">
         <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-blue-700">Fakultas</p>
+            <p class="text-sm font-semibold text-blue-700">Fakultas</p>
             <h3 class="mt-1 text-lg font-bold text-slate-900">{{ editingId ? 'Edit' : 'Tambah' }} Fakultas</h3>
             <p class="mt-1 text-sm text-slate-500">Kode unik dipakai pada pembayaran donasi dan iuran manual.</p>
           </div>
@@ -21,7 +21,7 @@
           <div class="divide-y divide-slate-100 bg-white">
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[150px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Nama Fakultas</label>
+                <label class="text-sm font-semibold text-slate-900">Nama Fakultas</label>
                 <p class="mt-0.5 text-xs text-slate-400">Nama atau singkatan fakultas.</p>
               </div>
               <input
@@ -34,7 +34,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[150px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Kode Unik</label>
+                <label class="text-sm font-semibold text-slate-900">Kode Unik</label>
                 <p class="mt-0.5 text-xs text-slate-400">Maksimal 3 digit.</p>
               </div>
               <input
@@ -48,7 +48,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[150px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Status</label>
+                <label class="text-sm font-semibold text-slate-900">Status</label>
                 <p class="mt-0.5 text-xs text-slate-400">Tampilkan sebagai pilihan aktif.</p>
               </div>
               <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
@@ -74,7 +74,7 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Fakultas</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">Fakultas</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola kode unik fakultas untuk pembayaran donasi dan iuran manual.
             </p>
@@ -90,15 +90,15 @@
 
       <section class="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Fakultas</p>
+          <p class="text-sm font-semibold text-slate-500">Total Fakultas</p>
           <p class="mt-2 text-2xl font-bold text-blue-900">{{ fakultasList.length }}</p>
         </div>
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Aktif</p>
+          <p class="text-sm font-semibold text-slate-500">Aktif</p>
           <p class="mt-2 text-2xl font-bold text-green-700">{{ activeCount }}</p>
         </div>
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Nonaktif</p>
+          <p class="text-sm font-semibold text-slate-500">Nonaktif</p>
           <p class="mt-2 text-2xl font-bold text-slate-700">{{ inactiveCount }}</p>
         </div>
       </section>
@@ -127,10 +127,10 @@
           <table class="min-w-full text-sm">
             <thead>
               <tr class="border-b border-slate-200 bg-slate-50">
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-slate-500 uppercase">Nama</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-slate-500 uppercase">Kode Unik</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-left text-slate-500 uppercase">Status</th>
-                <th class="px-4 py-3 text-xs font-semibold tracking-wider text-right text-slate-500 uppercase">Aksi</th>
+                <th class="px-4 py-3 text-sm font-semibold text-left text-slate-600">Nama</th>
+                <th class="px-4 py-3 text-sm font-semibold text-left text-slate-600">Kode Unik</th>
+                <th class="px-4 py-3 text-sm font-semibold text-left text-slate-600">Status</th>
+                <th class="px-4 py-3 text-sm font-semibold text-right text-slate-600">Aksi</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 bg-white">
@@ -151,7 +151,7 @@
                   </span>
                 </td>
                 <td class="px-4 py-3 text-right">
-                  <button class="mr-3 rounded-md bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100" @click="openEdit(item)">Edit</button>
+                  <button class="mr-3 rounded-md bg-blue-50 px-2.5 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100" @click="openEdit(item)">Edit</button>
                   <button class="rounded-md bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100" @click="handleDelete(item)">Hapus</button>
                 </td>
               </tr>

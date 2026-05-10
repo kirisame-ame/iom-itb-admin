@@ -16,7 +16,7 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola produk merchandise, stok, harga, dan tautan pembelian yang tampil pada halaman publik.
             </p>
@@ -33,15 +33,15 @@
 
       <section class="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Produk</p>
+          <p class="text-sm font-semibold text-slate-500">Total Produk</p>
           <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.totalEntries || computedData.length }}</p>
         </div>
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Stok Rendah</p>
+          <p class="text-sm font-semibold text-slate-500">Stok Rendah</p>
           <p class="mt-2 text-2xl font-bold text-amber-700">{{ lowStockCount }}</p>
         </div>
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Stok Habis</p>
+          <p class="text-sm font-semibold text-slate-500">Stok Habis</p>
           <p class="mt-2 text-2xl font-bold text-red-700">{{ emptyStockCount }}</p>
         </div>
       </section>
@@ -85,15 +85,15 @@
           <table class="min-w-full">
             <thead>
               <tr class="bg-blue-900">
-                <th class="w-20 whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Gambar</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Produk</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Harga</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Stok</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Kategori</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Deskripsi</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Link</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Diperbarui</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-blue-100">Aksi</th>
+                <th class="w-20 whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Gambar</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Produk</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Harga</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Stok</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Kategori</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Deskripsi</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Link</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Diperbarui</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-right text-sm font-semibold text-blue-100">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -166,7 +166,7 @@
                   </td>
                   <td class="px-5 py-4 text-right align-middle whitespace-nowrap">
                     <button
-                      class="mr-3 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100"
+                      class="mr-3 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-100"
                       @click.prevent="editItem(u)"
                     >
                       <IcEdit />

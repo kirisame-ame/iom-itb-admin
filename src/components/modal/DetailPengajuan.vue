@@ -12,7 +12,7 @@
       >
         <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 rounded-t-2xl">
           <div>
-            <p class="text-[13px] font-bold text-blue-600 uppercase tracking-widest mb-0.5">Data Pengajuan</p>
+            <p class="text-[13px] font-bold text-blue-600 mb-0.5">Data Pengajuan</p>
             <h2 class="text-[17px] font-bold text-slate-900">#{{ item?.id }}</h2>
           </div>
           <button
@@ -32,14 +32,14 @@
         <div v-else class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
 
           <section>
-            <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Data Pengajuan</h3>
+            <h3 class="text-sm font-semibold text-slate-500 mb-3">Data Pengajuan</h3>
             <div class="bg-slate-50 rounded-xl border border-slate-100 divide-y divide-slate-100">
               <div
                 v-for="[label, value] in Object.entries(item?.answersByLabel ?? {})"
                 :key="label"
                 class="px-4 py-3"
               >
-                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">{{ label }}</p>
+                <p class="text-xs font-medium text-slate-500 mb-1">{{ label }}</p>
                 <a
                   v-if="isUrl(value)"
                   :href="value"
@@ -61,7 +61,7 @@
           </section>
 
           <section>
-            <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Riwayat Status</h3>
+            <h3 class="text-sm font-semibold text-slate-500 mb-3">Riwayat Status</h3>
             <div v-if="!item?.riwayat?.length" class="text-sm text-slate-400 italic text-center py-4">
               Belum ada riwayat perubahan.
             </div>

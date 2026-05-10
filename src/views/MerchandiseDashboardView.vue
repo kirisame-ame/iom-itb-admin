@@ -7,7 +7,7 @@
         <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative">
-          <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Dashboard Penjualan Merchandise</h1>
+          <h1 class="text-2xl font-bold md:text-4xl">Dashboard Penjualan Merchandise</h1>
           <p class="mt-2 text-sm text-blue-100">
             Pantau penjualan merchandise berdasarkan kategori, jumlah terjual, dan total pendapatan.
           </p>
@@ -28,19 +28,19 @@
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Produk</p>
+            <p class="text-sm font-semibold text-slate-500">Total Produk</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ filteredMerchandises.length }}</p>
           </div>
           <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Terjual</p>
+            <p class="text-sm font-semibold text-slate-500">Total Terjual</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ totalTerjual }} pcs</p>
           </div>
           <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Pendapatan</p>
+            <p class="text-sm font-semibold text-slate-500">Total Pendapatan</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ formatPrice(totalPendapatan) }}</p>
           </div>
           <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Kategori Terlaris</p>
+            <p class="text-sm font-semibold text-slate-500">Kategori Terlaris</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ kategoriTerlaris || '-' }}</p>
           </div>
         </div>
@@ -64,12 +64,12 @@
           <table class="min-w-full text-sm">
             <thead class="bg-slate-50">
               <tr>
-                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">#</th>
-                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Nama</th>
-                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Kategori</th>
-                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Harga</th>
-                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Terjual</th>
-                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Pendapatan</th>
+                <th class="px-5 py-3 text-left text-sm font-semibold text-slate-600">#</th>
+                <th class="px-5 py-3 text-left text-sm font-semibold text-slate-600">Nama</th>
+                <th class="px-5 py-3 text-left text-sm font-semibold text-slate-600">Kategori</th>
+                <th class="px-5 py-3 text-left text-sm font-semibold text-slate-600">Harga</th>
+                <th class="px-5 py-3 text-left text-sm font-semibold text-slate-600">Terjual</th>
+                <th class="px-5 py-3 text-left text-sm font-semibold text-slate-600">Pendapatan</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">

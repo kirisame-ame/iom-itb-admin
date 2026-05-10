@@ -29,7 +29,7 @@
 
       <nav class="mt-4 pb-7">
         <div v-for="group in navGroups" :key="group.label" class="mt-5 first:mt-0">
-          <p class="mb-1.5 px-5 text-[13px] font-semibold tracking-normal text-blue-100">
+          <p class="mb-1.5 px-5 text-[13px] font-semibold text-blue-100">
             {{ group.label }}
           </p>
 

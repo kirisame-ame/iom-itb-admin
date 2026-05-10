@@ -19,7 +19,7 @@
           <div class="divide-y divide-slate-100">
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Nama <span class="text-red-500">*</span></label>
+                <label class="text-sm font-semibold text-slate-900">Nama <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Nama donatur yang dicatat.</p>
               </div>
               <input
@@ -33,7 +33,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Email</label>
+                <label class="text-sm font-semibold text-slate-900">Email</label>
                 <p class="mt-0.5 text-xs text-slate-400">Salah satu dari email atau No WA wajib diisi.</p>
               </div>
               <input
@@ -46,7 +46,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">No WA</label>
+                <label class="text-sm font-semibold text-slate-900">No WA</label>
                 <p class="mt-0.5 text-xs text-slate-400">Nomor WhatsApp untuk notifikasi donasi.</p>
               </div>
               <input
@@ -59,7 +59,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Jenis Donasi</label>
+                <label class="text-sm font-semibold text-slate-900">Jenis Donasi</label>
                 <p class="mt-0.5 text-xs text-slate-400">Kategori pencatatan donasi.</p>
               </div>
               <AppSelect
@@ -71,7 +71,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Fakultas</label>
+                <label class="text-sm font-semibold text-slate-900">Fakultas</label>
                 <p class="mt-0.5 text-xs text-slate-400">Opsional, untuk kode unik fakultas.</p>
               </div>
               <div>
@@ -88,7 +88,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Nominal <span class="text-red-500">*</span></label>
+                <label class="text-sm font-semibold text-slate-900">Nominal <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Jumlah uang yang didonasikan.</p>
               </div>
               <input
@@ -104,7 +104,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Tanggal Masuk <span class="text-red-500">*</span></label>
+                <label class="text-sm font-semibold text-slate-900">Tanggal Masuk <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Tanggal uang masuk.</p>
               </div>
               <input
@@ -117,7 +117,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Bank</label>
+                <label class="text-sm font-semibold text-slate-900">Bank</label>
                 <p class="mt-0.5 text-xs text-slate-400">Bank atau sumber transfer.</p>
               </div>
               <input
@@ -130,7 +130,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Notifikasi <span class="text-red-500">*</span></label>
+                <label class="text-sm font-semibold text-slate-900">Notifikasi <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Pilih kanal pengiriman notifikasi.</p>
               </div>
               <div>
@@ -155,7 +155,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Publikasi Nama</label>
+                <label class="text-sm font-semibold text-slate-900">Publikasi Nama</label>
                 <p class="mt-0.5 text-xs text-slate-400">Pengaturan tampilan nama donatur.</p>
               </div>
               <div class="grid gap-2 sm:grid-cols-2">
@@ -180,7 +180,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-start">
               <div class="md:pt-2">
-                <label class="text-sm font-semibold text-slate-700">Bukti Transfer Manual</label>
+                <label class="text-sm font-semibold text-slate-900">Bukti Transfer Manual</label>
                 <p class="mt-0.5 text-xs text-slate-400">Opsional untuk donasi manual. Midtrans memakai status transaksi.</p>
               </div>
               <div class="space-y-3">

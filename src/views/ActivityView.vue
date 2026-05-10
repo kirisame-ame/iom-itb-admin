@@ -23,7 +23,7 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola dan tinjau semua post kegiatan yang tampil pada halaman publik.
             </p>

@@ -12,7 +12,7 @@
       >
         <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 rounded-t-2xl">
           <div>
-            <p class="text-[13px] font-bold text-blue-600 uppercase tracking-widest mb-0.5">Update Status</p>
+            <p class="text-[13px] font-bold text-blue-600 mb-0.5">Update Status</p>
             <h2 class="text-[17px] font-bold text-slate-900">#{{ item?.id }}</h2>
           </div>
           <button
@@ -54,7 +54,7 @@
 
           <!-- Status form -->
           <section>
-            <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Perubahan Status</h3>
+            <h3 class="text-sm font-semibold text-slate-500 mb-3">Perubahan Status</h3>
             <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col gap-3">
               <div class="flex items-center gap-3">
                 <span class="text-xs font-medium text-slate-500 w-20 flex-shrink-0">Status</span>
@@ -97,7 +97,7 @@
 
           <!-- Riwayat -->
           <section>
-            <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Riwayat Perubahan</h3>
+            <h3 class="text-sm font-semibold text-slate-500 mb-3">Riwayat Perubahan</h3>
             <div v-if="!item?.riwayat?.length" class="text-sm text-slate-400 italic text-center py-4">
               Belum ada riwayat perubahan.
             </div>
@@ -156,7 +156,7 @@
       >
         <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 rounded-t-2xl">
           <div>
-            <p class="text-[13px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Pratinjau</p>
+            <p class="text-[13px] font-bold text-slate-400 mb-0.5">Pratinjau</p>
             <h3 class="text-[16px] font-bold text-slate-900">Email yang Akan Dikirim</h3>
           </div>
           <button

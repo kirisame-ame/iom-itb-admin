@@ -8,13 +8,13 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Dashboard Pembayaran</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">Dashboard Pembayaran</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Pantau pembayaran iuran sukarela dan kontribusi sukarela berdasarkan status, metode, fakultas, dan tren harian.
             </p>
           </div>
           <div class="rounded-2xl bg-white/10 px-4 py-3 text-sm text-blue-50">
-            <p class="text-xs uppercase tracking-wider text-blue-100">Periode</p>
+            <p class="text-sm font-medium text-blue-100">Periode</p>
             <p class="mt-1 font-semibold">{{ filtersLabel }}</p>
           </div>
         </div>
@@ -23,7 +23,7 @@
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Mulai</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Mulai</label>
             <input
               v-model="startDate"
               type="date"
@@ -31,7 +31,7 @@
             />
           </div>
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Sampai</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Sampai</label>
             <input
               v-model="endDate"
               type="date"
@@ -39,14 +39,14 @@
             />
           </div>
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Jenis</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Jenis</label>
             <AppSelect
               v-model="donationType"
               :options="donationTypeOptions"
             />
           </div>
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Status</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status</label>
             <AppSelect
               v-model="paymentStatus"
               :options="paymentStatusOptions"
@@ -67,7 +67,7 @@
 
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ card.title }}</p>
+          <p class="text-sm font-semibold text-slate-500">{{ card.title }}</p>
           <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
           <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
         </div>
@@ -176,7 +176,7 @@
             <h2 class="text-base font-bold text-slate-900">Pembayaran Terbaru</h2>
             <p class="mt-1 text-xs text-slate-500">10 transaksi terbaru sesuai filter dashboard.</p>
           </div>
-          <router-link to="/donasi" class="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">
+          <router-link to="/donasi" class="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100">
             Lihat Donasi
           </router-link>
         </div>
@@ -184,13 +184,13 @@
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Tanggal</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Nama</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Jenis</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Fakultas</th>
-                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-blue-100">Nominal</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Metode</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Status</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Tanggal</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Nama</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Jenis</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Fakultas</th>
+                <th class="px-4 py-3 text-right text-sm font-semibold text-blue-100">Nominal</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Metode</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Status</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 bg-white">

@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2">
-    <label class="text-sm capitalize font-[600]">
+    <label class="text-sm font-semibold capitalize text-slate-900">
       {{ label.replace(/_/g, " ") }} {{ required ? "*" : "" }}
     </label>
     <input type="text" :value="checked" :required="required" class="cursor-default w-[1px] h-[1px] opacity-0" autocomplete="false" readonly />

@@ -16,13 +16,13 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Transaksi Merchandise</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">Transaksi Merchandise</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola pembayaran, bukti transfer, dan status pengiriman pesanan merchandise.
             </p>
           </div>
           <div class="rounded-2xl bg-white/10 px-4 py-3 text-sm text-blue-50">
-            <p class="text-xs uppercase tracking-wider text-blue-100">Status pesanan</p>
+            <p class="text-sm font-medium text-blue-100">Status pesanan</p>
             <p class="mt-1 font-semibold">Ubah dari dropdown, lalu klik Simpan.</p>
           </div>
         </div>
@@ -30,26 +30,26 @@
 
       <section class="grid grid-cols-1 gap-3 md:grid-cols-4">
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Transaksi</p>
+          <p class="text-sm font-semibold text-slate-500">Total Transaksi</p>
           <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.totalEntries || computedData.length }}</p>
         </div>
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Lunas</p>
+          <p class="text-sm font-semibold text-slate-500">Lunas</p>
           <p class="mt-2 text-2xl font-bold text-green-700">{{ paidCount }}</p>
         </div>
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Perlu Diproses</p>
+          <p class="text-sm font-semibold text-slate-500">Perlu Diproses</p>
           <p class="mt-2 text-2xl font-bold text-amber-700">{{ needProcessCount }}</p>
         </div>
         <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Halaman</p>
+          <p class="text-sm font-semibold text-slate-500">Halaman</p>
           <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.currentPage || 1 }} / {{ pagination?.totalPages || 1 }}</p>
         </div>
       </section>
 
       <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Per halaman</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Per halaman</label>
             <AppSelect
               v-model="limit"
               :options="pageLimitOptions"
@@ -58,7 +58,7 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Metode Bayar</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Metode Bayar</label>
             <AppSelect
               v-model="paymentMethod"
               :options="paymentMethodOptions"
@@ -67,7 +67,7 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Status Bayar</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status Bayar</label>
             <AppSelect
               v-model="paymentStatus"
               :options="paymentStatusOptions"
@@ -76,7 +76,7 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Status Pesanan</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status Pesanan</label>
             <AppSelect
               v-model="orderStatus"
               :options="orderStatusFilterOptions"
@@ -85,7 +85,7 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Cari</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Cari</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-2.5">
                 <svg viewBox="0 0 24 24" class="w-4 h-4 text-slate-400 fill-current">
@@ -107,16 +107,16 @@
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">No</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pesanan</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pembeli</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Alamat</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Total</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pembayaran</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status Pesanan</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Tanggal</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">No</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Pesanan</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Pembeli</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Alamat</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Total</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Pembayaran</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Status Pesanan</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Tanggal</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Bukti</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
@@ -188,7 +188,7 @@
                 <td class="px-4 py-4 align-middle">
                   <button
                     v-if="isManualProof(u.payment)"
-                    class="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
+                    class="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100"
                     @click="openImageModal(u.payment || '')"
                   >
                     Lihat
@@ -212,7 +212,7 @@
                   <button
                     v-if="u.publicToken"
                     type="button"
-                    class="mr-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
+                    class="mr-2 rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100"
                     @click.prevent="copyTrackingLink(u)"
                   >
                     Salin Link

@@ -45,6 +45,46 @@
 
 @tailwind utilities;
 
+:root {
+  --iom-control-border: rgb(140 140 148);
+}
+
+.iom-control-border,
+input:not([type]),
+input[type='date'],
+input[type='email'],
+input[type='number'],
+input[type='password'],
+input[type='search'],
+input[type='tel'],
+input[type='text'],
+input[type='url'],
+select,
+textarea {
+  appearance: none;
+  background-color: #ffffff !important;
+  border-color: var(--iom-control-border) !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-radius: 8px !important;
+}
+
+.iom-control-border:focus,
+input:not([type]):focus,
+input[type='date']:focus,
+input[type='email']:focus,
+input[type='number']:focus,
+input[type='password']:focus,
+input[type='search']:focus,
+input[type='tel']:focus,
+input[type='text']:focus,
+input[type='url']:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--iom-control-border) !important;
+  --tw-ring-color: rgb(140 140 148 / 0.22) !important;
+}
+
 /* ===== Custom SweetAlert2 Error Popup ===== */
 .swal2-popup.swal-error-popup {
   padding-top: 0 !important;
@@ -89,8 +129,6 @@
 .swal2-popup.swal-error-popup .swal2-title {
   color: #ef4444 !important;
   font-weight: 700 !important;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   padding-bottom: 0;
 }
 

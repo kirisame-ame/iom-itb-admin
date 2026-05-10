@@ -8,7 +8,7 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola dan tinjau semua pengajuan bantuan mahasiswa.
             </p>
@@ -67,15 +67,15 @@
           <table class="min-w-full">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider w-10 whitespace-nowrap">No</th>
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Status</th>
-                <th class="px-5 py-3.5 text-center text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Ubah Status</th>
-                <th class="px-5 py-3.5 text-center text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Detail</th>
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Tanggal Kirim</th>
+                <th class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 w-10 whitespace-nowrap">No</th>
+                <th class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 whitespace-nowrap">Status</th>
+                <th class="px-5 py-3.5 text-center text-xs font-semibold text-blue-100 whitespace-nowrap">Ubah Status</th>
+                <th class="px-5 py-3.5 text-center text-xs font-semibold text-blue-100 whitespace-nowrap">Detail</th>
+                <th class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 whitespace-nowrap">Tanggal Kirim</th>
                 <th
                   v-for="col in columns"
                   :key="col"
-                  class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap"
+                  class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 whitespace-nowrap"
                 >
                   {{ col }}
                 </th>
@@ -113,7 +113,7 @@
                   <td class="px-5 py-4 text-center whitespace-nowrap">
                     <button
                       @click="openUpdateStatus(item)"
-                      class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-full hover:bg-blue-100 hover:border-blue-300 transition-colors"
+                      class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-full hover:bg-blue-100 hover:border-blue-300 transition-colors"
                     >
                       <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/>

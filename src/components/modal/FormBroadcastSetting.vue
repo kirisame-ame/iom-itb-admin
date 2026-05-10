@@ -5,7 +5,7 @@
       <div class="w-[560px] max-w-[95vw] overflow-hidden bg-white border rounded-md shadow-md">
         <form @submit.prevent="handleSubmit" novalidate>
           <div class="flex items-center justify-between px-5 py-3 text-gray-700 border-b">
-            <h3 class="text-sm capitalize">{{ title }}</h3>
+            <h3 class="text-sm font-semibold capitalize text-slate-900">{{ title }}</h3>
             <button type="button" @click="closeModal">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -16,7 +16,7 @@
           <div class="px-5 py-5 text-gray-700 bg-gray-50 border-b max-h-[75vh] overflow-y-auto space-y-4">
             <!-- Name -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Nama Setting <span class="text-red-500">*</span></label>
+              <label class="block mb-1.5 text-sm font-semibold text-slate-900">Nama Setting <span class="text-red-500">*</span></label>
               <input
                 v-model="form.name"
                 type="text"
@@ -27,7 +27,7 @@
 
             <!-- Jenis Iuran -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Iuran <span class="text-red-500">*</span></label>
+              <label class="block mb-1.5 text-sm font-semibold text-slate-900">Jenis Iuran <span class="text-red-500">*</span></label>
               <input
                 v-model="form.jenisIuran"
                 type="text"
@@ -39,7 +39,7 @@
             <!-- Interval + Day -->
             <div class="flex gap-3">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Interval <span class="text-red-500">*</span></label>
+                <label class="block mb-1.5 text-sm font-semibold text-slate-900">Interval <span class="text-red-500">*</span></label>
                 <select
                   v-model="form.scheduleInterval"
                   class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -51,7 +51,7 @@
                 </select>
               </div>
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="block mb-1.5 text-sm font-semibold text-slate-900">
                   {{ form.scheduleInterval === 'weekly' ? 'Hari (1=Sen, 7=Min)' : 'Tanggal (1-31)' }}
                   <span class="text-red-500">*</span>
                 </label>
@@ -68,7 +68,7 @@
 
             <!-- Template -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label class="block mb-1.5 text-sm font-semibold text-slate-900">
                 Template Pesan <span class="text-red-500">*</span>
                 <span class="text-xs text-gray-400 ml-1">(gunakan &#123;&#123;name&#125;&#125; dan &#123;&#123;jenisIuran&#125;&#125;)</span>
               </label>
@@ -83,7 +83,7 @@
             <!-- Status -->
             <div class="flex items-center gap-3">
               <input type="checkbox" id="isActive" v-model="form.isActive" class="w-4 h-4 accent-indigo-600" />
-              <label for="isActive" class="text-sm text-gray-700">Aktifkan jadwal otomatis</label>
+              <label for="isActive" class="text-sm font-medium text-slate-900">Aktifkan jadwal otomatis</label>
             </div>
           </div>
 

@@ -5,7 +5,7 @@
       type="button"
       :disabled="disabled"
       :aria-expanded="isOpen"
-      class="inline-flex min-h-[38px] w-full items-center justify-between gap-3 rounded-lg border-2 border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+      class="iom-control-border inline-flex min-h-[38px] w-full items-center justify-between gap-3 rounded-lg border bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#8c8c94]/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
       :class="buttonClass"
       @click="toggle"
       @keydown="onButtonKeydown"
@@ -28,7 +28,7 @@
       <div
         v-if="isOpen"
         ref="menuRef"
-        class="fixed z-[1200] max-h-64 overflow-y-auto rounded-xl border-2 border-slate-200 bg-white shadow-xl ring-1 ring-black/5"
+        class="fixed z-[1200] max-h-64 overflow-y-auto rounded-lg border border-[#8c8c94] bg-white shadow-xl ring-1 ring-black/5"
         :style="menuStyle"
       >
         <button

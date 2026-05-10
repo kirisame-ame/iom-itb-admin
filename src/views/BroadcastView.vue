@@ -337,7 +337,7 @@ const statusClass = (status: string) => {
 
 <style scoped>
 .table-head {
-  @apply px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200;
+  @apply px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200;
 }
 .table-cell {
   @apply px-5 py-4 text-sm bg-white border-b border-gray-200 text-gray-900;

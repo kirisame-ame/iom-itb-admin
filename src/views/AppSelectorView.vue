@@ -106,7 +106,7 @@
               @click="selectApp(app)"
             >
               <span v-if="app.id === originAppId"
-                class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-amber-100 text-amber-800 rounded-full px-1.5 py-0.5">
+                class="absolute top-2 right-2 text-[9px] font-bold bg-amber-100 text-amber-800 rounded-full px-1.5 py-0.5">
                 Asal
               </span>
               <div

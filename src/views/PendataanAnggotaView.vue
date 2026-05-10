@@ -8,7 +8,7 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Data pendaftaran anggota IOM ITB.</p>
           </div>
           <a
@@ -58,12 +58,12 @@
           <table class="min-w-full">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider w-10 whitespace-nowrap">No</th>
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Tanggal Kirim</th>
+                <th class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 w-10 whitespace-nowrap">No</th>
+                <th class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 whitespace-nowrap">Tanggal Kirim</th>
                 <th
                   v-for="col in columns"
                   :key="col"
-                  class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap"
+                  class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 whitespace-nowrap"
                 >
                   {{ col }}
                 </th>

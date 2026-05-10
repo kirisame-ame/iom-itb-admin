@@ -24,7 +24,7 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Donasi manual dan online Midtrans tercatat dalam satu daftar.</p>
           </div>
           <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
@@ -54,7 +54,7 @@
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Per halaman</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Per halaman</label>
             <AppSelect
               v-model="limit"
               :options="pageLimitOptions"
@@ -63,7 +63,7 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Metode</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Metode</label>
             <AppSelect
               v-model="paymentMethod"
               :options="paymentMethodOptions"
@@ -72,7 +72,7 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Status</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status</label>
             <AppSelect
               v-model="paymentStatus"
               :options="paymentStatusOptions"
@@ -81,7 +81,7 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Jenis Donasi</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Jenis Donasi</label>
             <AppSelect
               v-model="donationType"
               :options="donationTypeFilterOptions"
@@ -90,7 +90,7 @@
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Cari Nama</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Cari Nama</label>
             <input
               v-model="search"
               @input="onSearchInput"
@@ -103,7 +103,7 @@
 
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ card.title }}</p>
+          <p class="text-sm font-semibold text-slate-500">{{ card.title }}</p>
           <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
           <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
         </div>
@@ -122,16 +122,16 @@
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">No</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Tanggal</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Donatur</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Jenis</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Fakultas</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Kode</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Nominal</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Metode</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti Manual</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">No</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Tanggal</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Donatur</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Jenis</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Fakultas</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Kode</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Nominal</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Metode</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Status</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Bukti Manual</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
@@ -173,7 +173,7 @@
                 <td class="px-4 py-3 align-middle">
                   <span
                     v-if="u.paymentMethod === 'midtrans'"
-                    class="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700"
+                    class="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700"
                   >
                     Midtrans
                   </span>

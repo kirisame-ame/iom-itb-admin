@@ -194,7 +194,7 @@
 
               <!-- Caption -->
               <div class="mb-3">
-                <label class="block text-xs text-gray-500 mb-1">Caption</label>
+                <label class="block mb-1.5 text-sm font-semibold text-slate-900">Caption</label>
                 <input
                   v-model="form.media[currentMediaIndex].caption"
                   @input="autoSave"
@@ -251,7 +251,7 @@
 
             <!-- Tipe media -->
             <div class="mb-3">
-              <label class="block text-xs text-gray-500 mb-1">Tipe Media</label>
+              <label class="block mb-1.5 text-sm font-semibold text-slate-900">Tipe Media</label>
               <div class="relative">
                 <select
                   v-model="newMediaType"
@@ -274,7 +274,7 @@
                 </label>
               </div>
               <div v-else-if="newMediaType === 'url'">
-                <label class="block text-xs text-gray-500 mb-1">URL Gambar</label>
+                <label class="block mb-1.5 text-sm font-semibold text-slate-900">URL Gambar</label>
                 <input
                   v-model="newMediaValue"
                   placeholder="https://..."
@@ -282,7 +282,7 @@
                 />
               </div>
               <div v-else-if="newMediaType === 'youtube'">
-                <label class="block text-xs text-gray-500 mb-1">URL YouTube</label>
+                <label class="block mb-1.5 text-sm font-semibold text-slate-900">URL YouTube</label>
                 <input
                   v-model="newMediaValue"
                   placeholder="https://youtube.com/watch?v=..."

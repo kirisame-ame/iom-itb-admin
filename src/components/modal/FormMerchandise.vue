@@ -28,7 +28,7 @@
 
             <!-- Kategori dinamis -->
             <div class="relative mt-2 rounded-md shadow-sm">
-              <label class="text-sm font-semibold text-slate-700">Kategori</label>
+              <label class="text-sm font-semibold text-slate-900">Kategori</label>
               <AppSelect
                 class="mt-1"
                 :model-value="selectedKategori"

@@ -19,7 +19,7 @@
           <div class="divide-y divide-slate-100">
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Nama Mitra <span class="text-red-500">*</span></label>
+                <label class="text-sm font-semibold text-slate-900">Nama Mitra <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Nama institusi atau organisasi mitra.</p>
               </div>
               <input
@@ -33,7 +33,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Nama PIC</label>
+                <label class="text-sm font-semibold text-slate-900">Nama PIC</label>
                 <p class="mt-0.5 text-xs text-slate-400">Kontak internal, tidak tampil di publik.</p>
               </div>
               <input
@@ -46,7 +46,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Telepon PIC</label>
+                <label class="text-sm font-semibold text-slate-900">Telepon PIC</label>
                 <p class="mt-0.5 text-xs text-slate-400">Nomor yang dapat dihubungi admin.</p>
               </div>
               <input
@@ -59,7 +59,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-start">
               <div class="md:pt-2">
-                <label class="text-sm font-semibold text-slate-700">Deskripsi</label>
+                <label class="text-sm font-semibold text-slate-900">Deskripsi</label>
                 <p class="mt-0.5 text-xs text-slate-400">Ringkasan kerja sama dengan mitra.</p>
               </div>
               <textarea
@@ -72,7 +72,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Logo</label>
+                <label class="text-sm font-semibold text-slate-900">Logo</label>
                 <p class="mt-0.5 text-xs text-slate-400">Gambar logo mitra.</p>
               </div>
               <div class="flex items-center gap-3">
@@ -91,7 +91,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-start">
               <div>
-                <label class="text-sm font-semibold text-slate-700">MoU (PDF)</label>
+                <label class="text-sm font-semibold text-slate-900">MoU (PDF)</label>
                 <p class="mt-0.5 text-xs text-slate-400">Dokumen kerja sama yang tersimpan.</p>
               </div>
               <div>

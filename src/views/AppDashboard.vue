@@ -6,7 +6,7 @@
       <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
       <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Dashboard</h1>
+          <h1 class="text-2xl font-bold md:text-4xl">Dashboard</h1>
           <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
             Pantau dan kelola ringkasan statistik layanan, status pengajuan bantuan, serta progres donasi secara menyeluruh.
           </p>
@@ -21,7 +21,7 @@
       </div>
     </section>
 
-    <!-- KPI CARDS GRID -->
+    <!-- Ringkasan CARDS GRID -->
     <div class="mt-2 mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 xl:gap-6">
       
       <!-- Card 1: Pengajuan Perlu Proses -->
@@ -480,7 +480,7 @@ const isDonationDropdownOpen = ref(false)
 const isChartsVisible = ref(false)
 const isPembayaranVisible = ref(false)
 
-// ================= KPI =================
+// ================= Ringkasan =================
 const kpiData = ref({
   totalPengajuanPending: { 
     title: "Pengajuan Perlu Proses", 

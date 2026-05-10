@@ -5,7 +5,7 @@
       <form @submit.prevent="handleSubmit" class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl">
         <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-blue-700">Kegiatan Kemitraan</p>
+            <p class="text-sm font-semibold text-blue-700">Kegiatan Kemitraan</p>
             <h3 class="mt-1 text-lg font-bold capitalize text-slate-900">{{ title }}</h3>
             <p class="mt-1 text-sm text-slate-500">Lengkapi informasi utama, jadwal, dan gambar publikasi kegiatan.</p>
           </div>
@@ -20,7 +20,7 @@
           <div class="divide-y divide-slate-100">
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Mitra <span class="text-red-500">*</span></label>
+                <label class="text-sm font-semibold text-slate-900">Mitra <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Pilih mitra yang terkait.</p>
               </div>
               <AppSelect
@@ -32,7 +32,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Nama Kegiatan <span class="text-red-500">*</span></label>
+                <label class="text-sm font-semibold text-slate-900">Nama Kegiatan <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Judul kegiatan yang tampil di publik.</p>
               </div>
               <input
@@ -46,7 +46,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-start">
               <div class="md:pt-2">
-                <label class="text-sm font-semibold text-slate-700">Deskripsi</label>
+                <label class="text-sm font-semibold text-slate-900">Deskripsi</label>
                 <p class="mt-0.5 text-xs text-slate-400">Ringkasan singkat kegiatan.</p>
               </div>
               <textarea
@@ -59,7 +59,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Lokasi</label>
+                <label class="text-sm font-semibold text-slate-900">Lokasi</label>
                 <p class="mt-0.5 text-xs text-slate-400">Lokasi atau kanal pelaksanaan.</p>
               </div>
               <input
@@ -72,7 +72,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Status</label>
+                <label class="text-sm font-semibold text-slate-900">Status</label>
                 <p class="mt-0.5 text-xs text-slate-400">Tahap pelaksanaan kegiatan.</p>
               </div>
               <AppSelect
@@ -84,7 +84,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Periode</label>
+                <label class="text-sm font-semibold text-slate-900">Periode</label>
                 <p class="mt-0.5 text-xs text-slate-400">Tanggal mulai dan selesai.</p>
               </div>
               <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -103,7 +103,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-700">Gambar</label>
+                <label class="text-sm font-semibold text-slate-900">Gambar</label>
                 <p class="mt-0.5 text-xs text-slate-400">Poster atau dokumentasi kegiatan.</p>
               </div>
               <div class="flex items-center gap-3">

@@ -65,17 +65,12 @@
           />
         </div>
 
-        <select
+        <AppSelect
           v-model="sort"
+          :options="sortOptions"
+          class="w-full sm:w-40"
           @change="fetchData"
-          class="h-[38px] px-3 py-2 border border-gray-200 rounded-md text-sm bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8 cursor-pointer"
-          :style="selectStyle"
-        >
-          <option value="newest">Terbaru</option>
-          <option value="oldest">Terlama</option>
-          <option value="az">A-Z</option>
-          <option value="za">Z-A</option>
-        </select>
+        />
       </section>
 
       <div v-if="isLoading" class="space-y-3">
@@ -210,6 +205,7 @@ import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
 import { GET_ACTIVITIES, DELETE_ACTIVITY, POST_ACTIVITY, PUBLISH_ACTIVITY, GET_ACTIVITY_COUNTS, PUT_ACTIVITY } from '@/store/activity.module';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -239,12 +235,12 @@ const totalDraft = ref(0);
 const totalPublished = ref(0);
 const totalAll = ref(0);
 
-const selectStyle = {
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 14px center',
-  backgroundSize: '18px',
-}
+const sortOptions = [
+  { value: 'newest', label: 'Terbaru' },
+  { value: 'oldest', label: 'Terlama' },
+  { value: 'az', label: 'A-Z' },
+  { value: 'za', label: 'Z-A' },
+]
 
 const retractActivity = async (activity: any) => {
   const result = await Swal.fire({

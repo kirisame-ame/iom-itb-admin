@@ -39,7 +39,7 @@
                 v-model="searchKeyword"
                 type="text"
                 placeholder="Cari: donasi, status, upload, fakultas, pembayaran..."
-                class="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-11 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-[#8c8c94]/20"
+                class="h-12 w-full rounded-lg border border-slate-200 bg-white py-0 pl-11 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-[#8c8c94]/20"
               />
             </div>
           </div>
@@ -51,6 +51,7 @@
             <AppSelect
               v-model="selectedCategory"
               :options="categoryOptions"
+              button-class="h-12 py-0"
             />
           </div>
         </div>

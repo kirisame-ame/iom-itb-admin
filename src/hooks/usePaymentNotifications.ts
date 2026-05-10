@@ -100,9 +100,12 @@ export function usePaymentNotifications(): UsePaymentNotificationsReturn {
     if (isOpen.value) {
       // Mark as read immediately for snappy UI
       if (unreadCount.value > 0) {
-        markAsRead();
+        markAsRead().finally(() => {
+          refresh();
+        });
+      } else {
+        refresh();
       }
-      refresh();
     }
   };
 

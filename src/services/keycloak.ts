@@ -9,68 +9,60 @@ interface ParsedToken extends Record<string, any> {
   resource_access?: Record<string, { roles?: string[] }>;
 }
 
-const keycloak: any = new (Keycloak as any)({
-  url: process.env.VUE_APP_KEYCLOAK_URL || "",
-  realm: process.env.VUE_APP_KEYCLOAK_REALM || "",
-  clientId: process.env.VUE_APP_KEYCLOAK_CLIENT_ID || "iom-itb-admin",
-});
-
-let initialized = false;
-let initPromise: Promise<boolean> | null = null;
-
-const OIDC_CALLBACK_KEYS = new Set([
-  "state",
-  "session_state",
-  "iss",
-  "code",
-  "error",
-  "error_description",
-]);
-
-function cleanupOidcCallbackUrl(): void {
-  const url = new URL(window.location.href);
-  let changed = false;
-
-  const searchParams = new URLSearchParams(url.search);
-  for (const key of OIDC_CALLBACK_KEYS) {
-    if (searchParams.has(key)) {
-      searchParams.delete(key);
-      changed = true;
-    }
-  }
-  url.search = searchParams.toString() ? `?${searchParams.toString()}` : "";
-
-  if (url.hash) {
-    const hashValue = url.hash.startsWith("#") ? url.hash.slice(1) : url.hash;
-    const hashParams = new URLSearchParams(hashValue);
-    let hashChanged = false;
-
-    for (const key of OIDC_CALLBACK_KEYS) {
-      if (hashParams.has(key)) {
-        hashParams.delete(key);
-        hashChanged = true;
-      }
-    }
-
-    if (hashChanged) {
-      const nextHash = hashParams.toString();
-      url.hash = nextHash ? `#${nextHash}` : "";
-      changed = true;
-    }
-  }
-
-  if (changed) {
-    window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+declare global {
+  interface Window {
+    __IOM_KEYCLOAK__?: any;
+    __IOM_KEYCLOAK_INIT_PROMISE__?: Promise<boolean> | null;
+    __IOM_KEYCLOAK_INITIALIZED__?: boolean;
   }
 }
 
+const keycloak =
+  window.__IOM_KEYCLOAK__ ||
+  new (Keycloak as any)({
+    url: process.env.VUE_APP_KEYCLOAK_URL || "",
+    realm: process.env.VUE_APP_KEYCLOAK_REALM || "",
+    clientId: process.env.VUE_APP_KEYCLOAK_CLIENT_ID || "iom-itb-admin",
+  });
+
+window.__IOM_KEYCLOAK__ = keycloak;
+
+const cleanupOidcCallbackUrl = () => {
+  const url = new URL(window.location.href);
+
+  const oidcParams = [
+    "state",
+    "session_state",
+    "code",
+    "iss",
+    "error",
+    "error_description",
+  ];
+
+  let hasOidcParams = false;
+
+  oidcParams.forEach((param) => {
+    if (url.searchParams.has(param)) {
+      url.searchParams.delete(param);
+      hasOidcParams = true;
+    }
+  });
+
+  if (hasOidcParams) {
+    const cleanUrl =
+      url.pathname + url.search + url.hash;
+
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+};
+
 async function init(): Promise<boolean> {
-  if (initialized) {
+  if (window.__IOM_KEYCLOAK_INITIALIZED__) {
     return !!keycloak.authenticated;
   }
 
-  if (initPromise) {
-    return initPromise;
+  if (window.__IOM_KEYCLOAK_INIT_PROMISE__) {
+    return window.__IOM_KEYCLOAK_INIT_PROMISE__;
   }
 
   const options: Record<string, any> = {
@@ -82,19 +74,20 @@ async function init(): Promise<boolean> {
     silentCheckSsoFallback: true,
   };
 
-  initPromise = keycloak.init(options)
+  window.__IOM_KEYCLOAK_INIT_PROMISE__ = keycloak
+    .init(options)
     .then((authenticated: boolean) => {
-      initialized = true;
+      window.__IOM_KEYCLOAK_INITIALIZED__ = true;
       cleanupOidcCallbackUrl();
       return authenticated;
     })
     .catch((error: unknown) => {
-      initialized = false;
-      initPromise = null;
+      window.__IOM_KEYCLOAK_INIT_PROMISE__ = null;
+      window.__IOM_KEYCLOAK_INITIALIZED__ = false;
       throw error;
     });
 
-  return initPromise!;
+  return window.__IOM_KEYCLOAK_INIT_PROMISE__!;
 }
 
 function isAuthenticated(): boolean {
@@ -121,25 +114,23 @@ function getParsedToken(): ParsedToken | null {
 }
 
 async function login(): Promise<void> {
-  if (!initialized) {
-    await init();
-  }
+  await init();
 
   const loginUrl = await keycloak.createLoginUrl({
     redirectUri: `${window.location.origin}/select`,
     responseMode: "query",
   });
+
   window.location.assign(loginUrl);
 }
 
 async function logout(): Promise<void> {
-  if (!initialized) {
-    await init();
-  }
+  await init();
 
   const logoutUrl = await keycloak.createLogoutUrl({
     redirectUri: `${window.location.origin}/`,
   });
+
   window.location.assign(logoutUrl);
 }
 

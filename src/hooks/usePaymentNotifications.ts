@@ -60,9 +60,19 @@ export function usePaymentNotifications(): UsePaymentNotificationsReturn {
 
     try {
       const result = await fetchPaymentNotifications();
-      items.value = result.items;
-      summary.value = result.summary;
-      unreadCount.value = result.unreadCount;
+      
+      // If we are currently open, we might have optimistically marked as read.
+      // So if the server returns unread items but we already marked them read locally
+      // while the dropdown is open, we can force them to be read.
+      if (isOpen.value && result.unreadCount > 0) {
+        items.value = result.items.map(item => ({ ...item, read: true }));
+        summary.value = result.summary;
+        unreadCount.value = 0;
+      } else {
+        items.value = result.items;
+        summary.value = result.summary;
+        unreadCount.value = result.unreadCount;
+      }
     } catch {
       errorMessage.value = "Notifikasi belum bisa dimuat. Coba muat ulang.";
     } finally {
@@ -70,31 +80,34 @@ export function usePaymentNotifications(): UsePaymentNotificationsReturn {
     }
   };
 
+  const markAsRead = async (): Promise<void> => {
+    if (unreadCount.value === 0) return;
+
+    // Optimistic UI update
+    unreadCount.value = 0;
+    items.value = items.value.map((item) => ({ ...item, read: true }));
+
+    try {
+      const result = await markPaymentNotificationsRead();
+      unreadCount.value = result.unreadCount;
+    } catch {
+      errorMessage.value = "Status baca notifikasi belum bisa disimpan.";
+    }
+  };
+
   const toggle = (): void => {
     isOpen.value = !isOpen.value;
     if (isOpen.value) {
-      refresh().then(() => {
-        if (!errorMessage.value) {
-          markAsRead();
-        }
-      });
+      // Mark as read immediately for snappy UI
+      if (unreadCount.value > 0) {
+        markAsRead();
+      }
+      refresh();
     }
   };
 
   const close = (): void => {
     isOpen.value = false;
-  };
-
-  const markAsRead = async (): Promise<void> => {
-    if (unreadCount.value === 0) return;
-
-    try {
-      const result = await markPaymentNotificationsRead();
-      unreadCount.value = result.unreadCount;
-      items.value = items.value.map((item) => ({ ...item, read: true }));
-    } catch {
-      errorMessage.value = "Status baca notifikasi belum bisa disimpan.";
-    }
   };
 
   const isUnread = (item: PaymentNotificationItem): boolean => {

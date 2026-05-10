@@ -181,6 +181,10 @@
                 v-model="tagInput"
                 @input="searchTags"
                 @keyup.enter="addTagFromInput"
+                @keydown.down.prevent="highlightNext"
+                @keydown.up.prevent="highlightPrev"
+                @keydown.enter.prevent="selectHighlighted"
+                @blur="closeTagSuggestions"
                 placeholder="Cari atau buat tag..."
                 class="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -190,10 +194,11 @@
                 class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden"
               >
                 <button
-                  v-for="suggestion in tagSuggestions"
+                  v-for="(suggestion, index) in tagSuggestions"
                   :key="suggestion"
-                  @click="addTag(suggestion)"
-                  class="w-full px-3 py-2 text-xs text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                  @mousedown.prevent="addTag(suggestion)"
+                  :class="index === highlightedIndex ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'"
+                  class="w-full px-3 py-2 text-xs text-left transition-colors"
                 >
                   {{ suggestion }}
                 </button>
@@ -234,6 +239,27 @@ const thumbnailUrlInput = ref('');
 const tagInput = ref('');
 const tagSuggestions = ref<string[]>([]);
 let tagSearchTimer: any = null;
+
+const highlightedIndex = ref(-1);
+
+const highlightNext = () => {
+  if (tagSuggestions.value.length === 0) return;
+  highlightedIndex.value = (highlightedIndex.value + 1) % tagSuggestions.value.length;
+};
+
+const highlightPrev = () => {
+  if (tagSuggestions.value.length === 0) return;
+  highlightedIndex.value = (highlightedIndex.value - 1 + tagSuggestions.value.length) % tagSuggestions.value.length;
+};
+
+const selectHighlighted = () => {
+  if (highlightedIndex.value >= 0 && tagSuggestions.value[highlightedIndex.value]) {
+    addTag(tagSuggestions.value[highlightedIndex.value]);
+    highlightedIndex.value = -1;
+  } else {
+    addTagFromInput();
+  }
+};
 
 
 const form = ref({
@@ -426,14 +452,21 @@ const removeThumbnail = () => {
   autoSave();
 };
 
+const closeTagSuggestions = () => {
+  setTimeout(() => { tagSuggestions.value = []; }, 150);
+};
+
 const searchTags = () => {
   clearTimeout(tagSearchTimer);
   tagSearchTimer = setTimeout(async () => {
-    if (!tagInput.value) { tagSuggestions.value = []; return; }
+    if (!tagInput.value.trim()) { tagSuggestions.value = []; return; }
     const results = await store.dispatch(GET_TAGS, { search: tagInput.value });
-    tagSuggestions.value = (results || [])
+    console.log('TAG RESULTS:', results); // ✅ tambah ini
+    tagSuggestions.value = (results?.data?.data || results?.data || results || [])
       .map((t: any) => t.name)
-      .filter((name: string) => !form.value.tags.includes(name));
+      .filter((name: string) => !form.value.tags.includes(name))
+      .slice(0, 3);
+    console.log('SUGGESTIONS:', tagSuggestions.value); // ✅ dan ini
   }, 300);
 };
 

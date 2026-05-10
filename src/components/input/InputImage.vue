@@ -1,6 +1,6 @@
 <template>
     <div class="relative mt-2 rounded-md shadow-sm">
-      <label class="text-sm capitalize">{{ label.replace(/_/g, " ") }} {{ required ? "*" : "" }}</label>
+      <label class="text-sm font-semibold capitalize text-slate-900">{{ label.replace(/_/g, " ") }} {{ required ? "*" : "" }}</label>
   
       <!-- Input untuk upload gambar -->
       <input

@@ -16,82 +16,76 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
-              Merchandise IOM ITB
-            </p>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Transaksi Merchandise</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">Transaksi Merchandise</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola pembayaran, bukti transfer, dan status pengiriman pesanan merchandise.
             </p>
           </div>
           <div class="rounded-2xl bg-white/10 px-4 py-3 text-sm text-blue-50">
-            <p class="text-xs uppercase tracking-wider text-blue-100">Status pesanan</p>
+            <p class="text-sm font-medium text-blue-100">Status pesanan</p>
             <p class="mt-1 font-semibold">Ubah dari dropdown, lalu klik Simpan.</p>
           </div>
         </div>
       </section>
 
-      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <section class="grid grid-cols-1 gap-3 md:grid-cols-4">
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-sm font-semibold text-slate-500">Total Transaksi</p>
+          <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.totalEntries || computedData.length }}</p>
+        </div>
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-sm font-semibold text-slate-500">Lunas</p>
+          <p class="mt-2 text-2xl font-bold text-green-700">{{ paidCount }}</p>
+        </div>
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-sm font-semibold text-slate-500">Perlu Diproses</p>
+          <p class="mt-2 text-2xl font-bold text-amber-700">{{ needProcessCount }}</p>
+        </div>
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-sm font-semibold text-slate-500">Halaman</p>
+          <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.currentPage || 1 }} / {{ pagination?.totalPages || 1 }}</p>
+        </div>
+      </section>
+
+      <section class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Per halaman</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Per halaman</label>
+            <AppSelect
               v-model="limit"
+              :options="pageLimitOptions"
               @change="refreshFromFirstPage"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option :value="5">5</option>
-              <option :value="10">10</option>
-              <option :value="20">20</option>
-              <option :value="50">50</option>
-            </select>
+            />
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Metode Bayar</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Metode Bayar</label>
+            <AppSelect
               v-model="paymentMethod"
+              :options="paymentMethodOptions"
               @change="refreshFromFirstPage"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="manual">Manual</option>
-              <option value="midtrans">Midtrans</option>
-            </select>
+            />
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Status Bayar</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status Bayar</label>
+            <AppSelect
               v-model="paymentStatus"
+              :options="paymentStatusOptions"
               @change="refreshFromFirstPage"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="pending">Pending</option>
-              <option value="settlement">Settlement</option>
-              <option value="expired">Expired</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
-            </select>
+            />
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Status Pesanan</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status Pesanan</label>
+            <AppSelect
               v-model="orderStatus"
+              :options="orderStatusFilterOptions"
               @change="refreshFromFirstPage"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option v-for="status in orderStatusOptions" :key="status" :value="status">
-                {{ formatStatus(status) }}
-              </option>
-            </select>
+            />
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Cari</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Cari</label>
             <div class="relative">
               <span class="absolute inset-y-0 left-0 flex items-center pl-2.5">
                 <svg viewBox="0 0 24 24" class="w-4 h-4 text-slate-400 fill-current">
@@ -106,24 +100,23 @@
               />
             </div>
           </div>
-        </div>
-      </div>
+      </section>
 
-      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">No</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pesanan</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pembeli</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Alamat</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Total</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Pembayaran</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status Pesanan</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Tanggal</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Aksi</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">No</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Pesanan</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Pembeli</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Alamat</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Total</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Pembayaran</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Status Pesanan</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Tanggal</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Bukti</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
@@ -175,15 +168,11 @@
                 </td>
                 <td class="px-4 py-4 align-middle">
                   <div class="min-w-[170px] space-y-2">
-                    <select
+                    <AppSelect
                       v-model="statusDraft[u.id]"
                       :disabled="savingStatus[u.id]"
-                      class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      <option v-for="status in orderStatusOptions" :key="status" :value="status">
-                        {{ formatStatus(status) }}
-                      </option>
-                    </select>
+                      :options="orderStatusSelectOptions"
+                    />
                     <span
                       class="inline-block px-2 py-0.5 text-xs font-medium rounded-full"
                       :class="orderStatusBadgeClass(statusDraft[u.id] || u.status)"
@@ -199,7 +188,7 @@
                 <td class="px-4 py-4 align-middle">
                   <button
                     v-if="isManualProof(u.payment)"
-                    class="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
+                    class="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100"
                     @click="openImageModal(u.payment || '')"
                   >
                     Lihat
@@ -223,7 +212,7 @@
                   <button
                     v-if="u.publicToken"
                     type="button"
-                    class="mr-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
+                    class="mr-2 rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100"
                     @click.prevent="copyTrackingLink(u)"
                   >
                     Salin Link
@@ -271,6 +260,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { GET_TRANSACTIONS, DELETE_TRANSACTION, PUT_TRANSACTION } from '@/store/transaction.module';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
 
@@ -315,6 +305,49 @@ const statusDraft = ref<Record<number, string>>({});
 const savingStatus = ref<Record<number, boolean>>({});
 const orderStatusOptions = ['waiting', 'on process', 'on delivery', 'arrived', 'done', 'canceled', 'denied'];
 const notifyStatuses = new Set(['on process', 'on delivery', 'arrived', 'done', 'canceled', 'denied']);
+const orderStatusLabels: Record<string, string> = {
+  waiting: 'Menunggu',
+  'on process': 'Diproses',
+  'on delivery': 'Dikirim',
+  arrived: 'Tiba',
+  done: 'Selesai',
+  canceled: 'Dibatalkan',
+  denied: 'Ditolak',
+};
+const paymentStatusLabels: Record<string, string> = {
+  pending: 'Menunggu',
+  settlement: 'Lunas',
+  expired: 'Kedaluwarsa',
+  failed: 'Gagal',
+  refunded: 'Dikembalikan',
+};
+const pageLimitOptions = [
+  { value: 5, label: '5' },
+  { value: 10, label: '10' },
+  { value: 20, label: '20' },
+  { value: 50, label: '50' },
+];
+const paymentMethodOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'manual', label: 'Manual' },
+  { value: 'midtrans', label: 'Midtrans' },
+];
+const paymentStatusOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'pending', label: 'Menunggu' },
+  { value: 'settlement', label: 'Lunas' },
+  { value: 'expired', label: 'Kedaluwarsa' },
+  { value: 'failed', label: 'Gagal' },
+  { value: 'refunded', label: 'Dikembalikan' },
+];
+const orderStatusSelectOptions = orderStatusOptions.map((status) => ({
+  value: status,
+  label: orderStatusLabels[status],
+}));
+const orderStatusFilterOptions = [
+  { value: '', label: 'Semua' },
+  ...orderStatusSelectOptions,
+];
 const publicAppBaseUrl = (process.env.VUE_APP_PUBLIC_APP_URL || 'https://iom-app.kirisame.jp.net').replace(/\/+$/, '');
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -325,6 +358,8 @@ const computedData = computed<Transaction[]>(() => {
 
 const pagination = computed(() => store.getters.transactionPagination || {});
 const startNumber = computed(() => pagination.value?.start || 1);
+const paidCount = computed(() => computedData.value.filter((item) => item.paymentStatus === 'settlement').length);
+const needProcessCount = computed(() => computedData.value.filter((item) => ['waiting', 'on process'].includes(item.status)).length);
 
 const getData = async () => {
   isLoading.value = true;
@@ -380,7 +415,7 @@ const merchandiseName = (transaction: Transaction) => {
 
 const formatStatus = (status?: string) => {
   if (!status) return '-';
-  return status.replace(/\b\w/g, (char) => char.toUpperCase());
+  return orderStatusLabels[status] || status.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
 const formatNominal = (amount?: number | string | null) => {
@@ -396,7 +431,7 @@ const paymentMethodLabel = (method?: string) => {
   return '-';
 };
 
-const paymentStatusLabel = (status?: string) => status || 'pending';
+const paymentStatusLabel = (status?: string) => paymentStatusLabels[status || 'pending'] || 'Menunggu';
 
 const methodBadgeClass = (method?: string) =>
   method === 'midtrans' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700';

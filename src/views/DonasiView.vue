@@ -15,7 +15,7 @@
       class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60"
       @click="closeImageModal"
     >
-      <img :src="selectedImage" alt="Bukti Bayar" class="max-w-full max-h-full rounded-md shadow-lg" />
+      <img :src="selectedImage" alt="Bukti bayar manual" class="max-w-full max-h-full rounded-md shadow-lg" />
     </div>
 
     <div class="mt-8 space-y-5">
@@ -24,99 +24,73 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
-              Keuangan IOM ITB
-            </p>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Donasi manual dan online Midtrans tercatat dalam satu daftar.</p>
           </div>
-        <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
-          <button
-            type="button"
-            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
-            @click="openAddModal"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-            </svg>
-            Tambah Donasi
-          </button>
-          <a
-            :href="excelUrl"
-            target="_blank"
-            rel="noopener"
-            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:bg-emerald-400 hover:shadow-xl sm:w-auto"
-          >
-            Excel
-            <IcLink class="w-4 h-4" />
-          </a>
+          <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
+            <button
+              type="button"
+              class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
+              @click="openAddModal"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+              </svg>
+              Tambah Donasi
+            </button>
+            <a
+              :href="excelUrl"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:bg-emerald-400 hover:shadow-xl sm:w-auto"
+            >
+              Excel
+              <IcLink class="w-4 h-4" />
+            </a>
+          </div>
         </div>
-      </div>
       </section>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Per halaman</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Per halaman</label>
+            <AppSelect
               v-model="limit"
+              :options="pageLimitOptions"
               @change="() => { page = 1; getData() }"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option :value="5">5</option>
-              <option :value="10">10</option>
-              <option :value="20">20</option>
-              <option :value="50">50</option>
-            </select>
+            />
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Metode</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Metode</label>
+            <AppSelect
               v-model="paymentMethod"
+              :options="paymentMethodOptions"
               @change="() => { page = 1; getData() }"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="manual">Manual</option>
-              <option value="midtrans">Midtrans</option>
-            </select>
+            />
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Status</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status</label>
+            <AppSelect
               v-model="paymentStatus"
+              :options="paymentStatusOptions"
               @change="() => { page = 1; getData() }"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="pending">Pending</option>
-              <option value="settlement">Settlement</option>
-              <option value="expired">Expired</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
-            </select>
+            />
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Jenis Donasi</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Jenis Donasi</label>
+            <AppSelect
               v-model="donationType"
+              :options="donationTypeFilterOptions"
               @change="() => { page = 1; getData() }"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="iuran_sukarela">Iuran Sukarela</option>
-              <option value="kontribusi_anggota">Kontribusi Anggota</option>
-              <option value="kontribusi_donatur">Kontribusi Donatur</option>
-              <option value="pembelian_merchandise">Pembelian Merchandise</option>
-              <option value="kontribusi_sukarela">Kontribusi Sukarela</option>
-            </select>
+            />
           </div>
 
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Cari Nama</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Cari Nama</label>
             <input
               v-model="search"
               @input="onSearchInput"
@@ -127,21 +101,37 @@
         </div>
       </div>
 
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p class="text-sm font-semibold text-slate-500">{{ card.title }}</p>
+          <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
+          <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
+        </div>
+      </div>
+
       <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Daftar Donasi</h2>
+            <p class="mt-1 text-xs text-slate-500">Transaksi donasi sesuai filter daftar.</p>
+          </div>
+          <span class="text-xs text-slate-500">Halaman {{ pagination?.currentPage || page }} dari {{ pagination?.totalPages || 1 }}</span>
+        </div>
+
         <div class="overflow-x-auto">
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">No</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Tanggal</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Donatur</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Jenis</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Fakultas</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Kode</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-right text-blue-100 uppercase">Nominal</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Metode</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Status</th>
-                <th class="px-4 py-3.5 text-xs font-semibold tracking-wider text-left text-blue-100 uppercase">Bukti</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">No</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Tanggal</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Donatur</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Jenis</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Fakultas</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Kode</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Nominal</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Metode</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Status</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Bukti Manual</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
@@ -181,8 +171,14 @@
                   </span>
                 </td>
                 <td class="px-4 py-3 align-middle">
+                  <span
+                    v-if="u.paymentMethod === 'midtrans'"
+                    class="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700"
+                  >
+                    Midtrans
+                  </span>
                   <button
-                    v-if="u.proof"
+                    v-else-if="u.proof"
                     class="text-sm font-medium text-indigo-600 hover:underline"
                     @click="openImageModal(u.proof)"
                   >Lihat</button>
@@ -223,6 +219,27 @@ import IcLink from '@/assets/svg/ic-link.vue';
 import { useStore } from 'vuex';
 import { formatDate } from '@/utils';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
+
+interface DonationRow {
+  id?: string | number;
+  date?: string;
+  createdAt?: string;
+  name?: string;
+  email?: string;
+  noWhatsapp?: string;
+  donationType?: string;
+  faculty?: {
+    name?: string;
+    kodeUnik?: string;
+  };
+  kodeUnik?: string;
+  grossAmount?: number | string | null;
+  amount?: number | string | null;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  proof?: string;
+}
 
 const excelUrl =
   'https://docs.google.com/spreadsheets/d/13w3FcIz4jjIBcf7DvG_83FmU8NBss_MkGt4lM7U6x6k/edit?usp=sharing';
@@ -242,8 +259,36 @@ const title = ref('Donasi');
 
 const isOpened = ref(false);
 const currentId = ref<string | undefined>(undefined);
-const dataUpdate = ref<Record<string, any>>({});
+const dataUpdate = ref<Partial<DonationRow>>({});
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+const pageLimitOptions = [
+  { value: 5, label: '5' },
+  { value: 10, label: '10' },
+  { value: 20, label: '20' },
+  { value: 50, label: '50' },
+];
+const paymentMethodOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'manual', label: 'Manual' },
+  { value: 'midtrans', label: 'Midtrans' },
+];
+const paymentStatusOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'pending', label: 'Menunggu' },
+  { value: 'settlement', label: 'Lunas' },
+  { value: 'expired', label: 'Kedaluwarsa' },
+  { value: 'failed', label: 'Gagal' },
+  { value: 'refunded', label: 'Dikembalikan' },
+];
+const donationTypeFilterOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'iuran_sukarela', label: 'Iuran Sukarela' },
+  { value: 'kontribusi_anggota', label: 'Kontribusi Anggota' },
+  { value: 'kontribusi_donatur', label: 'Kontribusi Donatur' },
+  { value: 'pembelian_merchandise', label: 'Pembelian Merchandise' },
+  { value: 'kontribusi_sukarela', label: 'Kontribusi Sukarela' },
+];
 
 const openAddModal = () => {
   currentId.value = undefined;
@@ -258,7 +303,7 @@ const handleModalClose = async () => {
   await getData();
 };
 
-const computedData = computed(() => {
+const computedData = computed<DonationRow[]>(() => {
   const donasi = store.getters.donasi;
   return donasi?.data || [];
 });
@@ -269,6 +314,49 @@ const pagination = computed(() => {
 });
 
 const startNumber = computed(() => pagination.value?.start || 1);
+const settlementCount = computed(() =>
+  computedData.value.filter((item) => item?.paymentStatus === 'settlement').length
+);
+const pendingCount = computed(() =>
+  computedData.value.filter((item) => item?.paymentStatus === 'pending').length
+);
+const manualCount = computed(() =>
+  computedData.value.filter((item) => item?.paymentMethod !== 'midtrans').length
+);
+const displayedAmountTotal = computed(() =>
+  computedData.value.reduce((total, item) => {
+    const amount = Number(item?.grossAmount || item?.amount || 0);
+    return Number.isNaN(amount) ? total : total + amount;
+  }, 0)
+);
+
+const kpiCards = computed(() => [
+  {
+    title: 'Total Data',
+    value: String(pagination.value?.totalEntries || computedData.value.length),
+    description: `${computedData.value.length} donasi ditampilkan`,
+  },
+  {
+    title: 'Sudah Lunas',
+    value: String(settlementCount.value),
+    description: 'Transaksi settlement di halaman ini',
+  },
+  {
+    title: 'Menunggu',
+    value: String(pendingCount.value),
+    description: 'Transaksi pending di halaman ini',
+  },
+  {
+    title: 'Manual',
+    value: String(manualCount.value),
+    description: 'Input manual di halaman ini',
+  },
+  {
+    title: 'Nominal Halaman',
+    value: formatNominal(displayedAmountTotal.value),
+    description: 'Akumulasi nominal yang sedang tampil',
+  },
+]);
 
 const formatDonationType = (t?: string) => {
   if (!t) return '-';
@@ -283,7 +371,7 @@ const formatNominal = (amount?: number | string | null) => {
 };
 
 const methodBadgeClass = (method?: string) =>
-  method === 'midtrans' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-700';
+  method === 'midtrans' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-700';
 
 const statusBadgeClass = (status?: string) => {
   switch (status) {
@@ -292,13 +380,13 @@ const statusBadgeClass = (status?: string) => {
     case 'pending':
       return 'bg-yellow-100 text-yellow-700';
     case 'expired':
-      return 'bg-gray-200 text-gray-700';
+      return 'bg-slate-200 text-slate-700';
     case 'failed':
       return 'bg-red-100 text-red-700';
     case 'refunded':
       return 'bg-purple-100 text-purple-700';
     default:
-      return 'bg-gray-100 text-gray-600';
+      return 'bg-slate-100 text-slate-600';
   }
 };
 

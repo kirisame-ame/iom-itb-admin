@@ -38,19 +38,13 @@
 
       <div class="flex min-w-0 items-center gap-1.5 sm:mx-2 lg:mx-0">
         <div class="flex min-w-0 flex-col">
-          <h1 class="truncate text-lg font-bold leading-none tracking-tight text-[#003793] sm:text-2xl lg:text-4xl">
+          <h1 class="truncate text-lg font-bold leading-none text-[#003793] sm:text-2xl lg:text-4xl">
             Dashboard Admin
           </h1>
           <p class="text-xs text-gray-600 mt-1.5 hidden sm:block">
             Ikatan Orang Tua Mahasiswa Institut Teknologi Bandung
           </p>
         </div>
-
-        <img
-          class="ml-1 h-10 shrink-0 object-contain sm:h-14 lg:ml-2 lg:h-20"
-          :src="require('@/assets/image/logo.webp')"
-          alt="IOM Logo"
-        />
       </div>
     </div>
 

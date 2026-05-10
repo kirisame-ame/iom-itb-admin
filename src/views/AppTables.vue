@@ -10,12 +10,12 @@
             <thead class="border-b">
               <tr>
                 <th
-                  class="px-5 py-3 text-sm font-medium text-gray-100 uppercase bg-indigo-800"
+                  class="px-5 py-3 text-sm font-medium text-gray-100 bg-indigo-800"
                 >
                   City
                 </th>
                 <th
-                  class="px-5 py-3 text-sm font-medium text-gray-100 uppercase bg-indigo-800"
+                  class="px-5 py-3 text-sm font-medium text-gray-100 bg-indigo-800"
                 >
                   Total orders
                 </th>
@@ -124,27 +124,27 @@
               <thead>
                 <tr>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     User
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Role
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Created at
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Status
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Settings
                   </th>
@@ -279,22 +279,22 @@
               <thead>
                 <tr>
                   <th
-                    class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase bg-gray-100 border-b border-gray-200"
+                    class="px-6 py-3 text-xs font-medium leading-4 text-left text-gray-500 bg-gray-100 border-b border-gray-200"
                   >
                     Name
                   </th>
                   <th
-                    class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase bg-gray-100 border-b border-gray-200"
+                    class="px-6 py-3 text-xs font-medium leading-4 text-left text-gray-500 bg-gray-100 border-b border-gray-200"
                   >
                     Title
                   </th>
                   <th
-                    class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase bg-gray-100 border-b border-gray-200"
+                    class="px-6 py-3 text-xs font-medium leading-4 text-left text-gray-500 bg-gray-100 border-b border-gray-200"
                   >
                     Status
                   </th>
                   <th
-                    class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase bg-gray-100 border-b border-gray-200"
+                    class="px-6 py-3 text-xs font-medium leading-4 text-left text-gray-500 bg-gray-100 border-b border-gray-200"
                   >
                     Role
                   </th>

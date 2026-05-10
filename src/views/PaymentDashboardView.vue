@@ -1,23 +1,20 @@
 <template>
-  <div class="min-h-screen">
-    <Breadcrumb breadcrumb="dashboard-pembayaran" />
+  <div :class="isEmbed ? '' : 'min-h-screen'">
+    <Breadcrumb v-if="!isEmbed" breadcrumb="dashboard-pembayaran" />
 
-    <div class="mt-8 space-y-5">
-      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
+    <div :class="isEmbed ? 'mt-0 space-y-5' : 'mt-8 space-y-5'">
+      <section v-if="!isEmbed" class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
         <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
-              Keuangan IOM ITB
-            </p>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Dashboard Pembayaran</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">Dashboard Pembayaran</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Pantau pembayaran iuran sukarela dan kontribusi sukarela berdasarkan status, metode, fakultas, dan tren harian.
             </p>
           </div>
           <div class="rounded-2xl bg-white/10 px-4 py-3 text-sm text-blue-50">
-            <p class="text-xs uppercase tracking-wider text-blue-100">Periode</p>
+            <p class="text-sm font-medium text-blue-100">Periode</p>
             <p class="mt-1 font-semibold">{{ filtersLabel }}</p>
           </div>
         </div>
@@ -26,7 +23,7 @@
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Mulai</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Mulai</label>
             <input
               v-model="startDate"
               type="date"
@@ -34,7 +31,7 @@
             />
           </div>
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Sampai</label>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Sampai</label>
             <input
               v-model="endDate"
               type="date"
@@ -42,29 +39,18 @@
             />
           </div>
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Jenis</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Jenis</label>
+            <AppSelect
               v-model="donationType"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="all">Semua</option>
-              <option value="iuran_sukarela">Iuran Sukarela</option>
-              <option value="kontribusi_sukarela">Kontribusi Sukarela</option>
-            </select>
+              :options="donationTypeOptions"
+            />
           </div>
           <div>
-            <label class="block mb-1 text-xs text-slate-500">Status</label>
-            <select
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status</label>
+            <AppSelect
               v-model="paymentStatus"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="pending">Pending</option>
-              <option value="settlement">Settlement</option>
-              <option value="expired">Expired</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
-            </select>
+              :options="paymentStatusOptions"
+            />
           </div>
           <div class="flex items-end">
             <button
@@ -81,7 +67,7 @@
 
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ card.title }}</p>
+          <p class="text-sm font-semibold text-slate-500">{{ card.title }}</p>
           <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
           <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
         </div>
@@ -190,7 +176,7 @@
             <h2 class="text-base font-bold text-slate-900">Pembayaran Terbaru</h2>
             <p class="mt-1 text-xs text-slate-500">10 transaksi terbaru sesuai filter dashboard.</p>
           </div>
-          <router-link to="/donasi" class="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">
+          <router-link to="/donasi" class="rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100">
             Lihat Donasi
           </router-link>
         </div>
@@ -198,13 +184,13 @@
           <table class="min-w-full text-sm">
             <thead>
               <tr class="bg-blue-900">
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Tanggal</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Nama</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Jenis</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Fakultas</th>
-                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-blue-100">Nominal</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Metode</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Status</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Tanggal</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Nama</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Jenis</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Fakultas</th>
+                <th class="px-4 py-3 text-right text-sm font-semibold text-blue-100">Nominal</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Metode</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-blue-100">Status</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 bg-white">
@@ -250,14 +236,35 @@
 import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
 import { GET_PAYMENT_DASHBOARD } from '@/store/paymentDashboard.module';
+import type {
+  PaymentDashboardData,
+  PaymentDashboardKpis,
+  PaymentSummaryItem,
+} from '@/types/domain';
 
-type SummaryItem = Record<string, any>;
+withDefaults(defineProps<{ isEmbed?: boolean }>(), {
+  isEmbed: false,
+});
 
 const store = useStore();
 const isLoading = ref(true);
 const donationType = ref('all');
 const paymentStatus = ref('');
+const donationTypeOptions = [
+  { value: 'all', label: 'Semua' },
+  { value: 'iuran_sukarela', label: 'Iuran Sukarela' },
+  { value: 'kontribusi_sukarela', label: 'Kontribusi Sukarela' },
+];
+const paymentStatusOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'pending', label: 'Menunggu' },
+  { value: 'settlement', label: 'Lunas' },
+  { value: 'expired', label: 'Kedaluwarsa' },
+  { value: 'failed', label: 'Gagal' },
+  { value: 'refunded', label: 'Dikembalikan' },
+];
 
 const today = new Date();
 const start = new Date(today);
@@ -267,14 +274,14 @@ const toDateInput = (date: Date) => date.toISOString().slice(0, 10);
 const startDate = ref(toDateInput(start));
 const endDate = ref(toDateInput(today));
 
-const dashboard = computed(() => store.getters.paymentDashboard || {});
-const kpis = computed(() => dashboard.value.kpis || {});
-const statusSummary = computed<SummaryItem[]>(() => dashboard.value.statusSummary || []);
-const typeSummary = computed<SummaryItem[]>(() => dashboard.value.typeSummary || []);
-const methodSummary = computed<SummaryItem[]>(() => dashboard.value.methodSummary || []);
-const facultySummary = computed<SummaryItem[]>(() => dashboard.value.facultySummary || []);
-const dailyTrend = computed<SummaryItem[]>(() => dashboard.value.dailyTrend || []);
-const recentPayments = computed<SummaryItem[]>(() => dashboard.value.recentPayments || []);
+const dashboard = computed<PaymentDashboardData>(() => store.getters.paymentDashboard || {});
+const kpis = computed<PaymentDashboardKpis>(() => dashboard.value.kpis || {});
+const statusSummary = computed<PaymentSummaryItem[]>(() => dashboard.value.statusSummary || []);
+const typeSummary = computed<PaymentSummaryItem[]>(() => dashboard.value.typeSummary || []);
+const methodSummary = computed<PaymentSummaryItem[]>(() => dashboard.value.methodSummary || []);
+const facultySummary = computed<PaymentSummaryItem[]>(() => dashboard.value.facultySummary || []);
+const dailyTrend = computed<PaymentSummaryItem[]>(() => dashboard.value.dailyTrend || []);
+const recentPayments = computed<PaymentSummaryItem[]>(() => dashboard.value.recentPayments || []);
 
 const filtersLabel = computed(() => `${formatShortDate(startDate.value)} - ${formatShortDate(endDate.value)}`);
 

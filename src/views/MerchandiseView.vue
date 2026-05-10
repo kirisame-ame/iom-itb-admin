@@ -16,10 +16,7 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
-              Katalog IOM ITB
-            </p>
-            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
+            <h1 class="text-2xl font-bold md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola produk merchandise, stok, harga, dan tautan pembelian yang tampil pada halaman publik.
             </p>
@@ -36,59 +33,45 @@
 
       <section class="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Produk</p>
+          <p class="text-sm font-semibold text-slate-500">Total Produk</p>
           <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.totalEntries || computedData.length }}</p>
         </div>
         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Stok Terlihat</p>
-          <p class="mt-2 text-2xl font-bold text-blue-900">{{ totalStock }}</p>
+          <p class="text-sm font-semibold text-slate-500">Stok Rendah</p>
+          <p class="mt-2 text-2xl font-bold text-amber-700">{{ lowStockCount }}</p>
         </div>
         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Halaman</p>
-          <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.currentPage || 1 }} / {{ pagination?.totalPages || 1 }}</p>
+          <p class="text-sm font-semibold text-slate-500">Stok Habis</p>
+          <p class="mt-2 text-2xl font-bold text-red-700">{{ emptyStockCount }}</p>
         </div>
       </section>
 
-      <section class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-        <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-[auto,1fr] lg:w-auto lg:flex lg:flex-wrap lg:items-center">
-          <div class="relative">
-            <select
+      <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="grid gap-3 sm:grid-cols-[160px_1fr] lg:max-w-2xl lg:grid-cols-[160px_320px]">
+          <div>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Per Halaman</label>
+            <AppSelect
               v-model="limit"
+              :options="pageLimitOptions"
               @change="() => { page = 1; getData() }"
-              class="appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-8 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option :value="5">5</option>
-              <option :value="10">10</option>
-              <option :value="20">20</option>
-              <option :value="100">Semua</option>
-            </select>
-            <svg class="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
+            />
           </div>
 
-          <div class="relative">
+          <div>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Cari</label>
+            <div class="relative">
             <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
             </svg>
             <input
               v-model="search"
               placeholder="Cari merchandise..."
-              class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 lg:w-64"
+              class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-700 placeholder-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-[#8c8c94]/20"
               @input="onSearchInput"
             />
+            </div>
           </div>
         </div>
-
-        <p class="text-xs text-slate-500">
-          Menampilkan
-          <span class="font-semibold text-slate-700">{{ pagination?.start || 0 }}</span>
-          -
-          <span class="font-semibold text-slate-700">{{ pagination?.end || 0 }}</span>
-          dari
-          <span class="font-semibold text-slate-700">{{ pagination?.totalEntries || 0 }}</span>
-          entri
-        </p>
       </section>
 
       <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -96,20 +79,31 @@
           <table class="min-w-full">
             <thead>
               <tr class="bg-blue-900">
-                <th class="w-20 whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Gambar</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Produk</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Harga</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Stok</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Deskripsi</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Link</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Diperbarui</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-blue-100">Aksi</th>
+                <th class="w-20 whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Gambar</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Produk" :active="sortPriority('name') > 0" :direction="sortDirectionFor('name')" :priority="sortPriority('name')" @click="toggleSort('name', $event)" />
+                </th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Harga" :active="sortPriority('price') > 0" :direction="sortDirectionFor('price')" :priority="sortPriority('price')" @click="toggleSort('price', $event)" />
+                </th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Stok" :active="sortPriority('stock') > 0" :direction="sortDirectionFor('stock')" :priority="sortPriority('stock')" @click="toggleSort('stock', $event)" />
+                </th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Kategori" :active="sortPriority('kategori') > 0" :direction="sortDirectionFor('kategori')" :priority="sortPriority('kategori')" @click="toggleSort('kategori', $event)" />
+                </th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Deskripsi</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Link</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Diperbarui" :active="sortPriority('updatedAt') > 0" :direction="sortDirectionFor('updatedAt')" :priority="sortPriority('updatedAt')" @click="toggleSort('updatedAt', $event)" />
+                </th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-right text-sm font-semibold text-blue-100">Aksi</th>
               </tr>
             </thead>
             <tbody>
               <template v-if="isLoading">
                 <tr v-for="i in limit" :key="i" class="border-b border-slate-100">
-                  <td v-for="c in 8" :key="c" class="px-5 py-4">
+                  <td v-for="c in 9" :key="c" class="px-5 py-4">
                     <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
                   </td>
                 </tr>
@@ -117,7 +111,7 @@
 
               <template v-else-if="!computedData.length">
                 <tr>
-                  <td colspan="8" class="px-5 py-12 text-center text-sm italic text-slate-400">
+                  <td colspan="9" class="px-5 py-12 text-center text-sm italic text-slate-400">
                     Tidak ada merchandise ditemukan.
                   </td>
                 </tr>
@@ -148,6 +142,11 @@
                       {{ u?.stock ?? 0 }} stok
                     </span>
                   </td>
+                  <td class="px-5 py-4 align-middle">
+                    <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                      {{ u?.kategori || 'Tanpa kategori' }}
+                    </span>
+                  </td>
                   <td class="max-w-[260px] px-5 py-4 text-sm text-slate-600 align-middle">
                     <p class="max-h-10 overflow-hidden whitespace-pre-line" :title="u?.description || ''">{{ u?.description || '-' }}</p>
                   </td>
@@ -171,7 +170,7 @@
                   </td>
                   <td class="px-5 py-4 text-right align-middle whitespace-nowrap">
                     <button
-                      class="mr-3 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100"
+                      class="mr-3 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-100"
                       @click.prevent="editItem(u)"
                     >
                       <IcEdit />
@@ -179,7 +178,7 @@
                     </button>
                     <button
                       type="button"
-                      class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
+                      class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100"
                       @click.prevent="deleteItem(u.id)"
                     >
                       <IcTrash />
@@ -237,6 +236,15 @@ import { formattedPrice } from '@/utils';
 import IcTrash from '@/assets/svg/ic-trash.vue';
 import IcEdit from '@/assets/svg/ic-edit.vue';
 import IcPlus from '@/assets/svg/ic-plus.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
+import SortButton from '@/components/table/SortButton.vue';
+
+type SortDirection = 'asc' | 'desc';
+type MerchandiseSortKey = 'name' | 'price' | 'stock' | 'kategori' | 'updatedAt';
+type SortRule = {
+  key: MerchandiseSortKey;
+  direction: SortDirection;
+};
 
 type MerchandiseItem = {
   id: number;
@@ -246,6 +254,7 @@ type MerchandiseItem = {
   stock?: number | string;
   description?: string;
   link?: string;
+  kategori?: string;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -260,7 +269,14 @@ const page = ref(1);
 const limit = ref(5);
 const search = ref(""); 
 const title = ref("Merchandise"); 
+const sortRules = ref<SortRule[]>([{ key: 'updatedAt', direction: 'desc' }]);
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
+const pageLimitOptions = [
+  { value: 5, label: '5' },
+  { value: 10, label: '10' },
+  { value: 20, label: '20' },
+  { value: 100, label: 'Semua' },
+];
 
 const openModal = () => {
   isOpened.value = true;
@@ -275,7 +291,8 @@ const handleModalClose = async () => {
 
 const computedData = computed<MerchandiseItem[]>(() => {
   const merchandises = store.getters.merchandises;
-  return merchandises?.data || [];
+  const items = merchandises?.data || [];
+  return [...items].sort((a, b) => compareMerchandise(a, b, sortRules.value));
 });
 
 const pagination = computed(() => {
@@ -283,9 +300,79 @@ const pagination = computed(() => {
   return merchandises?.pagination || [];
 });
 
-const totalStock = computed(() => {
-  return computedData.value.reduce((total, item) => total + Number(item?.stock || 0), 0);
-});
+const lowStockCount = computed(() => computedData.value.filter((item) => {
+  const stock = Number(item?.stock || 0);
+  return stock > 0 && stock <= 5;
+}).length);
+const emptyStockCount = computed(() => computedData.value.filter((item) => Number(item?.stock || 0) <= 0).length);
+
+const normalizeText = (value: unknown) => String(value ?? '').toLowerCase();
+
+const normalizeNumber = (value: unknown) => {
+  const numeric = Number(value ?? 0);
+  return Number.isFinite(numeric) ? numeric : 0;
+};
+
+const normalizeDate = (value: unknown) => {
+  if (!value) return 0;
+  const timestamp = new Date(String(value)).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const compareValue = (left: string | number, right: string | number) => {
+  if (typeof left === 'number' && typeof right === 'number') return left - right;
+  return String(left).localeCompare(String(right), 'id', { numeric: true, sensitivity: 'base' });
+};
+
+const compareMerchandise = (
+  left: MerchandiseItem,
+  right: MerchandiseItem,
+  rules: SortRule[],
+) => {
+  const getValue = (item: MerchandiseItem, key: MerchandiseSortKey) => {
+    if (key === 'price' || key === 'stock') return normalizeNumber(item?.[key]);
+    if (key === 'updatedAt') return normalizeDate(item?.updatedAt);
+    return normalizeText(item?.[key]);
+  };
+
+  for (const rule of rules) {
+    const result = compareValue(getValue(left, rule.key), getValue(right, rule.key));
+    if (result !== 0) {
+      return result * (rule.direction === 'asc' ? 1 : -1);
+    }
+  }
+
+  return 0;
+};
+
+const defaultSortDirection = (key: MerchandiseSortKey): SortDirection =>
+  key === 'name' || key === 'kategori' ? 'asc' : 'desc';
+
+const sortPriority = (key: MerchandiseSortKey) => {
+  const index = sortRules.value.findIndex((rule) => rule.key === key);
+  return index === -1 ? 0 : index + 1;
+};
+
+const sortDirectionFor = (key: MerchandiseSortKey): SortDirection => {
+  return sortRules.value.find((rule) => rule.key === key)?.direction || defaultSortDirection(key);
+};
+
+const toggleSort = (key: MerchandiseSortKey, event?: MouseEvent) => {
+  const currentRule = sortRules.value.find((rule) => rule.key === key);
+  const nextRule: SortRule = {
+    key,
+    direction: currentRule?.direction === 'asc' ? 'desc' : 'asc',
+  };
+
+  if (event?.shiftKey) {
+    sortRules.value = currentRule
+      ? sortRules.value.map((rule) => (rule.key === key ? nextRule : rule))
+      : [...sortRules.value, { key, direction: defaultSortDirection(key) }];
+    return;
+  }
+
+  sortRules.value = currentRule ? [nextRule] : [{ key, direction: defaultSortDirection(key) }];
+};
 
 const getData = async () => {
   isLoading.value = true;

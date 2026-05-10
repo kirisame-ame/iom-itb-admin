@@ -1,5 +1,13 @@
 import ApiService from "./api.service";
 import { ActionContext } from "vuex";
+import type {
+    ApiActionParams,
+    ApiDataResponse,
+    Donation,
+    DonationPayload,
+    PaginatedData,
+    RootState,
+} from "@/types/domain";
 
 export const GET_DONASI = "getDonasi";
 export const SET_DONASI = "setDonasi";
@@ -7,26 +15,8 @@ export const POST_DONASI = "postDonasi";
 export const PUT_DONASI = "putDonasi";
 export const DELETE_DONASI = "deleteDonasi";
 
-interface Donasi {
-    id: number;
-    name: string;
-    email: string;
-    noWhatsapp: string;
-    amount?: number;
-    grossAmount?: number;
-    donationType?: string;
-    facultyId?: number | null;
-    faculty?: { id: number; name: string; kodeUnik: string } | null;
-    kodeUnik?: string | null;
-    paymentMethod?: "manual" | "midtrans";
-    paymentStatus?: "pending" | "settlement" | "expired" | "failed" | "refunded";
-    proof?: string;
-    date?: string;
-    createdAt?: string;
-}
-
 interface State {
-    donasi: { data: Donasi[]; pagination?: any } | any;
+    donasi: PaginatedData<Donation>;
 }
 
 const state: State = {
@@ -34,17 +24,17 @@ const state: State = {
 };
 
 const getters = {
-    donasi(state: State): any {
+    donasi(state: State): PaginatedData<Donation> {
         return state.donasi;
     },
 };
 
-type VuexContext = ActionContext<State, any>;
+type VuexContext = ActionContext<State, RootState>;
 
 const actions = {
-    [GET_DONASI](context: VuexContext, params: Record<string, any>): Promise<any> {
+    [GET_DONASI](context: VuexContext, params: ApiActionParams = {}): Promise<PaginatedData<Donation>> {
         return new Promise((resolve, reject) => {
-            ApiService.get<{ data: Donasi[] }>("/donations/admin", params.data)
+            ApiService.get<PaginatedData<Donation>>("/donations/admin", params.data || {})
                 .then(response => {
                     context.commit(SET_DONASI, response);
                     resolve(response);
@@ -55,9 +45,9 @@ const actions = {
                 });
         });
     },
-    [POST_DONASI](_context: VuexContext, params: Record<string, any>): Promise<any> {
+    [POST_DONASI](_context: VuexContext, params: ApiActionParams<DonationPayload>): Promise<Donation> {
         return new Promise((resolve, reject) => {
-            ApiService.post<{ data: any }>("/donations", params.data)
+            ApiService.post<ApiDataResponse<Donation>>("/donations", params.data || {})
                 .then(({ data }) => resolve(data))
                 .catch((err) => {
                     console.error("Error creating donation:", err);
@@ -65,9 +55,9 @@ const actions = {
                 });
         });
     },
-    [PUT_DONASI](_context: VuexContext, params: Record<string, any>): Promise<any> {
+    [PUT_DONASI](_context: VuexContext, params: ApiActionParams<DonationPayload>): Promise<Donation> {
         return new Promise((resolve, reject) => {
-            ApiService.put<{ data: any }>(`/donations/${params.id}`, params.data)
+            ApiService.put<ApiDataResponse<Donation>>(`/donations/${params.id}`, params.data || {})
                 .then(({ data }) => resolve(data))
                 .catch((err) => {
                     console.error("Error updating donation:", err);
@@ -75,7 +65,7 @@ const actions = {
                 });
         });
     },
-    [DELETE_DONASI](_context: VuexContext, params: Record<string, any>): Promise<void> {
+    [DELETE_DONASI](_context: VuexContext, params: ApiActionParams): Promise<void> {
         return new Promise((resolve, reject) => {
             ApiService.delete(`/donations/${params.id}`)
                 .then(() => resolve())
@@ -88,7 +78,7 @@ const actions = {
 };
 
 const mutations = {
-    [SET_DONASI](state: State, data: any): void {
+    [SET_DONASI](state: State, data: PaginatedData<Donation>): void {
         state.donasi = data;
     },
 };

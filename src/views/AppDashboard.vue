@@ -1,68 +1,192 @@
 <template>
   <div class="min-h-screen bg-slate-50">
     <!-- ── Page Header ─────────────────────────────────────────── -->
-    <div class="pb-4">
-      <h1 class="text-2xl font-bold tracking-tight text-blue-900 sm:text-3xl">Dashboard</h1>
-      <p class="text-sm text-slate-500 mt-2">Kelola dan tinjau semua pengajuan bantuan mahasiswa</p>
-    </div>
+    <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6 mb-6">
+      <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
+      <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
+      <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 class="text-2xl font-bold md:text-4xl">Dashboard</h1>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
+            Pantau dan kelola ringkasan statistik layanan, status pengajuan bantuan, serta progres donasi secara menyeluruh.
+          </p>
+        </div>
+        <button
+          class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/70 sm:w-auto"
+          @click="fetchDashboard"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          Refresh Data
+        </button>
+      </div>
+    </section>
 
-    <!-- KPI CARDS GRID -->
+    <!-- Ringkasan CARDS GRID -->
     <div class="mt-2 mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 xl:gap-6">
       
       <!-- Card 1: Pengajuan Perlu Proses -->
-      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+      <div 
+        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm  relative cursor-pointer hover:bg-slate-50 transition-colors"
+        @click="isPendingDropdownOpen = !isPendingDropdownOpen"
+      >
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalPengajuanPending.title }}</h3>
-          <div class="p-2 bg-orange-50 text-orange-500 rounded-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <div class="flex items-center gap-2">
+            <svg 
+              class="w-4 h-4 text-slate-400 transition-transform duration-200" 
+              :class="{ 'rotate-180': isPendingDropdownOpen }"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            <div class="p-2 bg-orange-50 text-orange-500 rounded-lg">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
           </div>
         </div>
         <div class="mt-4">
           <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.totalPengajuanPending.value }}</p>
         </div>
+
+        <!-- Dropdown / Breakdown -->
+        <div 
+          v-if="isPendingDropdownOpen"
+          class="absolute top-full left-0 right-0 mt-2 z-10 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
+        >
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+              <span class="text-sm text-slate-600 font-medium">Bantuan IOM</span>
+              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalPengajuanPending.breakdown.iom }}</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+              <span class="text-sm text-slate-600 font-medium">Bantuan Kesehatan (Bankes)</span>
+              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalPengajuanPending.breakdown.bankes }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-slate-600 font-medium">Orang Tua Asuh (OTA)</span>
+              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalPengajuanPending.breakdown.ota }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Card 2: Bantuan Disetujui -->
-      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+      <div 
+        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm  relative cursor-pointer hover:bg-slate-50 transition-colors"
+        @click="isApprovedDropdownOpen = !isApprovedDropdownOpen"
+      >
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalBantuanDisetujui.title }}</h3>
-          <div class="p-2 bg-green-50 text-green-500 rounded-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <div class="flex items-center gap-2">
+            <svg 
+              class="w-4 h-4 text-slate-400 transition-transform duration-200" 
+              :class="{ 'rotate-180': isApprovedDropdownOpen }"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            <div class="p-2 bg-green-50 text-green-500 rounded-lg">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </div>
           </div>
         </div>
         <div class="mt-4">
           <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.totalBantuanDisetujui.value }}</p>
         </div>
+
+        <!-- Dropdown / Breakdown -->
+        <div 
+          v-if="isApprovedDropdownOpen"
+          class="absolute top-full left-0 right-0 mt-2 z-10 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
+        >
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+              <span class="text-sm text-slate-600 font-medium">Bantuan IOM</span>
+              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalBantuanDisetujui.breakdown.iom }}</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+              <span class="text-sm text-slate-600 font-medium">Bantuan Kesehatan (Bankes)</span>
+              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalBantuanDisetujui.breakdown.bankes }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-slate-600 font-medium">Orang Tua Asuh (OTA)</span>
+              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalBantuanDisetujui.breakdown.ota }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Card 3: Pesanan Merchandise -->
-      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+      <!-- Card 3: Dashboard Merchandise -->
+      <div
+        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm relative cursor-pointer hover:bg-slate-50 transition-colors"
+        @click="goToMerchandiseDashboard"
+      >
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.pesananMerchandise.title }}</h3>
-          <div class="p-2 bg-blue-50 text-blue-500 rounded-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          <div class="flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-slate-400 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+            <div class="p-2 bg-blue-50 text-blue-500 rounded-lg">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            </div>
           </div>
         </div>
         <div class="mt-4">
           <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.pesananMerchandise.value }}</p>
+          <p class="mt-1 text-xs font-medium text-blue-600">Klik untuk buka dashboard merchandise</p>
         </div>
       </div>
 
       <!-- Card 4: Total Donasi -->
-      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+      <div 
+        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm  relative cursor-pointer hover:bg-slate-50 transition-colors"
+        @click="isDonationDropdownOpen = !isDonationDropdownOpen"
+      >
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalDonasi.title }}</h3>
-          <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <div class="flex items-center gap-2">
+            <svg 
+              class="w-4 h-4 text-slate-400 transition-transform duration-200" 
+              :class="{ 'rotate-180': isDonationDropdownOpen }"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
           </div>
         </div>
         <div class="mt-4">
           <p class="text-xl font-bold text-slate-800">{{ kpiData.totalDonasi.value }}</p>
         </div>
+
+        <!-- Dropdown / Breakdown -->
+        <div 
+          v-if="isDonationDropdownOpen"
+          class="absolute top-full left-0 right-0 mt-2 z-10 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
+        >
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+              <span class="text-sm text-slate-600 font-medium">Donasi IOM</span>
+              <span class="text-sm font-bold text-emerald-600">{{ kpiData.totalDonasi.breakdown.iom }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-slate-600 font-medium">Komitmen Dana OTA</span>
+              <span class="text-sm font-bold text-emerald-600">{{ kpiData.totalDonasi.breakdown.ota }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Card 5: Total Anggota -->
-      <div class="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+      <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalAnggota.title }}</h3>
           <div class="p-2 bg-indigo-50 text-indigo-500 rounded-lg">
@@ -77,12 +201,51 @@
 
     </div>
 
-    <!-- TUGAS 4: GRAFIK (CHARTS) -->
-    <div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
-      
-      <!-- Grafik Kiri (Tren Pengajuan) -->
-      <div class="rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
-        <h3 class="text-slate-700 font-bold text-lg mb-4">Tren Pengajuan Masuk</h3>
+    <!-- TOGGLE GRAFIK SECTION -->
+    <div class="mb-6">
+      <button 
+        @click="isChartsVisible = !isChartsVisible"
+        class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:bg-slate-50 transition-colors focus:outline-none"
+      >
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          </div>
+          <span class="font-bold text-slate-700 text-lg">Visualisasi Statistik & Grafik</span>
+        </div>
+        <svg 
+          class="w-5 h-5 text-slate-400 transition-transform duration-200" 
+          :class="{ 'rotate-180': isChartsVisible }"
+          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div v-if="isChartsVisible">
+      <!-- TUGAS 4: GRAFIK (CHARTS) -->
+      <div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
+        
+        <!-- Grafik Kiri (Tren Pengajuan) -->
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
+        <div class="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-slate-700 font-bold text-lg">Tren Pengajuan Masuk</h3>
+            <p class="text-xs text-slate-500">Pilih rentang waktu untuk melihat perubahan tren</p>
+          </div>
+          <div class="min-w-[160px]">
+            <select
+              v-model="selectedTrendRange"
+              @change="handleTrendRangeChange"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option v-for="range in trendRangeOptions" :key="range.value" :value="range.value">
+                {{ range.label }}
+              </option>
+            </select>
+          </div>
+        </div>
         <apexchart 
           :key="trenChartKey"
           type="line" 
@@ -93,7 +256,7 @@
       </div>
 
       <!-- Grafik Kanan (Distribusi Status) -->
-      <div class="flex flex-col rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+      <div class="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
         <h3 class="text-slate-700 font-bold text-lg mb-4">Distribusi Status Bantuan</h3>
         <div class="flex-1 flex items-center justify-center">
           <apexchart 
@@ -107,7 +270,7 @@
       </div>
 
       <!-- Grafik Bawah (Penerima Bantuan per Tahun) - Bar Chart -->
-      <div class="flex flex-col rounded-xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6 lg:col-span-2">
+      <div class="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm  lg:col-span-2">
         <h3 class="text-slate-700 font-bold text-lg mb-4">Penerima Bantuan per Tahun</h3>
         <div v-if="penerimaChartSeries[0]?.data?.length > 0" class="flex-1">
           <apexchart 
@@ -125,11 +288,93 @@
 
     </div>
 
+    <!-- AREA PLACEHOLDER GRAFIK KHUSUS BANKES & OTA -->
+    <div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
+      
+      <!-- Grafik Kiri (Kapasitas OTA) -->
+      <div class="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
+        <h3 class="text-slate-700 font-bold text-lg mb-4">Kapasitas Orang Tua Asuh</h3>
+        <div v-if="otaCapacityChartSeries.length > 0" class="flex-1 flex items-center justify-center">
+          <apexchart 
+            type="donut" 
+            height="320" 
+            :options="otaCapacityChartOptions" 
+            :series="otaCapacityChartSeries" 
+          />
+        </div>
+        <div v-else class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg min-h-[320px] bg-slate-50">
+          <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="text-slate-500 font-medium text-sm">Belum ada data kapasitas orang tua asuh</span>
+        </div>
+      </div>
+
+      <!-- Grafik Kanan (Status Tagihan) -->
+      <div class="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
+        <h3 class="text-slate-700 font-bold text-lg mb-4">Status Tagihan Donatur (OTA)</h3>
+        <div v-if="(otaBillingChartSeries[0]?.data?.[0] || 0) + (otaBillingChartSeries[0]?.data?.[1] || 0) > 0" class="flex-1 mt-6">
+          <apexchart 
+            type="bar" 
+            height="260" 
+            :options="otaBillingChartOptions" 
+            :series="otaBillingChartSeries" 
+          />
+        </div>
+        <div v-else class="flex-1 mt-6 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg min-h-[260px] bg-slate-50">
+          <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          <span class="text-slate-500 font-medium text-sm">Belum ada data tagihan donatur</span>
+        </div>
+      </div>
+
+    </div>
+    </div> <!-- END of isChartsVisible Wrapper -->
+
+    <!-- CARD REDIRECT DASHBOARD PEMBAYARAN -->
+    <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Keuangan & Pembayaran</p>
+          <h3 class="mt-1 text-lg font-bold text-slate-800">Dashboard Pembayaran</h3>
+          <p class="mt-1 max-w-2xl text-sm text-slate-500">Data kartu dan grafik yang sama tersedia di halaman terpisah. Buka halaman ini jika ingin fokus ke monitoring pembayaran.</p>
+        </div>
+        <button
+          type="button"
+          class="inline-flex items-center justify-center gap-2 rounded-full bg-[#003793] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-[#002d6d]"
+          @click="goToPaymentDashboard"
+        >
+          Buka Dashboard Pembayaran
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- CARD REDIRECT DASHBOARD MERCHANDISE -->
+    <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-blue-600">Merchandise & Transaksi</p>
+          <h3 class="mt-1 text-lg font-bold text-slate-800">Dashboard Merchandise</h3>
+          <p class="mt-1 max-w-2xl text-sm text-slate-500">Lihat ringkasan pesanan dan monitoring merchandise pada halaman terpisah.</p>
+        </div>
+        <button
+          type="button"
+          class="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-blue-700"
+          @click="goToMerchandiseDashboard"
+        >
+          Buka Dashboard Merchandise
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
     <!-- TABEL BAWAH: PENGAJUAN & LOG AKTIVITAS -->
     <div class="mb-6 grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
       
       <!-- Tabel Kiri: Pengajuan Bantuan Terbaru -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 bg-white">
           <h3 class="text-slate-700 font-bold text-lg">Pengajuan Bantuan Terbaru</h3>
         </div>
@@ -172,7 +417,7 @@
       </div>
 
       <!-- Tabel Kanan: Log Aktivitas Terbaru -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 bg-white">
           <h3 class="text-slate-700 font-bold text-lg">Log Aktivitas Terbaru</h3>
         </div>
@@ -275,14 +520,45 @@
 <script setup lang="ts">
 
 import { ref, onMounted } from "vue"
+import { useRouter } from "vue-router"
 import ApiService from "@/store/api.service"
 
-// ================= KPI =================
+const isPendingDropdownOpen = ref(false)
+const isApprovedDropdownOpen = ref(false)
+const isDonationDropdownOpen = ref(false)
+const isChartsVisible = ref(false)
+const router = useRouter()
+const selectedTrendRange = ref('week')
+const trendRangeOptions = [
+  { value: 'week', label: '7 Hari' },
+  { value: 'month', label: '1 Bulan' },
+  { value: '3months', label: '3 Bulan' },
+  { value: 'year', label: '1 Tahun' },
+  { value: 'all', label: 'Semua' }
+]
+
+// ================= Ringkasan =================
 const kpiData = ref({
-  totalPengajuanPending: { title: "Pengajuan Perlu Proses", value: 0 },
-  totalBantuanDisetujui: { title: "Bantuan Disetujui (Bulan Ini)", value: 0 },
+  totalPengajuanPending: { 
+    title: "Pengajuan Perlu Proses", 
+    value: 0,
+    breakdown: {
+      iom: 0,
+      bankes: 0,
+      ota: 0
+    }
+  },
+  totalBantuanDisetujui: { 
+    title: "Bantuan Disetujui (Bulan Ini)", 
+    value: 0,
+    breakdown: { iom: 0, bankes: 0, ota: 0 }
+  },
   pesananMerchandise: { title: "Pesanan Merchandise Baru", value: 0 },
-  totalDonasi: { title: "Donasi Terkumpul", value: "Rp 0" },
+  totalDonasi: { 
+    title: "Donasi Terkumpul", 
+    value: "Rp 0",
+    breakdown: { iom: "Rp 0", ota: "Rp 0" }
+  },
   totalAnggota: { title: "Total Anggota", value: 0, description: "" }
 })
 
@@ -314,83 +590,188 @@ const penerimaChartOptions = ref({
   dataLabels: { enabled: false }
 })
 
+// === GRAFIK BANKES & OTA ===
+const otaCapacityChartSeries = ref<number[]>([])
+const otaCapacityChartOptions = ref({
+  chart: { type: 'donut' },
+  labels: ['Sudah Terpakai', 'Sisa Kosong'],
+  colors: ['#F59E0B', '#10B981'], // Orange for used, Green for free
+  legend: { show: true, position: 'bottom' }
+})
+
+const otaBillingChartSeries = ref([{ name: 'Jumlah Donatur', data: [] as number[] }])
+const otaBillingChartOptions = ref({
+  chart: { type: 'bar', toolbar: { show: false } },
+  plotOptions: { bar: { borderRadius: 4, columnWidth: '40%' } },
+  xaxis: { categories: ['Sudah Lunas', 'Menunggak'] },
+  colors: ['#3B82F6'],
+  dataLabels: { enabled: false }
+})
+
 const recentSubmissions = ref<any[]>([])
 const activityLogs = ref<any[]>([])
 
-const fetchDashboard = async () => {
+const formatTrendLabel = (dateValue: string, range: string) => {
+  const date = new Date(dateValue)
+
+  if (range === 'week') {
+    return getDayName(date)
+  }
+
+  return date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short'
+  })
+}
+
+const loadCharts = async (range = selectedTrendRange.value) => {
   try {
-    const statsRes: any = await ApiService.get('/dashboard/stats')
-    const stats = statsRes.data || statsRes
-
-    kpiData.value.totalPengajuanPending.value = stats.totalPending || 0
-    kpiData.value.totalBantuanDisetujui.value = stats.approvedThisMonth || 0
-    kpiData.value.pesananMerchandise.value = stats.pesananBaru || 0
-    kpiData.value.totalDonasi.value = "Rp " + formatNumber(stats.totalDonasi || 0)
-    kpiData.value.totalAnggota.value = stats.totalAnggota
-    kpiData.value.totalAnggota.description =
-      `+${stats.anggotaBaru} anggota baru bulan ini`
-
-    const chartRes: any = await ApiService.get('/dashboard/charts')
+    const chartRes: any = await ApiService.get('/dashboard/charts', { range })
     const charts = chartRes.data || chartRes
 
-    // generate 7 hari terakhir
-    const last7Days: Date[] = []
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date()
-      d.setDate(d.getDate() - i)
-      last7Days.push(d)
-    }
-
-    // mapping data backend ke object
-    const mapData: Record<string, number> = {}
-
-    charts.trenPengajuan?.forEach((x:any)=>{
-      mapData[x.date] = x.total
-    })
-
-    const seriesData = last7Days.map(d => {
-      const key = formatDateKey(d)
-      return mapData[key] || 0
-    })
-
-    const categories = last7Days.map(d => getDayName(d))
+    const trendItems = charts.trenPengajuan || []
 
     trenChartSeries.value = [{
       name: 'Pengajuan',
-      data: seriesData
+      data: trendItems.map((x: any) => Number(x.total) || 0)
     }]
 
     trenChartOptions.value = {
       ...trenChartOptions.value,
       xaxis: {
-        categories
+        categories: trendItems.map((x: any) => formatTrendLabel(x.date, range))
       }
     }
 
-
     trenChartKey.value++
 
-    statusChartSeries.value =
-      charts.distribusiStatus?.map((x:any)=>x.total) || []
+    const statusItems = (charts.distribusiStatus || []).filter((x: any) => x.currentStatus !== 'TIDAK_DIKETAHUI')
 
+    statusChartSeries.value = statusItems.map((x: any) => Number(x.total) || 0)
     statusChartOptions.value = {
       ...statusChartOptions.value,
-      labels: charts.distribusiStatus?.map((x:any)=>mapStatus(x.currentStatus)) || []
+      labels: statusItems.map((x: any) => mapStatus(x.currentStatus))
     }
 
     statusChartKey.value++
 
     penerimaChartSeries.value = [{
       name: 'Total Penerima Bantuan',
-      data: charts.penerimaPerTahun?.map((x:any)=>x.total) || []
+      data: charts.penerimaPerTahun?.map((x: any) => Number(x.total) || 0) || []
     }]
 
     penerimaChartOptions.value = {
       ...penerimaChartOptions.value,
       xaxis: {
-        categories: charts.penerimaPerTahun?.map((x:any)=>x.year) || []
+        categories: charts.penerimaPerTahun?.map((x: any) => x.year) || []
       }
     }
+  } catch (err) {
+    console.error('Failed to load dashboard charts:', err)
+  }
+}
+
+const handleTrendRangeChange = () => {
+  void loadCharts(selectedTrendRange.value)
+}
+
+const goToPaymentDashboard = () => {
+  router.push('/dashboard-pembayaran')
+}
+
+const goToMerchandiseDashboard = () => {
+  router.push('/merchandise-dashboard')
+}
+
+const fetchDashboard = async () => {
+  try {
+    const statsRes: any = await ApiService.get('/dashboard/stats')
+    const stats = statsRes.data || statsRes
+
+    // Init the basic IOM values
+    let totalIOMPending = stats.totalPending || 0
+    let totalBankesPending = 0
+    let totalOTAPending = 0
+
+    let totalIOMApproved = stats.approvedThisMonth || 0
+    let totalBankesApproved = 0
+    let totalOTAApproved = 0
+
+    let totalIOMDonasi = stats.totalDonasi || 0
+    let totalOTADonasiAmount = 0
+
+    try {
+      // Hit Bankes Asli API to aggregate data
+      const responseBankes = await fetch('http://195.110.58.17:13000/api/dashboard/bankes')
+      const bankesRes = await responseBankes.json()
+      const bankesData = bankesRes.data || []
+      
+      // Count pending (Logika baru berdasarkan bankesStatus: 'unverified')
+      totalBankesPending = bankesData.filter((mhs: any) => mhs.bankesStatus === 'unverified').length
+      
+      // Count approved / verified (Logika baru berdasarkan bankesStatus: 'verified')
+      totalBankesApproved = bankesData.filter((mhs: any) => mhs.bankesStatus === 'verified').length
+
+      // Hitungan dummy pendings OTA (bisa disesuaikan lagi nanti)
+      totalOTAPending = bankesData.length > 2 ? 1 : 0 
+      totalOTAApproved = 0 
+    } catch (e) {
+      console.warn("Failed to fetch Bankes data:", e)
+    }
+
+    try {
+      // Hit OTA-KU API.
+      const response = await fetch('http://195.110.58.17:13000/api/dashboard/ota')
+      const otaRes = await response.json()
+      const otaData = otaRes.data || []
+      
+      // Sum the funds from all OTAs (Asumsi tim merek mengeluarkan property 'funds')
+      totalOTADonasiAmount = otaData.reduce((sum: number, ota: any) => sum + (ota.funds || 0), 0)
+
+      // Hitung Kapasitas OTA
+      const totalCapacity = otaData.reduce((sum: number, ota: any) => sum + (ota.maxCapacity || 0), 0)
+      const usedCapacity = otaData.reduce((sum: number, ota: any) => sum + (ota.usedCapacity || 0), 0)
+      otaCapacityChartSeries.value = [usedCapacity, Math.max(0, totalCapacity - usedCapacity)]
+
+      // Hitung Status Tagihan Donatur
+      let lunasCount = 0
+      let nunggakCount = 0
+      
+      otaData.forEach((ota: any) => {
+        if (ota.paymentStatus === 'lunas') lunasCount++
+        else if (ota.paymentStatus === 'menunggak') nunggakCount++
+      })
+      
+      otaBillingChartSeries.value = [{ name: 'Jumlah Donatur', data: [lunasCount, nunggakCount] }]
+
+    } catch (e) {
+      console.warn("Failed to fetch OTA-KU data:", e)
+    }
+
+    // Apply Pendings
+    kpiData.value.totalPengajuanPending.value = totalIOMPending + totalBankesPending + totalOTAPending
+    kpiData.value.totalPengajuanPending.breakdown.iom = totalIOMPending
+    kpiData.value.totalPengajuanPending.breakdown.bankes = totalBankesPending
+    kpiData.value.totalPengajuanPending.breakdown.ota = totalOTAPending
+
+    // Apply Approved
+    kpiData.value.totalBantuanDisetujui.value = totalIOMApproved + totalBankesApproved + totalOTAApproved
+    kpiData.value.totalBantuanDisetujui.breakdown.iom = totalIOMApproved
+    kpiData.value.totalBantuanDisetujui.breakdown.bankes = totalBankesApproved
+    kpiData.value.totalBantuanDisetujui.breakdown.ota = totalOTAApproved
+
+    // Apply Donasi
+    const totalDonasiAll = totalIOMDonasi + totalOTADonasiAmount
+    kpiData.value.totalDonasi.value = "Rp " + formatNumber(totalDonasiAll)
+    kpiData.value.totalDonasi.breakdown.iom = "Rp " + formatNumber(totalIOMDonasi)
+    kpiData.value.totalDonasi.breakdown.ota = "Rp " + formatNumber(totalOTADonasiAmount)
+
+    kpiData.value.pesananMerchandise.value = stats.pesananBaru || 0
+    kpiData.value.totalAnggota.value = stats.totalAnggota
+    kpiData.value.totalAnggota.description =
+      `+${stats.anggotaBaru} anggota baru bulan ini`
+
+    await loadCharts(selectedTrendRange.value)
 
     const recentRes: any = await ApiService.get('/dashboard/recent')
     const recent = recentRes.data || recentRes
@@ -426,11 +807,7 @@ function formatDate(date:string){
   if (!date) return "-"
   return new Date(date).toLocaleDateString('id-ID')
 }
-function formatDateKey(date: Date) {
-      return date.toISOString().split('T')[0]
-    }
-
-    // helper nama hari
+// helper nama hari
 function getDayName(date: Date) {
   const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab']
   return days[date.getDay()]

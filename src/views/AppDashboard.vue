@@ -116,16 +116,30 @@
         </div>
       </div>
 
-      <!-- Card 3: Pesanan Merchandise -->
-      <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
+      <!-- Card 3: Dashboard Merchandise -->
+      <div
+        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm relative cursor-pointer hover:bg-slate-50 transition-colors"
+        @click="goToMerchandiseDashboard"
+      >
         <div class="flex items-center justify-between">
           <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.pesananMerchandise.title }}</h3>
-          <div class="p-2 bg-blue-50 text-blue-500 rounded-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          <div class="flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-slate-400 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+            <div class="p-2 bg-blue-50 text-blue-500 rounded-lg">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            </div>
           </div>
         </div>
         <div class="mt-4">
           <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.pesananMerchandise.value }}</p>
+          <p class="mt-1 text-xs font-medium text-blue-600">Klik untuk buka dashboard merchandise</p>
         </div>
       </div>
 
@@ -215,7 +229,23 @@
         
         <!-- Grafik Kiri (Tren Pengajuan) -->
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
-        <h3 class="text-slate-700 font-bold text-lg mb-4">Tren Pengajuan Masuk</h3>
+        <div class="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-slate-700 font-bold text-lg">Tren Pengajuan Masuk</h3>
+            <p class="text-xs text-slate-500">Pilih rentang waktu untuk melihat perubahan tren</p>
+          </div>
+          <div class="min-w-[160px]">
+            <select
+              v-model="selectedTrendRange"
+              @change="handleTrendRangeChange"
+              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              <option v-for="range in trendRangeOptions" :key="range.value" :value="range.value">
+                {{ range.label }}
+              </option>
+            </select>
+          </div>
+        </div>
         <apexchart 
           :key="trenChartKey"
           type="line" 
@@ -264,13 +294,17 @@
       <!-- Grafik Kiri (Kapasitas OTA) -->
       <div class="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
         <h3 class="text-slate-700 font-bold text-lg mb-4">Kapasitas Orang Tua Asuh</h3>
-        <div class="flex-1 flex items-center justify-center">
+        <div v-if="otaCapacityChartSeries.length > 0" class="flex-1 flex items-center justify-center">
           <apexchart 
             type="donut" 
             height="320" 
             :options="otaCapacityChartOptions" 
             :series="otaCapacityChartSeries" 
           />
+        </div>
+        <div v-else class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg min-h-[320px] bg-slate-50">
+          <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="text-slate-500 font-medium text-sm">Belum ada data kapasitas orang tua asuh</span>
         </div>
       </div>
 
@@ -294,31 +328,46 @@
     </div>
     </div> <!-- END of isChartsVisible Wrapper -->
 
-    <!-- TOGGLE DASHBOARD PEMBAYARAN SECTION -->
-    <div class="mb-6">
-      <button 
-        @click="isPembayaranVisible = !isPembayaranVisible"
-        class="flex w-full items-center justify-between rounded-xl bg-white p-4 shadow-sm border border-slate-100 hover:bg-slate-50 transition-colors focus:outline-none"
-      >
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-green-50 text-green-600 rounded-lg">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          </div>
-          <span class="font-bold text-slate-700 text-lg">Dashboard Pembayaran / Keuangan</span>
+    <!-- CARD REDIRECT DASHBOARD PEMBAYARAN -->
+    <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Keuangan & Pembayaran</p>
+          <h3 class="mt-1 text-lg font-bold text-slate-800">Dashboard Pembayaran</h3>
+          <p class="mt-1 max-w-2xl text-sm text-slate-500">Data kartu dan grafik yang sama tersedia di halaman terpisah. Buka halaman ini jika ingin fokus ke monitoring pembayaran.</p>
         </div>
-        <svg 
-          class="w-5 h-5 text-slate-400 transition-transform duration-200" 
-          :class="{ 'rotate-180': isPembayaranVisible }"
-          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        <button
+          type="button"
+          class="inline-flex items-center justify-center gap-2 rounded-full bg-[#003793] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-[#002d6d]"
+          @click="goToPaymentDashboard"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
+          Buka Dashboard Pembayaran
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <!-- WRAPPER COMPONENT DASHBOARD PEMBAYARAN -->
-    <div v-show="isPembayaranVisible" class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-       <PaymentDashboardView :isEmbed="true" />
+    <!-- CARD REDIRECT DASHBOARD MERCHANDISE -->
+    <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-blue-600">Merchandise & Transaksi</p>
+          <h3 class="mt-1 text-lg font-bold text-slate-800">Dashboard Merchandise</h3>
+          <p class="mt-1 max-w-2xl text-sm text-slate-500">Lihat ringkasan pesanan dan monitoring merchandise pada halaman terpisah.</p>
+        </div>
+        <button
+          type="button"
+          class="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-blue-700"
+          @click="goToMerchandiseDashboard"
+        >
+          Buka Dashboard Merchandise
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- TABEL BAWAH: PENGAJUAN & LOG AKTIVITAS -->
@@ -471,14 +520,22 @@
 <script setup lang="ts">
 
 import { ref, onMounted } from "vue"
+import { useRouter } from "vue-router"
 import ApiService from "@/store/api.service"
-import PaymentDashboardView from "./PaymentDashboardView.vue"
 
 const isPendingDropdownOpen = ref(false)
 const isApprovedDropdownOpen = ref(false)
 const isDonationDropdownOpen = ref(false)
 const isChartsVisible = ref(false)
-const isPembayaranVisible = ref(false)
+const router = useRouter()
+const selectedTrendRange = ref('week')
+const trendRangeOptions = [
+  { value: 'week', label: '7 Hari' },
+  { value: 'month', label: '1 Bulan' },
+  { value: '3months', label: '3 Bulan' },
+  { value: 'year', label: '1 Tahun' },
+  { value: 'all', label: 'Semua' }
+]
 
 // ================= Ringkasan =================
 const kpiData = ref({
@@ -553,6 +610,78 @@ const otaBillingChartOptions = ref({
 
 const recentSubmissions = ref<any[]>([])
 const activityLogs = ref<any[]>([])
+
+const formatTrendLabel = (dateValue: string, range: string) => {
+  const date = new Date(dateValue)
+
+  if (range === 'week') {
+    return getDayName(date)
+  }
+
+  return date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short'
+  })
+}
+
+const loadCharts = async (range = selectedTrendRange.value) => {
+  try {
+    const chartRes: any = await ApiService.get('/dashboard/charts', { range })
+    const charts = chartRes.data || chartRes
+
+    const trendItems = charts.trenPengajuan || []
+
+    trenChartSeries.value = [{
+      name: 'Pengajuan',
+      data: trendItems.map((x: any) => Number(x.total) || 0)
+    }]
+
+    trenChartOptions.value = {
+      ...trenChartOptions.value,
+      xaxis: {
+        categories: trendItems.map((x: any) => formatTrendLabel(x.date, range))
+      }
+    }
+
+    trenChartKey.value++
+
+    const statusItems = (charts.distribusiStatus || []).filter((x: any) => x.currentStatus !== 'TIDAK_DIKETAHUI')
+
+    statusChartSeries.value = statusItems.map((x: any) => Number(x.total) || 0)
+    statusChartOptions.value = {
+      ...statusChartOptions.value,
+      labels: statusItems.map((x: any) => mapStatus(x.currentStatus))
+    }
+
+    statusChartKey.value++
+
+    penerimaChartSeries.value = [{
+      name: 'Total Penerima Bantuan',
+      data: charts.penerimaPerTahun?.map((x: any) => Number(x.total) || 0) || []
+    }]
+
+    penerimaChartOptions.value = {
+      ...penerimaChartOptions.value,
+      xaxis: {
+        categories: charts.penerimaPerTahun?.map((x: any) => x.year) || []
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load dashboard charts:', err)
+  }
+}
+
+const handleTrendRangeChange = () => {
+  void loadCharts(selectedTrendRange.value)
+}
+
+const goToPaymentDashboard = () => {
+  router.push('/dashboard-pembayaran')
+}
+
+const goToMerchandiseDashboard = () => {
+  router.push('/merchandise-dashboard')
+}
 
 const fetchDashboard = async () => {
   try {
@@ -642,67 +771,7 @@ const fetchDashboard = async () => {
     kpiData.value.totalAnggota.description =
       `+${stats.anggotaBaru} anggota baru bulan ini`
 
-    const chartRes: any = await ApiService.get('/dashboard/charts')
-    const charts = chartRes.data || chartRes
-
-    // generate 7 hari terakhir
-    const last7Days: Date[] = []
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date()
-      d.setDate(d.getDate() - i)
-      last7Days.push(d)
-    }
-
-    // mapping data backend ke object
-    const mapData: Record<string, number> = {}
-
-    charts.trenPengajuan?.forEach((x:any)=>{
-      mapData[x.date] = x.total
-    })
-
-    const seriesData = last7Days.map(d => {
-      const key = formatDateKey(d)
-      return mapData[key] || 0
-    })
-
-    const categories = last7Days.map(d => getDayName(d))
-
-    trenChartSeries.value = [{
-      name: 'Pengajuan',
-      data: seriesData
-    }]
-
-    trenChartOptions.value = {
-      ...trenChartOptions.value,
-      xaxis: {
-        categories
-      }
-    }
-
-
-    trenChartKey.value++
-
-    statusChartSeries.value =
-      charts.distribusiStatus?.map((x:any)=>x.total) || []
-
-    statusChartOptions.value = {
-      ...statusChartOptions.value,
-      labels: charts.distribusiStatus?.map((x:any)=>mapStatus(x.currentStatus)) || []
-    }
-
-    statusChartKey.value++
-
-    penerimaChartSeries.value = [{
-      name: 'Total Penerima Bantuan',
-      data: charts.penerimaPerTahun?.map((x:any)=>x.total) || []
-    }]
-
-    penerimaChartOptions.value = {
-      ...penerimaChartOptions.value,
-      xaxis: {
-        categories: charts.penerimaPerTahun?.map((x:any)=>x.year) || []
-      }
-    }
+    await loadCharts(selectedTrendRange.value)
 
     const recentRes: any = await ApiService.get('/dashboard/recent')
     const recent = recentRes.data || recentRes
@@ -738,11 +807,7 @@ function formatDate(date:string){
   if (!date) return "-"
   return new Date(date).toLocaleDateString('id-ID')
 }
-function formatDateKey(date: Date) {
-      return date.toISOString().split('T')[0]
-    }
-
-    // helper nama hari
+// helper nama hari
 function getDayName(date: Date) {
   const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab']
   return days[date.getDay()]

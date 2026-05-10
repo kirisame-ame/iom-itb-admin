@@ -55,61 +55,38 @@
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div>
             <label class="block mb-1 text-xs text-slate-500">Per halaman</label>
-            <select
+            <AppSelect
               v-model="limit"
+              :options="pageLimitOptions"
               @change="() => { page = 1; getData() }"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option :value="5">5</option>
-              <option :value="10">10</option>
-              <option :value="20">20</option>
-              <option :value="50">50</option>
-            </select>
+            />
           </div>
 
           <div>
             <label class="block mb-1 text-xs text-slate-500">Metode</label>
-            <select
+            <AppSelect
               v-model="paymentMethod"
+              :options="paymentMethodOptions"
               @change="() => { page = 1; getData() }"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="manual">Manual</option>
-              <option value="midtrans">Midtrans</option>
-            </select>
+            />
           </div>
 
           <div>
             <label class="block mb-1 text-xs text-slate-500">Status</label>
-            <select
+            <AppSelect
               v-model="paymentStatus"
+              :options="paymentStatusOptions"
               @change="() => { page = 1; getData() }"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="pending">Pending</option>
-              <option value="settlement">Settlement</option>
-              <option value="expired">Expired</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
-            </select>
+            />
           </div>
 
           <div>
             <label class="block mb-1 text-xs text-slate-500">Jenis Donasi</label>
-            <select
+            <AppSelect
               v-model="donationType"
+              :options="donationTypeFilterOptions"
               @change="() => { page = 1; getData() }"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="iuran_sukarela">Iuran Sukarela</option>
-              <option value="kontribusi_anggota">Kontribusi Anggota</option>
-              <option value="kontribusi_donatur">Kontribusi Donatur</option>
-              <option value="pembelian_merchandise">Pembelian Merchandise</option>
-              <option value="kontribusi_sukarela">Kontribusi Sukarela</option>
-            </select>
+            />
           </div>
 
           <div>
@@ -242,6 +219,7 @@ import IcLink from '@/assets/svg/ic-link.vue';
 import { useStore } from 'vuex';
 import { formatDate } from '@/utils';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
 
 interface DonationRow {
   id?: string | number;
@@ -283,6 +261,34 @@ const isOpened = ref(false);
 const currentId = ref<string | undefined>(undefined);
 const dataUpdate = ref<Partial<DonationRow>>({});
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+const pageLimitOptions = [
+  { value: 5, label: '5' },
+  { value: 10, label: '10' },
+  { value: 20, label: '20' },
+  { value: 50, label: '50' },
+];
+const paymentMethodOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'manual', label: 'Manual' },
+  { value: 'midtrans', label: 'Midtrans' },
+];
+const paymentStatusOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'pending', label: 'Menunggu' },
+  { value: 'settlement', label: 'Lunas' },
+  { value: 'expired', label: 'Kedaluwarsa' },
+  { value: 'failed', label: 'Gagal' },
+  { value: 'refunded', label: 'Dikembalikan' },
+];
+const donationTypeFilterOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'iuran_sukarela', label: 'Iuran Sukarela' },
+  { value: 'kontribusi_anggota', label: 'Kontribusi Anggota' },
+  { value: 'kontribusi_donatur', label: 'Kontribusi Donatur' },
+  { value: 'pembelian_merchandise', label: 'Pembelian Merchandise' },
+  { value: 'kontribusi_sukarela', label: 'Kontribusi Sukarela' },
+];
 
 const openAddModal = () => {
   currentId.value = undefined;

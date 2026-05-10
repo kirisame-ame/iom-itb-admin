@@ -7,9 +7,6 @@
         <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative">
-          <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
-            Keuangan Merchandise IOM ITB
-          </p>
           <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Dashboard Penjualan Merchandise</h1>
           <p class="mt-2 text-sm text-blue-100">
             Pantau penjualan merchandise berdasarkan kategori, jumlah terjual, dan total pendapatan.
@@ -22,35 +19,33 @@
       <template v-else>
         <div class="flex items-center gap-3">
           <span class="text-sm font-medium text-slate-600">Filter Kategori:</span>
-          <select
+          <AppSelect
             v-model="selectedKategori"
-            class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-          >
-            <option value="Semua">Semua Kategori</option>
-            <option v-for="k in allKategori" :key="k" :value="k">{{ k }}</option>
-          </select>
+            :options="kategoriFilterOptions"
+            button-class="min-w-[180px]"
+          />
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Produk</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ filteredMerchandises.length }}</p>
           </div>
-          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Terjual</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ totalTerjual }} pcs</p>
           </div>
-          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Pendapatan</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ formatPrice(totalPendapatan) }}</p>
           </div>
-          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Kategori Terlaris</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ kategoriTerlaris || '-' }}</p>
           </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
           <h2 class="mb-4 text-base font-bold text-slate-900">Pendapatan per Kategori</h2>
           <apexchart
             v-if="chartSeries[0].data.length"
@@ -62,7 +57,7 @@
           <p v-else class="text-sm text-slate-400">Belum ada data transaksi.</p>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="rounded-2xl border-2 border-slate-200 bg-white shadow-sm overflow-hidden">
           <div class="px-5 py-4 border-b border-slate-100">
             <h2 class="text-base font-bold text-slate-900">Top 10 Merchandise Terlaris</h2>
           </div>
@@ -105,18 +100,31 @@ import { useStore } from 'vuex';
 import { GET_MERCHANDISES } from '@/store/merchandise.module';
 import { GET_TRANSACTIONS } from '@/store/transaction.module';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
+import type { Merchandise, Transaction } from '@/types/domain';
+
+type TopMerchandise = Merchandise & {
+  totalTerjual: number;
+  totalPendapatan: number;
+};
 
 const store = useStore();
 const isLoading = ref(true);
 const selectedKategori = ref('Semua');
 
-const merchandises = computed<any[]>(() => store.getters.merchandises?.data || []);
-const transactions = computed<any[]>(() => store.getters.transactions || []);
+const merchandises = computed<Merchandise[]>(() => store.getters.merchandises?.data || []);
+const transactions = computed<Transaction[]>(() => store.getters.transactions || []);
 
 const allKategori = computed<string[]>(() => {
-  const cats = merchandises.value.map((m) => m.kategori).filter((c) => c && c.trim());
-  return [...new Set(cats)].sort() as string[];
+  const cats = merchandises.value
+    .map((m) => m.kategori)
+    .filter((category): category is string => Boolean(category?.trim()));
+  return [...new Set(cats)].sort();
 });
+const kategoriFilterOptions = computed(() => [
+  { value: 'Semua', label: 'Semua Kategori' },
+  ...allKategori.value.map((kategori) => ({ value: kategori, label: kategori })),
+]);
 
 const filteredMerchandises = computed(() =>
   selectedKategori.value === 'Semua'
@@ -124,14 +132,20 @@ const filteredMerchandises = computed(() =>
     : merchandises.value.filter((m) => m.kategori === selectedKategori.value)
 );
 
-const filteredMerchIds = computed(() => new Set(filteredMerchandises.value.map((m) => m.id)));
+const filteredMerchIds = computed(() =>
+  new Set(filteredMerchandises.value.map((m) => m.id).filter((id): id is number => typeof id === 'number'))
+);
 
 const filteredTransactions = computed(() =>
   transactions.value.filter((t) => filteredMerchIds.value.has(t.merchandiseId))
 );
 
-const merchMap = computed<Map<number, any>>(() =>
-  new Map(merchandises.value.map((m) => [m.id, m]))
+const merchMap = computed<Map<number, Merchandise>>(() =>
+  new Map(
+    merchandises.value
+      .filter((m): m is Merchandise & { id: number } => typeof m.id === 'number')
+      .map((m) => [m.id, m])
+  )
 );
 
 const totalTerjual = computed(() =>
@@ -177,17 +191,18 @@ const chartSeries = computed(() => {
   return [{ name: 'Pendapatan', data: allKategori.value.map((k) => revenue[k] || 0) }];
 });
 
-const top10 = computed(() => {
+const top10 = computed<TopMerchandise[]>(() => {
   const tally: Record<number, { totalTerjual: number; totalPendapatan: number }> = {};
   filteredTransactions.value.forEach((t) => {
     const id = t.merchandiseId;
+    if (typeof id !== 'number') return;
     if (!tally[id]) tally[id] = { totalTerjual: 0, totalPendapatan: 0 };
     const merch = merchMap.value.get(id);
     tally[id].totalTerjual += Number(t.qty) || 0;
     tally[id].totalPendapatan += (Number(t.qty) || 0) * (Number(merch?.price) || 0);
   });
   return Object.entries(tally)
-    .map(([id, stats]) => ({ ...merchMap.value.get(Number(id)), ...stats }))
+    .map(([id, stats]) => ({ ...(merchMap.value.get(Number(id)) || {}), ...stats }))
     .sort((a, b) => b.totalTerjual - a.totalTerjual)
     .slice(0, 10);
 });

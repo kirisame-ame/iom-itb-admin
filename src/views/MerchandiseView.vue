@@ -16,9 +16,6 @@
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
-              Katalog IOM ITB
-            </p>
             <h1 class="text-2xl font-bold tracking-tight md:text-4xl">{{ title }}</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
               Kelola produk merchandise, stok, harga, dan tautan pembelian yang tampil pada halaman publik.
@@ -35,36 +32,28 @@
       </section>
 
       <section class="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
           <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Produk</p>
           <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.totalEntries || computedData.length }}</p>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Stok Terlihat</p>
-          <p class="mt-2 text-2xl font-bold text-blue-900">{{ totalStock }}</p>
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Stok Rendah</p>
+          <p class="mt-2 text-2xl font-bold text-amber-700">{{ lowStockCount }}</p>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Halaman</p>
-          <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.currentPage || 1 }} / {{ pagination?.totalPages || 1 }}</p>
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Stok Habis</p>
+          <p class="mt-2 text-2xl font-bold text-red-700">{{ emptyStockCount }}</p>
         </div>
       </section>
 
-      <section class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+      <section class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-[auto,1fr] lg:w-auto lg:flex lg:flex-wrap lg:items-center">
           <div class="relative">
-            <select
+            <AppSelect
               v-model="limit"
+              :options="pageLimitOptions"
               @change="() => { page = 1; getData() }"
-              class="appearance-none rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-8 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option :value="5">5</option>
-              <option :value="10">10</option>
-              <option :value="20">20</option>
-              <option :value="100">Semua</option>
-            </select>
-            <svg class="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
+            />
           </div>
 
           <div class="relative">
@@ -91,7 +80,7 @@
         </p>
       </section>
 
-      <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <section class="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
           <table class="min-w-full">
             <thead>
@@ -100,6 +89,7 @@
                 <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Produk</th>
                 <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Harga</th>
                 <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Stok</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Kategori</th>
                 <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Deskripsi</th>
                 <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Link</th>
                 <th class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-blue-100">Diperbarui</th>
@@ -109,7 +99,7 @@
             <tbody>
               <template v-if="isLoading">
                 <tr v-for="i in limit" :key="i" class="border-b border-slate-100">
-                  <td v-for="c in 8" :key="c" class="px-5 py-4">
+                  <td v-for="c in 9" :key="c" class="px-5 py-4">
                     <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
                   </td>
                 </tr>
@@ -117,7 +107,7 @@
 
               <template v-else-if="!computedData.length">
                 <tr>
-                  <td colspan="8" class="px-5 py-12 text-center text-sm italic text-slate-400">
+                  <td colspan="9" class="px-5 py-12 text-center text-sm italic text-slate-400">
                     Tidak ada merchandise ditemukan.
                   </td>
                 </tr>
@@ -146,6 +136,11 @@
                   <td class="px-5 py-4 align-middle">
                     <span :class="[stockBadgeClass(u?.stock), 'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold']">
                       {{ u?.stock ?? 0 }} stok
+                    </span>
+                  </td>
+                  <td class="px-5 py-4 align-middle">
+                    <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                      {{ u?.kategori || 'Tanpa kategori' }}
                     </span>
                   </td>
                   <td class="max-w-[260px] px-5 py-4 text-sm text-slate-600 align-middle">
@@ -237,6 +232,7 @@ import { formattedPrice } from '@/utils';
 import IcTrash from '@/assets/svg/ic-trash.vue';
 import IcEdit from '@/assets/svg/ic-edit.vue';
 import IcPlus from '@/assets/svg/ic-plus.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
 
 type MerchandiseItem = {
   id: number;
@@ -246,6 +242,7 @@ type MerchandiseItem = {
   stock?: number | string;
   description?: string;
   link?: string;
+  kategori?: string;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -261,6 +258,12 @@ const limit = ref(5);
 const search = ref(""); 
 const title = ref("Merchandise"); 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
+const pageLimitOptions = [
+  { value: 5, label: '5' },
+  { value: 10, label: '10' },
+  { value: 20, label: '20' },
+  { value: 100, label: 'Semua' },
+];
 
 const openModal = () => {
   isOpened.value = true;
@@ -283,9 +286,11 @@ const pagination = computed(() => {
   return merchandises?.pagination || [];
 });
 
-const totalStock = computed(() => {
-  return computedData.value.reduce((total, item) => total + Number(item?.stock || 0), 0);
-});
+const lowStockCount = computed(() => computedData.value.filter((item) => {
+  const stock = Number(item?.stock || 0);
+  return stock > 0 && stock <= 5;
+}).length);
+const emptyStockCount = computed(() => computedData.value.filter((item) => Number(item?.stock || 0) <= 0).length);
 
 const getData = async () => {
   isLoading.value = true;

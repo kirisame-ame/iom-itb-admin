@@ -40,28 +40,17 @@
           </div>
           <div>
             <label class="block mb-1 text-xs text-slate-500">Jenis</label>
-            <select
+            <AppSelect
               v-model="donationType"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="all">Semua</option>
-              <option value="iuran_sukarela">Iuran Sukarela</option>
-              <option value="kontribusi_sukarela">Kontribusi Sukarela</option>
-            </select>
+              :options="donationTypeOptions"
+            />
           </div>
           <div>
             <label class="block mb-1 text-xs text-slate-500">Status</label>
-            <select
+            <AppSelect
               v-model="paymentStatus"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="pending">Pending</option>
-              <option value="settlement">Settlement</option>
-              <option value="expired">Expired</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
-            </select>
+              :options="paymentStatusOptions"
+            />
           </div>
           <div class="flex items-end">
             <button
@@ -247,21 +236,35 @@
 import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
 import { GET_PAYMENT_DASHBOARD } from '@/store/paymentDashboard.module';
+import type {
+  PaymentDashboardData,
+  PaymentDashboardKpis,
+  PaymentSummaryItem,
+} from '@/types/domain';
 
-const props = defineProps({
-  isEmbed: {
-    type: Boolean,
-    default: false
-  }
+withDefaults(defineProps<{ isEmbed?: boolean }>(), {
+  isEmbed: false,
 });
-
-type SummaryItem = Record<string, any>;
 
 const store = useStore();
 const isLoading = ref(true);
 const donationType = ref('all');
 const paymentStatus = ref('');
+const donationTypeOptions = [
+  { value: 'all', label: 'Semua' },
+  { value: 'iuran_sukarela', label: 'Iuran Sukarela' },
+  { value: 'kontribusi_sukarela', label: 'Kontribusi Sukarela' },
+];
+const paymentStatusOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'pending', label: 'Menunggu' },
+  { value: 'settlement', label: 'Lunas' },
+  { value: 'expired', label: 'Kedaluwarsa' },
+  { value: 'failed', label: 'Gagal' },
+  { value: 'refunded', label: 'Dikembalikan' },
+];
 
 const today = new Date();
 const start = new Date(today);
@@ -271,14 +274,14 @@ const toDateInput = (date: Date) => date.toISOString().slice(0, 10);
 const startDate = ref(toDateInput(start));
 const endDate = ref(toDateInput(today));
 
-const dashboard = computed(() => store.getters.paymentDashboard || {});
-const kpis = computed(() => dashboard.value.kpis || {});
-const statusSummary = computed<SummaryItem[]>(() => dashboard.value.statusSummary || []);
-const typeSummary = computed<SummaryItem[]>(() => dashboard.value.typeSummary || []);
-const methodSummary = computed<SummaryItem[]>(() => dashboard.value.methodSummary || []);
-const facultySummary = computed<SummaryItem[]>(() => dashboard.value.facultySummary || []);
-const dailyTrend = computed<SummaryItem[]>(() => dashboard.value.dailyTrend || []);
-const recentPayments = computed<SummaryItem[]>(() => dashboard.value.recentPayments || []);
+const dashboard = computed<PaymentDashboardData>(() => store.getters.paymentDashboard || {});
+const kpis = computed<PaymentDashboardKpis>(() => dashboard.value.kpis || {});
+const statusSummary = computed<PaymentSummaryItem[]>(() => dashboard.value.statusSummary || []);
+const typeSummary = computed<PaymentSummaryItem[]>(() => dashboard.value.typeSummary || []);
+const methodSummary = computed<PaymentSummaryItem[]>(() => dashboard.value.methodSummary || []);
+const facultySummary = computed<PaymentSummaryItem[]>(() => dashboard.value.facultySummary || []);
+const dailyTrend = computed<PaymentSummaryItem[]>(() => dashboard.value.dailyTrend || []);
+const recentPayments = computed<PaymentSummaryItem[]>(() => dashboard.value.recentPayments || []);
 
 const filtersLabel = computed(() => `${formatShortDate(startDate.value)} - ${formatShortDate(endDate.value)}`);
 

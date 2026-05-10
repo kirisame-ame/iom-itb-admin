@@ -23,14 +23,11 @@
                 <label class="text-sm font-semibold text-slate-700">Mitra <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Pilih mitra yang terkait.</p>
               </div>
-              <select
+              <AppSelect
                 v-model="formData.data.kemitraanId"
-                required
-                class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="" disabled>Pilih mitra</option>
-                <option v-for="option in kemitraanOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+                :options="kemitraanSelectOptions"
+                button-class="bg-slate-50 text-slate-800 focus:ring-blue-500/20"
+              />
             </div>
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
@@ -78,12 +75,11 @@
                 <label class="text-sm font-semibold text-slate-700">Status</label>
                 <p class="mt-0.5 text-xs text-slate-400">Tahap pelaksanaan kegiatan.</p>
               </div>
-              <select
+              <AppSelect
                 v-model="formData.data.status"
-                class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-              </select>
+                :options="statusOptions"
+                button-class="bg-slate-50 text-slate-800 focus:ring-blue-500/20"
+              />
             </div>
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
@@ -148,6 +144,7 @@ import {
 } from "@/store/kegiatanKemitraan.module";
 import { GET_KEMITRAAN } from "@/store/kemitraan.module";
 import { showError } from "@/utils/swal";
+import AppSelect from "@/components/input/AppSelect.vue";
 
 interface KemitraanOption {
   id?: number | string;
@@ -175,6 +172,9 @@ const toInputDate = (value: unknown) => {
 };
 
 export default defineComponent({
+  components: {
+    AppSelect,
+  },
   props: {
     title: {
       type: String,
@@ -213,6 +213,10 @@ export default defineComponent({
           value: Number(k.id),
         }));
     });
+    const kemitraanSelectOptions = computed(() => [
+      { value: "", label: "Pilih mitra", disabled: true },
+      ...kemitraanOptions.value,
+    ]);
 
     const closeModal = () => {
       isLoading.value = false;
@@ -312,6 +316,7 @@ export default defineComponent({
       isLoading,
       statusOptions,
       kemitraanOptions,
+      kemitraanSelectOptions,
     };
   },
 });

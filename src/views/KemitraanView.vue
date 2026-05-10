@@ -177,12 +177,13 @@ import ModalForm from "../components/modal/FormKemitraan.vue";
 import { useStore } from 'vuex';
 import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
+import type { ApiErrorResponse, EntityId, Kemitraan } from '@/types/domain';
 
 const store = useStore();
 
 const isOpened = ref(false);
-const dataUpdate = ref<Record<string, any>>({});
-const currentId = ref<string | undefined>(undefined);
+const dataUpdate = ref<Partial<Kemitraan>>({});
+const currentId = ref<EntityId | undefined>(undefined);
 const isImageModalOpen = ref(false);
 const selectedImage = ref('');
 const searchQuery = ref('');
@@ -201,7 +202,7 @@ const handleModalClose = async () => {
   await getData();
 };
 
-const computedData = computed<any[]>(() => {
+const computedData = computed<Kemitraan[]>(() => {
   const list = store.getters.kemitraan;
   if (Array.isArray(list)) return list;
   return list?.data || [];
@@ -282,13 +283,13 @@ const initials = (name?: string) => {
     .toUpperCase();
 };
 
-const editItem = (item: any) => {
+const editItem = (item: Kemitraan) => {
   dataUpdate.value = { ...item };
   currentId.value = item.id;
   isOpened.value = true;
 };
 
-const deleteItem = async (id: number) => {
+const deleteItem = async (id: EntityId) => {
   const result = await Swal.fire({
     title: 'Hapus kemitraan?',
     text: 'Data ini tidak bisa dikembalikan.',
@@ -309,8 +310,9 @@ const deleteItem = async (id: number) => {
       confirmButtonColor: '#4f46e5',
     });
     await getData();
-  } catch (err: any) {
-    Swal.fire({ icon: 'error', title: 'Gagal', text: err?.message || 'Gagal menghapus.' });
+  } catch (err: unknown) {
+    const apiError = err as ApiErrorResponse;
+    Swal.fire({ icon: 'error', title: 'Gagal', text: apiError?.message || 'Gagal menghapus.' });
   }
 };
 </script>

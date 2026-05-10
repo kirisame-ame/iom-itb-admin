@@ -60,16 +60,10 @@
 
           <div class="lg:col-span-1">
             <label class="block mb-1 text-xs text-slate-500">Status</label>
-            <select
+            <AppSelect
               v-model="statusFilter"
-              class="block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            >
-              <option value="">Semua</option>
-              <option value="planned">Direncanakan</option>
-              <option value="ongoing">Berlangsung</option>
-              <option value="completed">Selesai</option>
-              <option value="cancelled">Dibatalkan</option>
-            </select>
+              :options="statusFilterOptions"
+            />
           </div>
 
           <div class="rounded-xl bg-slate-50 px-4 py-3 lg:col-span-1">
@@ -183,17 +177,26 @@ import ModalForm from '../components/modal/FormKegiatanKemitraan.vue';
 import { useStore } from 'vuex';
 import Breadcrumb from '../components/AppBreadcrumb.vue';
 import { confirmDelete, errorAlert, successAlert } from '@/utils/swal';
+import AppSelect from '@/components/input/AppSelect.vue';
+import type { EntityId, KegiatanKemitraan } from '@/types/domain';
 
 const store = useStore();
 
 const isOpened = ref(false);
-const dataUpdate = ref<Record<string, any>>({});
-const currentId = ref<string | undefined>(undefined);
+const dataUpdate = ref<Partial<KegiatanKemitraan>>({});
+const currentId = ref<EntityId | undefined>(undefined);
 const isImageModalOpen = ref(false);
 const selectedImage = ref('');
 const searchQuery = ref('');
 const statusFilter = ref('');
 const isLoading = ref(true);
+const statusFilterOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'planned', label: 'Direncanakan' },
+  { value: 'ongoing', label: 'Berlangsung' },
+  { value: 'completed', label: 'Selesai' },
+  { value: 'cancelled', label: 'Dibatalkan' },
+];
 
 const openModal = () => {
   dataUpdate.value = {};
@@ -208,7 +211,7 @@ const handleModalClose = async () => {
   await getData();
 };
 
-const computedData = computed<any[]>(() => {
+const computedData = computed<KegiatanKemitraan[]>(() => {
   const list = store.getters.kegiatanKemitraan;
   return Array.isArray(list) ? list : list?.data || [];
 });
@@ -308,13 +311,13 @@ const statusClass = (status?: string) => {
   }
 };
 
-const editItem = (item: any) => {
+const editItem = (item: KegiatanKemitraan) => {
   dataUpdate.value = { ...item };
   currentId.value = item.id;
   isOpened.value = true;
 };
 
-const deleteItem = async (id: number) => {
+const deleteItem = async (id: EntityId) => {
   const result = await confirmDelete();
   if (!result.isConfirmed) return;
   try {

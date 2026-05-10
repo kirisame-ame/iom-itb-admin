@@ -62,13 +62,11 @@
                 <label class="text-sm font-semibold text-slate-700">Jenis Donasi</label>
                 <p class="mt-0.5 text-xs text-slate-400">Kategori pencatatan donasi.</p>
               </div>
-              <select
+              <AppSelect
                 v-model="formData.data.donationType"
-                class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="">Pilih jenis donasi</option>
-                <option v-for="option in donationTypeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+                :options="donationTypeSelectOptions"
+                button-class="bg-slate-50 text-slate-800 focus:ring-blue-500/20"
+              />
             </div>
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
@@ -77,15 +75,11 @@
                 <p class="mt-0.5 text-xs text-slate-400">Opsional, untuk kode unik fakultas.</p>
               </div>
               <div>
-                <select
+                <AppSelect
                   v-model="facultyId"
-                  class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option :value="null">Tidak terkait fakultas</option>
-                  <option v-for="f in fakultasList" :key="f.id" :value="f.id">
-                    {{ f.name }} (kode unik: {{ f.kodeUnik }})
-                  </option>
-                </select>
+                  :options="facultyOptions"
+                  button-class="bg-slate-50 text-slate-800 focus:ring-blue-500/20"
+                />
                 <p v-if="selectedFaculty" class="mt-1 text-xs text-slate-500">
                   Nominal akhir akan ditambah kode unik <b>{{ selectedFaculty.kodeUnik }}</b>.
                 </p>
@@ -254,8 +248,11 @@ import { defineComponent, ref, computed, onMounted, watch, reactive } from 'vue'
 import { useStore } from 'vuex';
 import { POST_DONASI, PUT_DONASI } from '@/store/donasi.module';
 import { POST_IMAGE } from '@/store/upload.module';
-import { GET_FAKULTAS, Fakultas } from '@/store/fakultas.module';
+import { GET_FAKULTAS } from '@/store/fakultas.module';
+import type { Fakultas } from '@/store/fakultas.module';
 import { showError } from '@/utils/swal';
+import AppSelect from '@/components/input/AppSelect.vue';
+import type { ApiErrorResponse, Donation, DonationPayload } from '@/types/domain';
 
 const DONATION_TYPE_OPTIONS = [
   'iuran_sukarela',
@@ -279,6 +276,9 @@ const toInputDate = (value: unknown) => {
 };
 
 export default defineComponent({
+  components: {
+    AppSelect,
+  },
   props: {
     title: { type: String, required: true },
     id: { type: String, required: false },
@@ -286,13 +286,14 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const store = useStore();
+    const initialData = props.data as Partial<Donation>;
     const modalContent = ref(null);
     const isLoading = ref(false);
-    const facultyId = ref<number | null>(props.data?.facultyId ?? props.data?.faculty?.id ?? null);
-    const imageMode = ref(props.data?.proof ? 'url' : 'upload');
+    const facultyId = ref<number | null>(initialData.facultyId ?? initialData.faculty?.id ?? null);
+    const imageMode = ref(initialData.proof ? 'url' : 'upload');
     const imageFile = ref<File | null>(null);
     const imagePreviewLocal = ref('');
-    const imageUrlInput = ref(typeof props.data?.proof === 'string' ? props.data.proof : '');
+    const imageUrlInput = ref(typeof initialData.proof === 'string' ? initialData.proof : '');
 
     const donationTypeOptions = ref(
       DONATION_TYPE_OPTIONS.map((value) => ({
@@ -300,6 +301,10 @@ export default defineComponent({
         label: formatDonationType(value),
       }))
     );
+    const donationTypeSelectOptions = computed(() => [
+      { value: '', label: 'Pilih jenis donasi' },
+      ...donationTypeOptions.value,
+    ]);
     const notificationOptions = [
       { value: 'whatsapp', label: 'WhatsApp' },
       { value: 'email', label: 'Email' },
@@ -308,22 +313,29 @@ export default defineComponent({
     const formData = reactive({
       id: '',
       data: {
-        ...props.data,
-        name: props.data?.name || '',
-        email: props.data?.email || '',
-        noWhatsapp: props.data?.noWhatsapp || '',
-        donationType: props.data?.donationType || '',
-        amount: props.data?.amount ?? props.data?.grossAmount ?? '',
-        date: toInputDate(props.data?.date),
-        bank: props.data?.bank || '',
-        notification: Array.isArray(props.data?.notification) ? props.data.notification : [],
-        nameIsHidden: props.data?.options?.nameIsHidden || props.data?.nameIsHidden || false,
-        isHambaAllah: props.data?.options?.isHambaAllah || props.data?.isHambaAllah || false,
-        image: props.data?.proof || '',
-      } as Record<string, any>,
+        ...initialData,
+        name: initialData.name || '',
+        email: initialData.email || '',
+        noWhatsapp: initialData.noWhatsapp || '',
+        donationType: initialData.donationType || '',
+        amount: initialData.amount ?? initialData.grossAmount ?? '',
+        date: toInputDate(initialData.date),
+        bank: initialData.bank || '',
+        notification: Array.isArray(initialData.notification) ? initialData.notification : [],
+        nameIsHidden: initialData.options?.nameIsHidden || initialData.nameIsHidden || false,
+        isHambaAllah: initialData.options?.isHambaAllah || initialData.isHambaAllah || false,
+        image: initialData.proof || '',
+      } as DonationPayload,
     });
 
     const fakultasList = computed<Fakultas[]>(() => store.getters.fakultas || []);
+    const facultyOptions = computed(() => [
+      { value: null, label: 'Tidak terkait fakultas' },
+      ...fakultasList.value.map((f) => ({
+        value: f.id,
+        label: `${f.name} (kode unik: ${f.kodeUnik})`,
+      })),
+    ]);
     const selectedFaculty = computed<Fakultas | undefined>(() =>
       fakultasList.value.find((f) => f.id === facultyId.value)
     );
@@ -402,10 +414,10 @@ export default defineComponent({
     const handleSubmit = async () => {
       isLoading.value = true;
       try {
-        const payload = {
+        const payload: DonationPayload = {
           ...formData.data,
           facultyId: facultyId.value,
-        } as Record<string, any>;
+        };
 
         if (payload.image) {
           if (typeof payload.image !== 'string') {
@@ -424,8 +436,9 @@ export default defineComponent({
           await store.dispatch(POST_DONASI, { data: payload });
         }
         closeModal();
-      } catch (error: any) {
-        showError('Gagal', error?.response?.data?.message || 'Gagal menyimpan donasi');
+      } catch (error: unknown) {
+        const apiError = error as ApiErrorResponse;
+        showError('Gagal', apiError?.response?.data?.message || apiError?.message || 'Gagal menyimpan donasi');
         isLoading.value = false;
       }
     };
@@ -451,8 +464,10 @@ export default defineComponent({
       handleSubmit,
       isLoading,
       donationTypeOptions,
+      donationTypeSelectOptions,
       notificationOptions,
       fakultasList,
+      facultyOptions,
       facultyId,
       selectedFaculty,
       formData,

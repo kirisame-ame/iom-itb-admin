@@ -1,22 +1,23 @@
 <template>
     <div class="relative mt-2 rounded-md shadow-sm">
         <label class="text-sm capitalize">{{ label.replace(/_/g, " ") }} {{ required ? '*' : '' }}</label>
-        <select
-          id="countries"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          @change="updateValue"
+        <AppSelect
           v-model="inputValue"
-          :required="required"
-          >
-          <option v-for="(v,i) in options" :key="i" :value="optionValue(v)" >{{ optionLabel(v) }}</option>
-        </select>
+          :options="selectOptions"
+          button-class="bg-gray-50 border-gray-300 text-gray-900"
+          @change="updateValue"
+        />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, onMounted } from 'vue';
+import { defineComponent, ref, watch, onMounted, computed } from 'vue';
+import AppSelect from './AppSelect.vue';
 
 export default defineComponent({
+  components: {
+    AppSelect,
+  },
   props: {
     keyValue: {
       type: String,
@@ -74,9 +75,15 @@ export default defineComponent({
       return option;
     };
 
+    const selectOptions = computed(() => props.options.map((option) => ({
+      value: optionValue(option),
+      label: optionLabel(option),
+    })));
+
     return {
       inputValue,
       updateValue,
+      selectOptions,
       optionLabel,
       optionValue
     };

@@ -344,6 +344,8 @@ module.exports = {
     },
     fontFamily: {
       sans: [
+        'Manrope',
+        'Geist',
         'Inter',
         'ui-sans-serif',
         'system-ui',
@@ -359,6 +361,21 @@ module.exports = {
         '"Segoe UI Emoji"',
         '"Segoe UI Symbol"',
         '"Noto Color Emoji"',
+      ],
+      heading: [
+        '"Google Sans Flex"',
+        'Manrope',
+        'Geist',
+        'ui-sans-serif',
+        'system-ui',
+        'sans-serif',
+      ],
+      display: [
+        '"Google Sans Flex"',
+        'Manrope',
+        'ui-sans-serif',
+        'system-ui',
+        'sans-serif',
       ],
       serif: ['ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
       mono: [

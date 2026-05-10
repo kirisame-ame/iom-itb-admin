@@ -3,7 +3,7 @@
     <Breadcrumb breadcrumb="fakultas" />
 
     <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm" @click.self="closeModal">
-      <div class="w-full max-w-[640px] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl">
+      <div class="w-full max-w-[640px] overflow-hidden rounded-lg border-2 border-slate-200 bg-white shadow-2xl">
         <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
           <div>
             <p class="text-xs font-semibold uppercase tracking-wider text-blue-700">Fakultas</p>
@@ -69,20 +69,60 @@
     </div>
 
     <div class="mt-6 space-y-4">
-      <section class="flex flex-col gap-3 border-b border-slate-200 pb-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Fakultas</h1>
-          <p class="mt-1 max-w-2xl text-sm leading-relaxed text-slate-500">Kelola kode unik fakultas untuk pembayaran donasi dan iuran manual.</p>
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
+        <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
+        <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
+        <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight md:text-4xl">Fakultas</h1>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">
+              Kelola kode unik fakultas untuk pembayaran donasi dan iuran manual.
+            </p>
+          </div>
+          <button class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/70 sm:w-auto" @click="openCreate">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+            </svg>
+            Tambah Fakultas
+          </button>
         </div>
-        <button class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700" @click="openCreate">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
-            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-          </svg>
-          Tambah Fakultas
-        </button>
       </section>
 
-      <div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      <section class="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Fakultas</p>
+          <p class="mt-2 text-2xl font-bold text-blue-900">{{ fakultasList.length }}</p>
+        </div>
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Aktif</p>
+          <p class="mt-2 text-2xl font-bold text-green-700">{{ activeCount }}</p>
+        </div>
+        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Nonaktif</p>
+          <p class="mt-2 text-2xl font-bold text-slate-700">{{ inactiveCount }}</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="grid gap-3 md:grid-cols-[1fr_220px]">
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+            </svg>
+            <input
+              v-model="search"
+              placeholder="Cari nama fakultas atau kode unik..."
+              class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            />
+          </div>
+          <AppSelect
+            v-model="statusFilter"
+            :options="statusFilterOptions"
+          />
+        </div>
+      </section>
+
+      <div class="overflow-hidden rounded-lg border-2 border-slate-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
           <table class="min-w-full text-sm">
             <thead>
@@ -99,10 +139,10 @@
                   <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
                 </td>
               </tr>
-              <tr v-else-if="fakultasList.length === 0">
-                <td colspan="4" class="px-5 py-12 text-sm text-center text-slate-400 italic">Belum ada fakultas.</td>
+              <tr v-else-if="filteredFakultasList.length === 0">
+                <td colspan="4" class="px-5 py-12 text-sm text-center text-slate-400 italic">Belum ada fakultas yang cocok.</td>
               </tr>
-              <tr v-else v-for="item in fakultasList" :key="item.id" class="transition-colors hover:bg-blue-50/40">
+              <tr v-else v-for="item in filteredFakultasList" :key="item.id" class="transition-colors hover:bg-blue-50/40">
                 <td class="px-4 py-3 font-semibold text-slate-900">{{ item.name }}</td>
                 <td class="px-4 py-3 font-mono text-sm text-slate-600">{{ item.kodeUnik }}</td>
                 <td class="px-4 py-3">
@@ -119,7 +159,7 @@
           </table>
         </div>
         <div class="border-t border-slate-100 px-4 py-3">
-          <span class="text-xs text-slate-500">Total: {{ fakultasList.length }} fakultas</span>
+          <span class="text-xs text-slate-500">Menampilkan {{ filteredFakultasList.length }} dari {{ fakultasList.length }} fakultas</span>
         </div>
       </div>
     </div>
@@ -131,6 +171,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
+import AppSelect from '@/components/input/AppSelect.vue';
 import {
   GET_FAKULTAS,
   POST_FAKULTAS,
@@ -138,6 +179,7 @@ import {
   DELETE_FAKULTAS,
   Fakultas,
 } from '@/store/fakultas.module';
+import type { ApiErrorResponse } from '@/types/domain';
 
 const store = useStore();
 const isLoading = ref(true);
@@ -145,8 +187,33 @@ const isModalOpen = ref(false);
 const isSubmitting = ref(false);
 const editingId = ref<number | null>(null);
 const form = ref({ name: '', kodeUnik: '', isActive: true });
+const search = ref('');
+const statusFilter = ref('');
+const statusFilterOptions = [
+  { value: '', label: 'Semua status' },
+  { value: 'active', label: 'Aktif' },
+  { value: 'inactive', label: 'Nonaktif' },
+];
 
 const fakultasList = computed<Fakultas[]>(() => store.getters.fakultas || []);
+const activeCount = computed(() => fakultasList.value.filter((item) => item.isActive).length);
+const inactiveCount = computed(() => fakultasList.value.length - activeCount.value);
+const filteredFakultasList = computed(() => {
+  const keyword = search.value.trim().toLowerCase();
+
+  return fakultasList.value.filter((item) => {
+    const matchKeyword = keyword
+      ? `${item.name} ${item.kodeUnik}`.toLowerCase().includes(keyword)
+      : true;
+    const matchStatus = statusFilter.value === 'active'
+      ? item.isActive
+      : statusFilter.value === 'inactive'
+        ? !item.isActive
+        : true;
+
+    return matchKeyword && matchStatus;
+  });
+});
 
 const load = async () => {
   isLoading.value = true;
@@ -185,8 +252,9 @@ const handleSubmit = async () => {
     }
     closeModal();
     await load();
-  } catch (err: any) {
-    Swal.fire({ icon: 'error', title: 'Gagal', text: err?.message || 'Gagal menyimpan fakultas' });
+  } catch (err: unknown) {
+    const apiError = err as ApiErrorResponse;
+    Swal.fire({ icon: 'error', title: 'Gagal', text: apiError?.message || 'Gagal menyimpan fakultas' });
   } finally {
     isSubmitting.value = false;
   }
@@ -206,8 +274,9 @@ const handleDelete = async (item: Fakultas) => {
   try {
     await store.dispatch(DELETE_FAKULTAS, { id: item.id });
     await load();
-  } catch (err: any) {
-    Swal.fire({ icon: 'error', title: 'Gagal', text: err?.message || 'Gagal menghapus fakultas' });
+  } catch (err: unknown) {
+    const apiError = err as ApiErrorResponse;
+    Swal.fire({ icon: 'error', title: 'Gagal', text: apiError?.message || 'Gagal menghapus fakultas' });
   }
 };
 </script>

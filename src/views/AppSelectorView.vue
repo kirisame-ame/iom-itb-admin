@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-inter">
+  <div class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans">
 
     <!-- Background -->
     <div class="fixed inset-0 z-0 overflow-hidden">

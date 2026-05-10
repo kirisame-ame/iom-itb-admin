@@ -2,11 +2,10 @@
   <div class="fixed inset-0 z-[998] bg-slate-900/50 backdrop-blur-sm"></div>
   <div class="fixed inset-0 z-[999] flex items-center justify-center p-4" @click="closeModal">
     <div ref="modalContent" class="w-full max-w-[580px]" @click.stop>
-      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+      <div class="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-2xl">
         <form @submit.prevent="handleSubmit" novalidate>
           <div class="flex items-start justify-between gap-4 bg-blue-900 px-6 py-5 text-white">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-wider text-blue-100">Form Merchandise</p>
               <h3 class="mt-1 text-xl font-bold capitalize">{{ title }}</h3>
               <p class="mt-1 text-sm text-blue-100">Lengkapi informasi produk yang akan tampil di katalog.</p>
             </div>
@@ -18,27 +17,25 @@
           </div>
 
           <div class="max-h-[75vh] space-y-4 overflow-y-auto bg-slate-50 px-6 py-6 text-slate-700">
-            <InputText label="name" :value="data?.name" @update="updateValue" :required="true" />
+            <InputText label="Nama Produk" key-value="name" :value="data?.name" @update="updateValue" :required="true" />
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <InputNumber label="stock" :value="data?.stock" @update="updateValue" :required="true" />
-              <InputPrice label="price" :value="data?.price" @update="updateValue" :required="true"/>
+              <InputNumber label="Stok" key-value="stock" :value="data?.stock" @update="updateValue" :required="true" />
+              <InputPrice label="Harga" key-value="price" :value="data?.price" @update="updateValue" :required="true"/>
             </div>
-            <InputTextArea label="description" :value="data?.description" @update="updateValue" :required="true" />
-            <InputImageCostume label="image" :value="data?.image" @update="updateValue" />
-            <InputText label="link" :value="data?.link" @update="updateValue" />
+            <InputTextArea label="Deskripsi" key-value="description" :value="data?.description" @update="updateValue" :required="true" />
+            <InputImageCostume label="Gambar Produk" key-value="image" :value="data?.image" @update="updateValue" />
+            <InputText label="Link Pembelian" key-value="link" :value="data?.link" @update="updateValue" />
 
             <!-- Kategori dinamis -->
             <div class="relative mt-2 rounded-md shadow-sm">
-              <label class="text-sm capitalize">Kategori</label>
-              <select
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
-                :value="selectedKategori"
+              <label class="text-sm font-semibold text-slate-700">Kategori</label>
+              <AppSelect
+                class="mt-1"
+                :model-value="selectedKategori"
+                :options="kategoriSelectOptions"
+                button-class="bg-gray-50 border-gray-300 text-gray-900"
                 @change="onKategoriChange"
-              >
-                <option value="">-- Pilih Kategori --</option>
-                <option v-for="k in kategoriOptions" :key="k" :value="k">{{ k }}</option>
-                <option value="__new__">+ Tambah Kategori Baru...</option>
-              </select>
+              />
               <input
                 v-if="showNewKategori"
                 v-model="newKategoriInput"
@@ -65,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import InputText from '@/components/input/InputText.vue';
 import InputTextArea from '@/components/input/InputTextArea.vue';
 import InputNumber from '@/components/input/InputNumber.vue';
@@ -76,6 +73,10 @@ import { POST_IMAGE } from "@/store/upload.module";
 import InputImageCostume from '../input/InputImageCostume.vue';
 import { showError } from '@/utils/swal';
 import ApiService from '@/store/api.service';
+import AppSelect from '@/components/input/AppSelect.vue';
+import type { ApiDataResponse, ApiErrorResponse, MerchandisePayload } from '@/types/domain';
+
+type CategoryResponse = ApiDataResponse<string[]> | string[];
 
 export default defineComponent({
   components: {
@@ -84,6 +85,7 @@ export default defineComponent({
     InputNumber,
     InputPrice,
     InputImageCostume,
+    AppSelect,
   },
   props: {
     title: {
@@ -102,23 +104,30 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const store = useStore();
+    const initialData = props.data as MerchandisePayload;
     const modalContent = ref(null);
     const isLoading = ref(false);
 
     const kategoriOptions = ref<string[]>(['Stiker', 'Busana', 'ATK']);
-    const selectedKategori = ref<string>(props.data?.kategori || '');
+    const selectedKategori = ref<string>(String(initialData.kategori || ''));
     const showNewKategori = ref(false);
     const newKategoriInput = ref('');
+    const kategoriSelectOptions = computed(() => [
+      { value: '', label: '-- Pilih Kategori --' },
+      ...kategoriOptions.value.map((kategori) => ({ value: kategori, label: kategori })),
+      { value: '__new__', label: '+ Tambah Kategori Baru...' },
+    ]);
 
     onMounted(async () => {
       try {
-        const res: any = await ApiService.get('/merchandises/categories');
-        if (res?.data) kategoriOptions.value = res.data;
+        const res = await ApiService.get<CategoryResponse>('/merchandises/categories');
+        const categories = Array.isArray(res) ? res : res.data;
+        if (Array.isArray(categories)) kategoriOptions.value = categories;
       } catch { /* fallback ke default */ }
     });
 
-    const onKategoriChange = (e: Event) => {
-      const val = (e.target as HTMLSelectElement).value;
+    const onKategoriChange = (value: string | number | boolean | null | undefined) => {
+      const val = String(value || '');
       if (val === '__new__') {
         showNewKategori.value = true;
         selectedKategori.value = '__new__';
@@ -127,7 +136,7 @@ export default defineComponent({
         showNewKategori.value = false;
         newKategoriInput.value = '';
         selectedKategori.value = val;
-        formData.data['kategori'] = val || null;
+        formData.data['kategori'] = val || '';
       }
     };
 
@@ -138,15 +147,11 @@ export default defineComponent({
 
     const formData = {
       id: '',
-      data: { ...(props.data || {}) } as Record<string, any>
+      data: { ...initialData } as MerchandisePayload,
     }
 
-    const updateValue = (params: { key: string; value: any }) => {
+    const updateValue = (params: { key: string; value: unknown }) => {
       formData.data[params.key] = params.value;
-    };
-
-    const isValidUrl = (val: string): boolean => {
-      try { new URL(val); return true; } catch { return false; }
     };
 
     const handleSubmit = async () => {
@@ -176,7 +181,7 @@ export default defineComponent({
         }
       }
 
-      const link = formData.data.link;
+      const link = typeof formData.data.link === 'string' ? formData.data.link : '';
       if (link && link.trim() !== '') {
         try {
           const url = new URL(link);
@@ -210,8 +215,9 @@ export default defineComponent({
           await store.dispatch(POST_MERCHANDISE, formData);
         }
         closeModal();
-      } catch (error:any) {
-        showError('Error', error?.response?.data?.message || 'Terjadi kesalahan, coba lagi.');
+      } catch (error: unknown) {
+        const apiError = error as ApiErrorResponse;
+        showError('Error', apiError?.response?.data?.message || apiError?.message || 'Terjadi kesalahan, coba lagi.');
         isLoading.value = false;
       }
     };
@@ -223,6 +229,7 @@ export default defineComponent({
       updateValue,
       isLoading,
       kategoriOptions,
+      kategoriSelectOptions,
       selectedKategori,
       showNewKategori,
       newKategoriInput,

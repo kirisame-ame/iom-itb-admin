@@ -7,9 +7,6 @@
 
         <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p class="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-100">
-              Dokumentasi Admin
-            </p>
             <h1 class="text-2xl font-bold tracking-tight md:text-4xl">
               Panduan Penggunaan Fitur Admin
             </h1>

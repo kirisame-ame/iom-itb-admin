@@ -70,34 +70,12 @@
 
 <script setup lang="ts">
 import { useSidebar } from "../hooks/useSidebar";
-import sidebarLogo from "@/assets/image/IOM-ITB-PrimaryLogo-white.png";
-
-type IconName =
-  | "dashboard"
-  | "guide"
-  | "calendar"
-  | "bag"
-  | "card"
-  | "heart"
-  | "chart"
-  | "building"
-  | "document"
-  | "users"
-  | "shield"
-  | "wallet"
-  | "link";
-
-interface NavItem {
-  name: string;
-  label: string;
-  to: string;
-  icon: IconName;
-}
-
-interface NavGroup {
-  label: string;
-  items: NavItem[];
-}
+import IcUser from "@/assets/svg/ic-user.vue";
+import IcCard from "@/assets/svg/ic-card.vue";
+import IcBag from "@/assets/svg/ic-bag.vue";
+import IcGrafic from "@/assets/svg/ic-grafic.vue";
+import IcHome from "@/assets/svg/ic-home.vue";
+import IcMail from "@/assets/svg/ic-mail.vue";
 
 const { isOpen } = useSidebar();
 

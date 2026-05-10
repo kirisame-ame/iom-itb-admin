@@ -45,19 +45,13 @@
           </div>
 
           <div>
-            <label for="category" class="mb-2 block text-sm font-semibold text-slate-700">
+            <label class="mb-2 block text-sm font-semibold text-slate-700">
               Kategori
             </label>
-            <select
-              id="category"
+            <AppSelect
               v-model="selectedCategory"
-              class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-[#003793] focus:ring-4 focus:ring-[#003793]/10"
-            >
-              <option value="">Semua kategori</option>
-              <option v-for="category in categories" :key="category" :value="category">
-                {{ category }}
-              </option>
-            </select>
+              :options="categoryOptions"
+            />
           </div>
         </div>
       </section>
@@ -232,6 +226,7 @@
 
 <script setup lang="ts">
 import { computed, defineComponent, h, ref, watch } from "vue";
+import AppSelect from '@/components/input/AppSelect.vue';
 
 interface GuideStep {
   title: string;
@@ -940,6 +935,11 @@ const selectedFeatureId = ref(adminDocumentation[0]?.id || "");
 const categories = computed(() => {
   return Array.from(new Set(adminDocumentation.map((item) => item.category))).sort();
 });
+
+const categoryOptions = computed(() => [
+  { value: '', label: 'Semua kategori' },
+  ...categories.value.map((c) => ({ value: c, label: c })),
+]);
 
 const filteredDocumentation = computed(() => {
   const keyword = searchKeyword.value.trim().toLowerCase();

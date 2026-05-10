@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-slate-50">
     <!-- ── Page Header ─────────────────────────────────────────── -->
-    <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm  mb-6">
+    <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6 mb-6">
       <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
       <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
       <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

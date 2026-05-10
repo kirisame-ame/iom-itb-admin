@@ -1,7 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-50">
-    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <section class="relative mb-6 overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
+  <div class="min-h-screen">
+    <section class="relative mb-6 overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
         <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
         <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
 
@@ -228,7 +227,6 @@
           </div>
         </main>
       </div>
-    </div>
   </div>
 </template>
 

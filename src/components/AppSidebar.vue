@@ -174,12 +174,11 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Konten & Katalog",
+    label: "Formulir Masuk",
     items: [
-      { name: "Kegiatan", label: "Kegiatan", to: "/kegiatan", icon: "calendar" },
-      { name: "Merchandise", label: "Merchandise", to: "/merchandise", icon: "bag" },
-      { name: "Merchandise Dashboard", label: "Dashboard Merchandise", to: "/merchandise-dashboard", icon: "chart" },
-      { name: "Transactions", label: "Transaksi Merchandise", to: "/transactions", icon: "card" },
+      { name: "Pengajuan Bantuan", label: "Pengajuan Bantuan", to: "/pengajuan-bantuan", icon: "document" },
+      { name: "Pendataan Anggota", label: "Pendataan Anggota", to: "/pendataan-anggota", icon: "users" },
+      { name: "Orangtua Asuh", label: "Orangtua Asuh", to: "/orangtua-asuh", icon: "shield" },
     ],
   },
   {
@@ -187,16 +186,17 @@ const navGroups: NavGroup[] = [
     items: [
       { name: "Dashboard Pembayaran", label: "Dashboard Pembayaran", to: "/dashboard-pembayaran", icon: "chart" },
       { name: "Donasi", label: "Donasi", to: "/donasi", icon: "heart" },
+      { name: "Fakultas", label: "Fakultas", to: "/fakultas", icon: "building" },
+      { name: "Dana Bantuan", label: "Dana Bantuan", to: "/dana-bantuan", icon: "wallet" },
     ],
   },
   {
-    label: "Anggota & Bantuan",
+    label: "Konten & Katalog",
     items: [
-      { name: "Fakultas", label: "Fakultas", to: "/fakultas", icon: "building" },
-      { name: "Pendataan Anggota", label: "Pendataan Anggota", to: "/pendataan-anggota", icon: "users" },
-      { name: "Pengajuan Bantuan", label: "Pengajuan Bantuan", to: "/pengajuan-bantuan", icon: "document" },
-      { name: "Orangtua Asuh", label: "Orangtua Asuh", to: "/orangtua-asuh", icon: "shield" },
-      { name: "Dana Bantuan", label: "Dana Bantuan", to: "/dana-bantuan", icon: "wallet" },
+      { name: "Kegiatan", label: "Kegiatan", to: "/kegiatan", icon: "calendar" },
+      { name: "Merchandise", label: "Merchandise", to: "/merchandise", icon: "bag" },
+      { name: "Merchandise Dashboard", label: "Dashboard Merchandise", to: "/merchandise-dashboard", icon: "chart" },
+      { name: "Transactions", label: "Transaksi Merchandise", to: "/transactions", icon: "card" },
     ],
   },
   {

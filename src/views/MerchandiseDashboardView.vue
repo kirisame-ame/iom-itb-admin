@@ -17,35 +17,35 @@
       <div v-if="isLoading" class="text-center py-20 text-slate-400">Memuat data...</div>
 
       <template v-else>
-        <div class="flex items-center gap-3">
-          <span class="text-sm font-medium text-slate-600">Filter Kategori:</span>
+        <div class="flex flex-col gap-1.5 sm:max-w-xs">
+          <span class="text-sm font-semibold text-slate-900">Filter Kategori</span>
           <AppSelect
             v-model="selectedKategori"
             :options="kategoriFilterOptions"
-            button-class="min-w-[180px]"
+            button-class="min-w-[180px] bg-white text-slate-800"
           />
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-sm font-semibold text-slate-500">Total Produk</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ filteredMerchandises.length }}</p>
           </div>
-          <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-sm font-semibold text-slate-500">Total Terjual</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ totalTerjual }} pcs</p>
           </div>
-          <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-sm font-semibold text-slate-500">Total Pendapatan</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ formatPrice(totalPendapatan) }}</p>
           </div>
-          <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-sm font-semibold text-slate-500">Kategori Terlaris</p>
             <p class="mt-3 text-2xl font-bold text-slate-900">{{ kategoriTerlaris || '-' }}</p>
           </div>
         </div>
 
-        <div class="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 class="mb-4 text-base font-bold text-slate-900">Pendapatan per Kategori</h2>
           <apexchart
             v-if="chartSeries[0].data.length"
@@ -57,7 +57,7 @@
           <p v-else class="text-sm text-slate-400">Belum ada data transaksi.</p>
         </div>
 
-        <div class="rounded-2xl border-2 border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
           <div class="px-5 py-4 border-b border-slate-100">
             <h2 class="text-base font-bold text-slate-900">Top 10 Merchandise Terlaris</h2>
           </div>

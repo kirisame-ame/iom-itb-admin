@@ -5,8 +5,7 @@
       <form @submit.prevent="handleSubmit" class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl">
         <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
           <div>
-            <p class="text-sm font-semibold text-blue-700">Kegiatan Kemitraan</p>
-            <h3 class="mt-1 text-lg font-bold capitalize text-slate-900">{{ title }}</h3>
+            <h3 class="text-lg font-bold capitalize text-slate-900">{{ title }}</h3>
             <p class="mt-1 text-sm text-slate-500">Lengkapi informasi utama, jadwal, dan gambar publikasi kegiatan.</p>
           </div>
           <button type="button" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" @click="closeModal">

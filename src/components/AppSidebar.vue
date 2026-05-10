@@ -70,12 +70,35 @@
 
 <script setup lang="ts">
 import { useSidebar } from "../hooks/useSidebar";
-import IcUser from "@/assets/svg/ic-user.vue";
-import IcCard from "@/assets/svg/ic-card.vue";
-import IcBag from "@/assets/svg/ic-bag.vue";
-import IcGrafic from "@/assets/svg/ic-grafic.vue";
-import IcHome from "@/assets/svg/ic-home.vue";
-import IcMail from "@/assets/svg/ic-mail.vue";
+import sidebarLogo from "@/assets/image/IOM-ITB-PrimaryLogo-white.png";
+
+type IconName =
+  | "dashboard"
+  | "guide"
+  | "calendar"
+  | "bag"
+  | "card"
+  | "heart"
+  | "chart"
+  | "building"
+  | "document"
+  | "users"
+  | "shield"
+  | "wallet"
+  | "link"
+  | "mail";
+
+interface NavItem {
+  name: string;
+  label: string;
+  to: string;
+  icon: IconName;
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
 
 const { isOpen } = useSidebar();
 
@@ -141,6 +164,11 @@ const icons: Record<IconName, string[]> = {
     "M10.81 15.312a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757a4.5 4.5 0 0 1 6.364 0",
     "M8.25 12h7.5",
   ],
+  mail: [
+    "M21.75 7.5v9A2.25 2.25 0 0 1 19.5 18.75h-15A2.25 2.25 0 0 1 2.25 16.5v-9",
+    "M21.75 7.5 12 13.5 2.25 7.5",
+    "M4.5 5.25h15A2.25 2.25 0 0 1 21.75 7.5H2.25A2.25 2.25 0 0 1 4.5 5.25Z",
+  ],
 };
 
 const navGroups: NavGroup[] = [
@@ -166,6 +194,7 @@ const navGroups: NavGroup[] = [
       { name: "Donasi", label: "Donasi", to: "/donasi", icon: "heart" },
       { name: "Fakultas", label: "Fakultas", to: "/fakultas", icon: "building" },
       { name: "Dana Bantuan", label: "Dana Bantuan", to: "/dana-bantuan", icon: "wallet" },
+      { name: "Template Email", label: "Template Email", to: "/email-templates", icon: "mail"},
     ],
   },
   {

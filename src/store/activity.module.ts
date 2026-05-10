@@ -10,14 +10,12 @@ export const PUT_ACTIVITY = "putActivity";
 export const DELETE_ACTIVITY = "deleteActivity";
 export const PUBLISH_ACTIVITY = "publishActivity";
 export const GET_ACTIVITY_COUNTS = "getActivityCounts";
+export const GET_TAGS = "getTags";
 
 
-interface ActivityMedia {
-  id?: number;
-  type: 'image' | 'youtube';
-  value: string;
-  order: number;
-  caption?: string;
+interface Tag {
+  id: number;
+  name: string;
 }
 
 interface Activity {
@@ -28,7 +26,7 @@ interface Activity {
   image: string;
   url: string;
   status: 'draft' | 'published';
-  media: ActivityMedia[];
+  tags: Tag[];
   createdAt: string;
   updatedAt: string;
 }
@@ -109,6 +107,14 @@ const actions = {
     return new Promise((resolve, reject) => {
       ApiService.get<any>("/activities/admin/counts") 
         .then(response => resolve(response.data))
+        .catch(err => reject(err));
+    });
+  },
+
+  [GET_TAGS](_context: VuexContext, params?: { search?: string }): Promise<any> {
+    return new Promise((resolve, reject) => {
+      ApiService.get<any>('/activities/tags', params)
+        .then(response => resolve(response)) 
         .catch(err => reject(err));
     });
   },

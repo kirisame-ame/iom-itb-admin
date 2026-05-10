@@ -80,13 +80,9 @@
             class="w-full text-4xl font-bold text-gray-900 bg-transparent border-none outline-none placeholder-gray-200 mb-6 leading-tight"
           />
           <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <QuillEditor
-              ref="quillRef"
-              v-model:content="form.description"
-              content-type="html"
-              @update:content="autoSave"
-              :options="quillOptions"
-              class="min-h-[600px]"
+            <RichTextEditor
+              v-model="form.description"
+              @change="autoSave"
             />
           </div>
         </div>
@@ -95,211 +91,120 @@
       <!-- Sidebar Kanan -->
       <div class="w-96 flex-shrink-0 border-l border-gray-200 bg-white flex flex-col overflow-hidden">
         <div class="flex-1 overflow-y-auto min-h-0">
+
+          <!-- Thumbnail -->
           <div class="p-5 border-b border-gray-100">
-            <h3 class="text-sm font-semibold text-gray-700 mb-4">Media</h3>
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Thumbnail</h3>
 
-            <!-- Ada media -->
-            <div v-if="form.media.length > 0">
-              <!-- Preview utama -->
-              <div class="relative w-full aspect-video bg-gray-100 rounded-xl overflow-hidden mb-3">
-                <!-- Image -->
-                <img
-                  v-if="form.media[currentMediaIndex]?.type === 'image'"
-                  :src="form.media[currentMediaIndex]?.value"
-                  class="w-full h-full object-cover"
-                />
-                <!-- YouTube — tampilkan thumbnail, klik buka tab baru -->
-                <div
-                  v-else-if="form.media[currentMediaIndex]?.type === 'youtube'"
-                  @click="openYoutube(form.media[currentMediaIndex]?.value)"
-                  class="w-full h-full relative cursor-pointer group"
-                >
-                  <img
-                    :src="getYoutubeThumbnail(form.media[currentMediaIndex]?.value)"
-                    class="w-full h-full object-cover"
-                  />
-                  <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                    <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
-                      <svg class="w-5 h-5 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Counter -->
-                <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
-                  {{ currentMediaIndex + 1 }} / {{ form.media.length }}
-                </div>
-              </div>
-
-              <!-- Thumbnail strip + nav -->
-              <div class="flex items-center gap-2 mb-3">
-                <button
-                  @click="prevMedia"
-                  :disabled="currentMediaIndex === 0"
-                  class="p-1.5 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition-colors flex-shrink-0"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                  </svg>
-                </button>
-
-                <div class="flex gap-1.5 flex-1 overflow-x-auto py-1">
-                  <button
-                    v-for="(item, i) in form.media"
-                    :key="i"
-                    @click="currentMediaIndex = i"
-                    :class="currentMediaIndex === i ? 'ring-1 ring-blue-500 ring-offset-1' : 'opacity-60 hover:opacity-100'"
-                    class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 transition-all"
-                  >
-                    <img
-                      v-if="item.type === 'image'"
-                      :src="item.value"
-                      class="w-full h-full object-cover"
-                    />
-                    <div v-else class="w-full h-full bg-gray-800 flex items-center justify-center">
-                      <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                  </button>
-                </div>
-
-                <button
-                  @click="nextMedia"
-                  :disabled="currentMediaIndex === form.media.length - 1"
-                  class="p-1.5 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition-colors flex-shrink-0"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Set as thumbnail (hanya untuk image) -->
+            <!-- Preview thumbnail -->
+            <div v-if="form.image" class="relative mb-3">
+              <img :src="form.image" class="w-full aspect-video object-cover rounded-xl" />
               <button
-                v-if="form.media[currentMediaIndex]?.type === 'image'"
-                @click="setAsThumbnail(currentMediaIndex)"
-                :class="form.image === form.media[currentMediaIndex]?.value
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'"
-                class="w-full px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors flex items-center justify-center gap-1.5 mb-3"
+                @click="removeThumbnail"
+                class="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
-                {{ form.image === form.media[currentMediaIndex]?.value ? 'Thumbnail aktif' : 'Set as thumbnail' }}
               </button>
-
-              <!-- Caption -->
-              <div class="mb-3">
-                <label class="block text-xs text-gray-500 mb-1">Caption</label>
-                <input
-                  v-model="form.media[currentMediaIndex].caption"
-                  @input="autoSave"
-                  placeholder="Tambahkan caption..."
-                  class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <!-- Move + Hapus -->
-              <div class="flex gap-2">
-                <button
-                  @click="moveMedia('left')"
-                  :disabled="currentMediaIndex === 0"
-                  class="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition-colors flex items-center justify-center gap-1"
-                >
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                  </svg>
-                  Maju
-                </button>
-                <button
-                  @click="moveMedia('right')"
-                  :disabled="currentMediaIndex === form.media.length - 1"
-                  class="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition-colors flex items-center justify-center gap-1"
-                >
-                  Mundur
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </button>
-                <button
-                  @click="removeMedia(currentMediaIndex)"
-                  class="px-2 py-1.5 text-xs border border-red-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                  </svg>
-                </button>
-              </div>
             </div>
 
-            <!-- Belum ada media -->
-            <div v-else class="w-full aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300">
+            <!-- Placeholder -->
+            <div v-else class="w-full aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300 mb-3">
               <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
-              <p class="text-xs">Belum ada media</p>
+              <p class="text-xs">Belum ada thumbnail</p>
+            </div>
+
+            <!-- Toggle upload / url -->
+            <div class="flex rounded-md overflow-hidden border border-gray-200 mb-3">
+              <button
+                @click="thumbnailMode = 'url'"
+                :class="thumbnailMode === 'url' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'"
+                class="flex-1 py-1.5 text-xs font-medium transition-colors"
+              >URL</button>
+              <button
+                @click="thumbnailMode = 'upload'"
+                :class="thumbnailMode === 'upload' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'"
+                class="flex-1 py-1.5 text-xs font-medium transition-colors"
+              >Upload</button>
+            </div>
+
+            <!-- URL input -->
+            <div v-if="thumbnailMode === 'url'" class="flex gap-2">
+              <input
+                v-model="thumbnailUrlInput"
+                placeholder="https://..."
+                class="flex-1 px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @keyup.enter="setThumbnailFromUrl"
+              />
+              <button
+                @click="setThumbnailFromUrl"
+                class="px-3 py-2 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >Set</button>
+            </div>
+
+            <!-- Upload input -->
+            <div v-else>
+              <label class="block w-full px-3 py-2.5 text-xs text-center border border-dashed border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                Pilih file gambar...
+                <input type="file" accept="image/*" class="hidden" @change="uploadThumbnail" />
+              </label>
             </div>
           </div>
 
-          <!-- Tambah Media -->
+          <!-- Tags -->
           <div class="p-5">
-            <h3 class="text-sm font-semibold text-gray-700 mb-4">Tambah Media</h3>
+            <h3 class="text-sm font-semibold text-gray-700 mb-1">Tags</h3>
+            <p class="text-xs text-gray-400 mb-3">Maksimal 3 tag</p>
 
-            <!-- Tipe media -->
-            <div class="mb-3">
-              <label class="block text-xs text-gray-500 mb-1">Tipe Media</label>
-              <div class="relative">
-                <select
-                  v-model="newMediaType"
-                  class="w-full h-9 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8 cursor-pointer"
-                  :style="selectStyle"
+            <!-- Tag chips -->
+            <div v-if="form.tags.length > 0" class="flex flex-wrap gap-1.5 mb-3">
+              <span
+                v-for="(tag, i) in form.tags"
+                :key="i"
+                class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
+              >
+                {{ tag }}
+                <button @click="removeTag(i)" class="hover:text-blue-900 transition-colors">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </span>
+            </div>
+
+            <!-- Input + autocomplete -->
+            <div v-if="form.tags.length < 3" class="relative">
+              <input
+                v-model="tagInput"
+                @input="searchTags"
+                @keyup.enter="addTagFromInput"
+                placeholder="Cari atau buat tag..."
+                class="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <!-- Suggestions dropdown -->
+              <div
+                v-if="tagSuggestions.length > 0"
+                class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden"
+              >
+                <button
+                  v-for="suggestion in tagSuggestions"
+                  :key="suggestion"
+                  @click="addTag(suggestion)"
+                  class="w-full px-3 py-2 text-xs text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
                 >
-                  <option value="upload">Upload Gambar</option>
-                  <option value="url">URL Gambar</option>
-                  <option value="youtube">YouTube</option>
-                </select>
+                  {{ suggestion }}
+                </button>
               </div>
+              <!-- Hint buat tag baru -->
+              <p v-if="tagInput && tagSuggestions.length === 0" class="text-xs text-gray-400 mt-1">
+                Tekan Enter untuk buat tag "{{ tagInput }}"
+              </p>
             </div>
-
-            <!-- Field sesuai tipe -->
-            <div class="mb-3">
-              <div v-if="newMediaType === 'upload'">
-                <label class="block w-full px-3 py-2.5 text-xs text-center border border-dashed border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                  Pilih file gambar...
-                  <input type="file" accept="image/*" multiple class="hidden" @change="uploadMedia" />
-                </label>
-              </div>
-              <div v-else-if="newMediaType === 'url'">
-                <label class="block text-xs text-gray-500 mb-1">URL Gambar</label>
-                <input
-                  v-model="newMediaValue"
-                  placeholder="https://..."
-                  class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div v-else-if="newMediaType === 'youtube'">
-                <label class="block text-xs text-gray-500 mb-1">URL YouTube</label>
-                <input
-                  v-model="newMediaValue"
-                  placeholder="https://youtube.com/watch?v=..."
-                  class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            <!-- Tombol tambah -->
-            <button
-              v-if="newMediaType !== 'upload'"
-              @click="addMedia"
-              class="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Tambah
-            </button>
           </div>
+
         </div>
       </div>
     </div>
@@ -310,40 +215,25 @@
 import { ref, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import { QuillEditor } from '@vueup/vue-quill';
-import '@vueup/vue-quill/dist/vue-quill.snow.css';
-import { GET_ACTIVITY_BY_ID, PUT_ACTIVITY, POST_ACTIVITY } from '@/store/activity.module';
+import { GET_ACTIVITY_BY_ID, PUT_ACTIVITY, POST_ACTIVITY, GET_TAGS } from '@/store/activity.module';
 import { POST_ACTIVITY_IMAGE } from '@/store/upload.module';
 import Swal from 'sweetalert2';
+import RichTextEditor from '@/components/input/RichTextEditor.vue';
 
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
-const quillRef = ref();
 
 const activityId = ref<number | null>(route.params.id === 'new' ? null : Number(route.params.id));
 const isSaving = ref(false);
 const saveStatus = ref('');
 const lastUpdated = ref('');
-const currentMediaIndex = ref(0);
-const newMediaType = ref<'upload' | 'url' | 'youtube'>('upload');
-const newMediaValue = ref('');
 
-const selectStyle = {
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 8px center',
-  backgroundSize: '16px',
-}
-
-const getYoutubeThumbnail = (url: string) => {
-  const match = url?.match(/(?:v=|youtu\.be\/)([^&\n?#]+)/);
-  return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : '';
-};
-
-const openYoutube = (url: string) => {
-  window.open(url, '_blank');
-};
+const thumbnailMode = ref<'upload' | 'url'>('url');
+const thumbnailUrlInput = ref('');
+const tagInput = ref('');
+const tagSuggestions = ref<string[]>([]);
+let tagSearchTimer: any = null;
 
 
 const form = ref({
@@ -352,23 +242,8 @@ const form = ref({
   url: '',
   image: '',
   status: 'draft' as 'draft' | 'published',
-  media: [] as Array<{ type: 'image' | 'youtube'; value: string; order: number; caption?: string }>
+  tags: [] as string[],
 });
-
-const quillOptions = {
-  theme: 'snow',
-  modules: {
-    toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],
-      ['blockquote'],
-      [{ 'header': 1 }, { 'header': 2 }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
-      ['link'],
-      ['clean']
-    ]
-  }
-};
 
 
 const generateSlug = (title: string) => {
@@ -525,108 +400,62 @@ const previewActivity = () => {
 };
 
 // Media navigation
-const prevMedia = () => {
-  if (currentMediaIndex.value > 0) currentMediaIndex.value--;
-};
-
-const nextMedia = () => {
-  if (currentMediaIndex.value < form.value.media.length - 1) currentMediaIndex.value++;
-};
-
-const setAsThumbnail = (index: number) => {
-  const item = form.value.media[index];
-  if (item.type !== 'image') return;
-  if (form.value.image === item.value) {
-    // Toggle off
-    form.value.image = '';
-  } else {
-    form.value.image = item.value;
-  }
+const uploadThumbnail = async (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  const url = await store.dispatch(POST_ACTIVITY_IMAGE, file);
+  form.value.image = url;
   autoSave();
 };
 
-const moveMedia = (direction: 'left' | 'right') => {
-  const index = currentMediaIndex.value;
-  const media = form.value.media;
-  if (direction === 'left' && index > 0) {
-    [media[index], media[index - 1]] = [media[index - 1], media[index]];
-    currentMediaIndex.value--;
-  } else if (direction === 'right' && index < media.length - 1) {
-    [media[index], media[index + 1]] = [media[index + 1], media[index]];
-    currentMediaIndex.value++;
+const setThumbnailFromUrl = () => {
+  if (!thumbnailUrlInput.value) return;
+  try {
+    const url = new URL(thumbnailUrlInput.value);
+    if (!['https:'].includes(url.protocol)) throw new Error();
+    form.value.image = thumbnailUrlInput.value;
+    thumbnailUrlInput.value = '';
+    autoSave();
+  } catch {
+    Swal.fire({ title: 'URL tidak valid', icon: 'warning', confirmButtonColor: '#2563eb' });
   }
-  // Update order
-  form.value.media.forEach((m, i) => { m.order = i; });
+};
+
+const removeThumbnail = () => {
+  form.value.image = '';
   autoSave();
 };
 
-const removeMedia = (index: number) => {
-  const item = form.value.media[index];
-  // Kalau yang dihapus adalah thumbnail, kosongkan thumbnail
-  if (form.value.image === item.value) {
-    form.value.image = '';
+const searchTags = () => {
+  clearTimeout(tagSearchTimer);
+  tagSearchTimer = setTimeout(async () => {
+    if (!tagInput.value) { tagSuggestions.value = []; return; }
+    const results = await store.dispatch(GET_TAGS, { search: tagInput.value });
+    tagSuggestions.value = (results || [])
+      .map((t: any) => t.name)
+      .filter((name: string) => !form.value.tags.includes(name));
+  }, 300);
+};
+
+const addTag = (name: string) => {
+  const normalized = name.trim().toLowerCase();
+  if (!normalized || form.value.tags.includes(normalized)) return;
+  if (form.value.tags.length >= 3) {
+    Swal.fire({ title: 'Maksimal 3 tag', icon: 'warning', confirmButtonColor: '#2563eb' });
+    return;
   }
-  form.value.media.splice(index, 1);
-  form.value.media.forEach((m, i) => { m.order = i; });
-  if (currentMediaIndex.value >= form.value.media.length) {
-    currentMediaIndex.value = Math.max(0, form.value.media.length - 1);
-  }
+  form.value.tags.push(normalized);
+  tagInput.value = '';
+  tagSuggestions.value = [];
   autoSave();
 };
 
-const uploadMedia = async (event: Event) => {
-  const files = Array.from((event.target as HTMLInputElement).files || []);
-  for (const file of files) {
-    const url = await store.dispatch(POST_ACTIVITY_IMAGE, file);
-    form.value.media.push({
-      type: 'image',
-      value: url,
-      order: form.value.media.length,
-    });
-    // Auto-set thumbnail kalau belum ada
-    if (!form.value.image) {
-      form.value.image = url;
-    }
-  }
-  currentMediaIndex.value = form.value.media.length - 1;
-  autoSave();
+const addTagFromInput = () => {
+  if (tagInput.value) addTag(tagInput.value);
 };
 
-const addMedia = () => {
-  if (!newMediaValue.value) return;
-
-  if (newMediaType.value === 'youtube') {
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/;
-    if (!youtubeRegex.test(newMediaValue.value)) {
-      Swal.fire({ title: 'URL YouTube tidak valid', icon: 'warning', confirmButtonColor: '#2563eb' });
-      return;
-    }
-    form.value.media.push({
-      type: 'youtube',
-      value: newMediaValue.value,
-      order: form.value.media.length,
-    });
-  } else if (newMediaType.value === 'url') {
-    try {
-      const url = new URL(newMediaValue.value);
-      if (!['http:', 'https:'].includes(url.protocol)) throw new Error();
-      form.value.media.push({
-        type: 'image',
-        value: newMediaValue.value,
-        order: form.value.media.length,
-      });
-      // Auto-set thumbnail kalau belum ada
-      if (!form.value.image) {
-        form.value.image = newMediaValue.value;
-      }
-    } catch {
-      Swal.fire({ title: 'URL gambar tidak valid', icon: 'warning', confirmButtonColor: '#2563eb' });
-      return;
-    }
-  }
-
-  currentMediaIndex.value = form.value.media.length - 1;
-  newMediaValue.value = '';
+const removeTag = (index: number) => {
+  form.value.tags.splice(index, 1);
   autoSave();
 };
 
@@ -640,34 +469,11 @@ onMounted(async () => {
       url: activity.url || '',
       image: activity.image || '',
       status: activity.status || 'draft',
-      media: activity.media || [],
+      tags: (activity.tags || []).map((t: any) => t.name), 
     };
     lastUpdated.value = formatUpdatedAt(activity.updatedAt);
   }
 
   await nextTick();
-  const quill = quillRef.value?.getQuill();
-  if (quill) {
-    quill.clipboard.addMatcher(Node.TEXT_NODE, (node: any, delta: any) => {
-      const urlRegex = /https?:\/\/[^\s]+/g;
-      const text = node.data;
-      if (urlRegex.test(text)) {
-        const ops: any[] = [];
-        let lastIndex = 0;
-        text.replace(urlRegex, (url: string, offset: number) => {
-          if (offset > lastIndex) {
-            ops.push({ insert: text.slice(lastIndex, offset) });
-          }
-          ops.push({ insert: url, attributes: { link: url } });
-          lastIndex = offset + url.length;
-        });
-        if (lastIndex < text.length) {
-          ops.push({ insert: text.slice(lastIndex) });
-        }
-        delta.ops = ops;
-      }
-      return delta;
-    });
-  }
 });
 </script>

@@ -38,65 +38,15 @@
         {{ formatDate(activity.date) }}
       </p>
 
-      <!-- Media Carousel -->
-      <div v-if="allMedia.length > 0" class="mb-[32px] max-w-[600px] mx-auto">
-        <div class="relative w-full aspect-video bg-gray-100 rounded-xl overflow-hidden">
-          <!-- Image -->
-          <img
-            v-if="allMedia[currentSlide]?.type === 'image'"
-            :src="allMedia[currentSlide]?.value"
-            :alt="allMedia[currentSlide]?.caption || activity.title"
-            class="w-full h-full object-cover"
-          />
-          <!-- YouTube embed -->
-          <iframe
-            v-else-if="allMedia[currentSlide]?.type === 'youtube'"
-            :src="getYoutubeEmbed(allMedia[currentSlide]?.value)"
-            class="w-full h-full"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          />
-
-          <!-- Arrow prev -->
-          <button
-            v-if="allMedia.length > 1"
-            @click="prev"
-            class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-          </button>
-
-          <!-- Arrow next -->
-          <button
-            v-if="allMedia.length > 1"
-            @click="next"
-            class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Caption -->
-        <p v-if="allMedia[currentSlide]?.caption" class="text-center text-xs text-gray-400 mt-2">
-          {{ allMedia[currentSlide].caption }}
-        </p>
-
-        <!-- Dots -->
-        <div v-if="allMedia.length > 1" class="flex justify-center gap-2 mt-3">
-          <button
-            v-for="(_, i) in allMedia"
-            :key="i"
-            @click="currentSlide = Number(i)"
-            :class="currentSlide === Number(i) ? 'w-4' : 'w-2'"
-            class="h-2 rounded-full transition-all"
-            :style="currentSlide === Number(i) ? 'background-color: #003793' : 'background-color: #d1d5db'"
-          />
-        </div>
+      <div v-if="activity.tags?.length > 0" class="flex flex-wrap gap-2 mb-[24px]">
+        <span
+          v-for="tag in activity.tags"
+          :key="tag.id"
+          class="px-3 py-1 text-xs font-medium rounded-full"
+          style="background-color: #e8eef8; color: #003793;"
+        >
+          {{ tag.name }}
+        </span>
       </div>
 
       <!-- Konten HTML -->

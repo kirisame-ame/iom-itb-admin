@@ -8,7 +8,7 @@ interface ApiServiceType {
   init(): void;
   setHeader(): void;
   query<T>(resource: string, params?: object): Promise<T>;
-  get<T>(resource: string, params?: { session?: string }): Promise<T>;
+  get<T>(resource: string, params?: Record<string, any>): Promise<T>; 
   post<T>(resource: string, params: object): Promise<T>;
   upload<T>(resource: string, params: File): Promise<T>;
   update<T>(resource: string, slug: string, params: object): Promise<T>;
@@ -71,7 +71,7 @@ const ApiService: ApiServiceType = {
       });
   },
 
-  async get<T>(resource: string, params?: { session?: string }): Promise<T> {
+  get<T>(resource: string, params?: Record<string, any>): Promise<T> {
     if (!this.api1) {
       return Promise.reject(new Error("ApiService is not initialized"));
     }

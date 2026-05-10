@@ -9,7 +9,7 @@ interface ApiServiceType {
   setHeader(): void;
   getRequestConfig(params: object): AxiosRequestConfig;
   query<T>(resource: string, params?: object): Promise<T>;
-  get<T>(resource: string, params?: { session?: string }): Promise<T>;
+  get<T>(resource: string, params?: object): Promise<T>;
   post<T>(resource: string, params: object): Promise<T>;
   upload<T>(resource: string, params: File): Promise<T>;
   update<T>(resource: string, slug: string, params: object): Promise<T>;
@@ -73,12 +73,12 @@ const ApiService: ApiServiceType = {
 
     return this.api1.get<T>(resource, { params })
       .then(response => response.data)
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         throw new Error(`ApiService ${error}`);
       });
   },
 
-  async get<T>(resource: string, params?: { session?: string }): Promise<T> {
+  async get<T>(resource: string, params?: object): Promise<T> {
     if (!this.api1) {
       return Promise.reject(new Error("ApiService is not initialized"));
     }
@@ -119,7 +119,7 @@ const ApiService: ApiServiceType = {
 
     return this.api1.put<T>(`${resource}/${slug}`, params)
       .then(response => response.data)
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         throw new Error(`ApiService ${error}`);
       });
   },
@@ -143,7 +143,7 @@ const ApiService: ApiServiceType = {
 
     return this.api1.patch<T>(resource, params)
       .then(response => response.data)
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         throw new Error(`ApiService ${error}`);
       });
   },
@@ -156,7 +156,7 @@ const ApiService: ApiServiceType = {
 
     return this.api1.delete<T>(resource)
       .then(response => response.data)
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         throw new Error(`ApiService ${error}`);
       });
   }

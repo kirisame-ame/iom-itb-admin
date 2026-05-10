@@ -1,25 +1,21 @@
 import ApiService from "./api.service";
 import { ActionContext, ActionTree, GetterTree, MutationTree, Module } from "vuex";
+import type {
+  ApiActionParams,
+  ApiDataResponse,
+  ApiQueryParams,
+  KegiatanKemitraan,
+  KegiatanKemitraanPayload,
+  RootState,
+} from "@/types/domain";
+
+export type { KegiatanKemitraan } from "@/types/domain";
 
 export const GET_KEGIATAN_KEMITRAAN = "getKegiatanKemitraan";
 export const SET_KEGIATAN_KEMITRAAN = "setKegiatanKemitraan";
 export const POST_KEGIATAN_KEMITRAAN = "postKegiatanKemitraan";
 export const PUT_KEGIATAN_KEMITRAAN = "putKegiatanKemitraan";
 export const DELETE_KEGIATAN_KEMITRAAN = "deleteKegiatanKemitraan";
-
-interface KegiatanKemitraan {
-  id: number;
-  kemitraanId?: number;
-  name: string;
-  description?: string;
-  location?: string;
-  startDate?: string;
-  endDate?: string;
-  image?: string;
-  file?: string;
-  status?: string;
-  options?: Record<string, any>;
-}
 
 interface State {
   kegiatanKemitraan: KegiatanKemitraan[];
@@ -29,18 +25,18 @@ const state: State = {
   kegiatanKemitraan: [],
 };
 
-const getters: GetterTree<State, State> = {
+const getters: GetterTree<State, RootState> = {
   kegiatanKemitraan(state): KegiatanKemitraan[] {
     return state.kegiatanKemitraan;
   },
 };
 
-type VuexContext = ActionContext<State, State>;
+type VuexContext = ActionContext<State, RootState>;
 
-const actions: ActionTree<State, State> = {
-  [GET_KEGIATAN_KEMITRAAN](context: VuexContext, params: Record<string, any>): Promise<KegiatanKemitraan[]> {
+const actions: ActionTree<State, RootState> = {
+  [GET_KEGIATAN_KEMITRAAN](context: VuexContext, params: ApiActionParams<ApiQueryParams> = {}): Promise<KegiatanKemitraan[]> {
     return new Promise((resolve, reject) => {
-      ApiService.get<{ data: KegiatanKemitraan[] }>("/kegiatan-kemitraan", params?.data)
+      ApiService.get<ApiDataResponse<KegiatanKemitraan[]>>("/kegiatan-kemitraan", params.data || {})
         .then((response) => {
           const { data } = response;
           context.commit(SET_KEGIATAN_KEMITRAAN, data);
@@ -52,9 +48,9 @@ const actions: ActionTree<State, State> = {
         });
     });
   },
-  [POST_KEGIATAN_KEMITRAAN](context: VuexContext, params: Record<string, any>): Promise<KegiatanKemitraan[]> {
+  [POST_KEGIATAN_KEMITRAAN](context: VuexContext, params: ApiActionParams<KegiatanKemitraanPayload>): Promise<KegiatanKemitraan[]> {
     return new Promise((resolve, reject) => {
-      ApiService.post<{ data: KegiatanKemitraan[] }>("/kegiatan-kemitraan", params.data)
+      ApiService.post<ApiDataResponse<KegiatanKemitraan[]>>("/kegiatan-kemitraan", params.data || {})
         .then(({ data }) => {
           resolve(data);
         })
@@ -63,9 +59,9 @@ const actions: ActionTree<State, State> = {
         });
     });
   },
-  [PUT_KEGIATAN_KEMITRAAN](context: VuexContext, params: Record<string, any>): Promise<KegiatanKemitraan[]> {
+  [PUT_KEGIATAN_KEMITRAAN](context: VuexContext, params: ApiActionParams<KegiatanKemitraanPayload>): Promise<KegiatanKemitraan[]> {
     return new Promise((resolve, reject) => {
-      ApiService.put<{ data: KegiatanKemitraan[] }>(`/kegiatan-kemitraan/${params.id}`, params.data)
+      ApiService.put<ApiDataResponse<KegiatanKemitraan[]>>(`/kegiatan-kemitraan/${params.id}`, params.data || {})
         .then(({ data }) => {
           resolve(data);
         })
@@ -74,7 +70,7 @@ const actions: ActionTree<State, State> = {
         });
     });
   },
-  [DELETE_KEGIATAN_KEMITRAAN](context: VuexContext, params: Record<string, any>): Promise<void> {
+  [DELETE_KEGIATAN_KEMITRAAN](context: VuexContext, params: ApiActionParams): Promise<void> {
     return new Promise((resolve, reject) => {
       ApiService.delete(`/kegiatan-kemitraan/${params.id}`)
         .then(() => {
@@ -93,7 +89,7 @@ const mutations: MutationTree<State> = {
   },
 };
 
-const kegiatanKemitraan: Module<State, any> = {
+const kegiatanKemitraan: Module<State, RootState> = {
   state,
   getters,
   actions,

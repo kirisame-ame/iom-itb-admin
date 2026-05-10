@@ -1,13 +1,19 @@
 <template>
-  <div class="relative mt-2 rounded-md shadow-sm">
-    <label class="text-sm font-semibold capitalize text-slate-900">{{ label.replace(/_/g, " ") }} {{ required ? "*" : "" }}</label>
-    <input
-      type="text"
-      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-      :value="formattedValue"
-      @input="onInput"
-      :required="required"
-    />
+  <div class="space-y-1.5">
+    <label class="block text-sm font-bold text-slate-700 capitalize">{{ label.replace(/_/g, " ") }} {{ required ? "*" : "" }}</label>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+        <span class="text-sm font-bold text-slate-400">Rp</span>
+      </div>
+      <input
+        type="text"
+        class="block w-full pl-10 pr-4 py-2.5 text-sm font-bold text-indigo-700 bg-white border border-[#8c8c94] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+        :value="formattedValueWithoutSymbol"
+        @input="onInput"
+        :required="required"
+        placeholder="0"
+      />
+    </div>
   </div>
 </template>
 
@@ -35,13 +41,11 @@ export default defineComponent({
     }
   },
   computed: {
-    formattedValue(): string {
+    formattedValueWithoutSymbol(): string {
       const numberValue = parseInt(this.value.toString());
       if (isNaN(numberValue)) return '';
 
       return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
         minimumFractionDigits: 0
       }).format(numberValue);
     }
@@ -52,18 +56,17 @@ export default defineComponent({
       let rawValue = input.value.replace(/\D/g, ''); // Remove all non-digit characters
 
       if (rawValue === '') {
-        this.$emit('update', {  key:this.keyValue || this.label, value: '' });
+        this.$emit('update', {  key:this.keyValue || this.label, value: 0 });
         return;
       }
-      // Emit the raw numeric value
-      this.$emit('update', { key: this.keyValue || this.label, value: parseInt(rawValue, 10) });
+      
+      const numericValue = parseInt(rawValue, 10);
+      this.$emit('update', { key: this.keyValue || this.label, value: numericValue });
 
-      // Reformat the input value to Rupiah format
+      // Reformat the input value display
       input.value = new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
         minimumFractionDigits: 0
-      }).format(parseInt(rawValue, 10));
+      }).format(numericValue);
     }
   }
 });

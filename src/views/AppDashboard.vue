@@ -21,182 +21,185 @@
       </div>
     </section>
 
-    <!-- Ringkasan CARDS GRID -->
-    <div class="mt-2 mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 xl:gap-6">
+    <!-- ── KPI Scoreboard (Bento Grid) ──────────────────────────── -->
+    <div class="mt-2 mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       
       <!-- Card 1: Pengajuan Perlu Proses -->
       <div 
-        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm  relative cursor-pointer hover:bg-slate-50 transition-colors"
+        class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-indigo-200 hover:shadow-md cursor-pointer"
         @click="isPendingDropdownOpen = !isPendingDropdownOpen"
       >
-        <div class="flex items-center justify-between">
-          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalPengajuanPending.title }}</h3>
-          <div class="flex items-center gap-2">
-            <svg 
-              class="w-4 h-4 text-slate-400 transition-transform duration-200" 
-              :class="{ 'rotate-180': isPendingDropdownOpen }"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400">{{ kpiData.totalPengajuanPending.title }}</p>
+            <p class="mt-2 text-3xl font-black text-slate-900">{{ kpiData.totalPengajuanPending.value }}</p>
+          </div>
+          <div class="text-indigo-500/80 transition-transform group-hover:scale-110">
+            <svg class="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+              <path d="M14.25 2.75H7A2.25 2.25 0 0 0 4.75 5v14A2.25 2.25 0 0 0 7 21.25h10A2.25 2.25 0 0 0 19.25 19v-9.25" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14.25 2.75v5A2.25 2.25 0 0 0 16.5 10h2.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9.25 14.25c0-1.05.86-1.9 1.92-1.9.8 0 1.48.46 1.78 1.13.3-.67.98-1.13 1.78-1.13 1.06 0 1.92.85 1.92 1.9 0 2.75-3.7 4.7-3.7 4.7s-3.7-1.95-3.7-4.7Z" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <div class="p-2 bg-orange-50 text-orange-500 rounded-lg">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
           </div>
         </div>
-        <div class="mt-4">
-          <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.totalPengajuanPending.value }}</p>
-        </div>
+        
+        <div class="relative mt-4">
+          <button 
+            @click.stop="isPendingDropdownOpen = !isPendingDropdownOpen"
+            class="flex items-center gap-1.5 text-[11px] font-bold text-indigo-600 transition-opacity hover:opacity-80"
+          >
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Lihat Rincian</span>
+          </button>
 
-        <!-- Dropdown / Breakdown -->
-        <div 
-          v-if="isPendingDropdownOpen"
-          class="absolute top-full left-0 right-0 mt-2 z-10 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
-        >
-          <div class="space-y-3">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-              <span class="text-sm text-slate-600 font-medium">Bantuan IOM</span>
-              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalPengajuanPending.breakdown.iom }}</span>
+          <!-- Floating Tooltip -->
+          <div 
+            v-if="isPendingDropdownOpen"
+            class="absolute bottom-full left-0 z-20 mb-3 w-52 rounded-xl bg-white border border-[#8c8c94] p-3.5 shadow-xl animate-in fade-in zoom-in-95 duration-200"
+          >
+            <div class="space-y-2.5">
+              <div v-for="(val, key) in kpiData.totalPengajuanPending.breakdown" :key="key" class="flex justify-between items-center">
+                <span class="text-[10px] font-bold text-slate-500">{{ key === 'iom' ? 'Bantuan IOM' : key === 'bankes' ? 'Kesehatan' : 'OTA' }}</span>
+                <span class="text-xs font-black text-slate-900">{{ val }}</span>
+              </div>
             </div>
-            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-              <span class="text-sm text-slate-600 font-medium">Bantuan Kesehatan (Bankes)</span>
-              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalPengajuanPending.breakdown.bankes }}</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-slate-600 font-medium">Orang Tua Asuh (OTA)</span>
-              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalPengajuanPending.breakdown.ota }}</span>
-            </div>
+            <!-- Arrow -->
+            <div class="absolute -bottom-[5px] left-4 h-2.5 w-2.5 rotate-45 bg-white border-b border-r border-[#8c8c94]"></div>
           </div>
         </div>
       </div>
 
       <!-- Card 2: Bantuan Disetujui -->
       <div 
-        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm  relative cursor-pointer hover:bg-slate-50 transition-colors"
+        class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-blue-200 hover:shadow-md cursor-pointer"
         @click="isApprovedDropdownOpen = !isApprovedDropdownOpen"
       >
-        <div class="flex items-center justify-between">
-          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalBantuanDisetujui.title }}</h3>
-          <div class="flex items-center gap-2">
-            <svg 
-              class="w-4 h-4 text-slate-400 transition-transform duration-200" 
-              :class="{ 'rotate-180': isApprovedDropdownOpen }"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400">{{ kpiData.totalBantuanDisetujui.title }}</p>
+            <p class="mt-2 text-3xl font-black text-slate-900">{{ kpiData.totalBantuanDisetujui.value }}</p>
+          </div>
+          <div class="text-blue-500/80 transition-transform group-hover:scale-110">
+            <svg class="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+              <path d="M12 3.75 4.5 6.75v5.625c0 4.238 2.832 8.05 7.5 9.375 4.668-1.325 7.5-5.137 7.5-9.375V6.75L12 3.75Z" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8.75 12.15c0-1.05.82-1.9 1.85-1.9.62 0 1.16.3 1.4.78.24-.48.78-.78 1.4-.78 1.03 0 1.85.85 1.85 1.9 0 2.25-3.25 3.95-3.25 3.95s-3.25-1.7-3.25-3.95Z" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <div class="p-2 bg-green-50 text-green-500 rounded-lg">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </div>
           </div>
         </div>
-        <div class="mt-4">
-          <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.totalBantuanDisetujui.value }}</p>
-        </div>
 
-        <!-- Dropdown / Breakdown -->
-        <div 
-          v-if="isApprovedDropdownOpen"
-          class="absolute top-full left-0 right-0 mt-2 z-10 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
-        >
-          <div class="space-y-3">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-              <span class="text-sm text-slate-600 font-medium">Bantuan IOM</span>
-              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalBantuanDisetujui.breakdown.iom }}</span>
+        <div class="relative mt-4">
+          <button 
+            @click.stop="isApprovedDropdownOpen = !isApprovedDropdownOpen"
+            class="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 transition-opacity hover:opacity-80"
+          >
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Komposisi Bantuan</span>
+          </button>
+
+          <!-- Floating Tooltip -->
+          <div 
+            v-if="isApprovedDropdownOpen"
+            class="absolute bottom-full left-0 z-20 mb-3 w-52 rounded-xl bg-white border border-[#8c8c94] p-3.5 shadow-xl animate-in fade-in zoom-in-95 duration-200"
+          >
+            <div class="space-y-2.5">
+              <div v-for="(val, key) in kpiData.totalBantuanDisetujui.breakdown" :key="key" class="flex justify-between items-center">
+                <span class="text-[10px] font-bold text-slate-500">{{ key === 'iom' ? 'Bantuan IOM' : key === 'bankes' ? 'Kesehatan' : 'OTA' }}</span>
+                <span class="text-xs font-black text-slate-900">{{ val }}</span>
+              </div>
             </div>
-            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-              <span class="text-sm text-slate-600 font-medium">Bantuan Kesehatan (Bankes)</span>
-              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalBantuanDisetujui.breakdown.bankes }}</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-slate-600 font-medium">Orang Tua Asuh (OTA)</span>
-              <span class="text-sm font-bold text-slate-800">{{ kpiData.totalBantuanDisetujui.breakdown.ota }}</span>
-            </div>
+            <!-- Arrow -->
+            <div class="absolute -bottom-[5px] left-4 h-2.5 w-2.5 rotate-45 bg-white border-b border-r border-[#8c8c94]"></div>
           </div>
         </div>
       </div>
 
       <!-- Card 3: Dashboard Merchandise -->
       <div
-        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm relative cursor-pointer hover:bg-slate-50 transition-colors"
+        class="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-sky-200 hover:shadow-md cursor-pointer"
         @click="goToMerchandiseDashboard"
       >
-        <div class="flex items-center justify-between">
-          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.pesananMerchandise.title }}</h3>
-          <div class="flex items-center gap-2">
-            <svg
-              class="w-4 h-4 text-slate-400 transition-transform duration-200"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400">Merchandise</p>
+            <p class="mt-2 text-3xl font-black text-slate-900">{{ kpiData.pesananMerchandise.value }}</p>
+          </div>
+          <div class="text-sky-500/80 transition-transform group-hover:scale-110">
+            <svg class="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+              <path d="M9 4.75 7 6.25l-3.25 1.5 2 4.75 2.5-1V20h7.5v-8.5l2.5 1 2-4.75-3.25-1.5-2-1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 4.75c.55 1.1 1.55 1.75 3 1.75s2.45-.65 3-1.75" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <div class="p-2 bg-blue-50 text-blue-500 rounded-lg">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-            </div>
           </div>
         </div>
-        <div class="mt-4">
-          <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.pesananMerchandise.value }}</p>
-          <p class="mt-1 text-xs font-medium text-blue-600">Klik untuk buka dashboard merchandise</p>
+        <div class="mt-4 flex items-center gap-1 text-[11px] font-bold text-sky-600">
+          <span>Kelola pesanan</span>
+          <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7l5 5m0 0l-5 5m5-5H6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
 
       <!-- Card 4: Total Donasi -->
       <div 
-        class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm  relative cursor-pointer hover:bg-slate-50 transition-colors"
+        class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-[#003793]/20 hover:shadow-md cursor-pointer"
         @click="isDonationDropdownOpen = !isDonationDropdownOpen"
       >
-        <div class="flex items-center justify-between">
-          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalDonasi.title }}</h3>
-          <div class="flex items-center gap-2">
-            <svg 
-              class="w-4 h-4 text-slate-400 transition-transform duration-200" 
-              :class="{ 'rotate-180': isDonationDropdownOpen }"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400">Donasi Masuk</p>
+            <p class="mt-2 text-xl font-black text-slate-900">{{ kpiData.totalDonasi.value }}</p>
+          </div>
+          <div class="text-[#003793]/70 transition-transform group-hover:scale-110">
+            <svg class="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+              <path d="M3.5 14.75h3.25l2.7 2.15a3.25 3.25 0 0 0 2.04.72h3.26c.85 0 1.55-.7 1.55-1.55s-.7-1.55-1.55-1.55h-3.1" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 14.75l1.75-1.35a3.1 3.1 0 0 1 1.9-.65h2.1a1.55 1.55 0 0 1 1.55 1.55" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M17.25 7.5a3.25 3.25 0 1 0-6.5 0 3.25 3.25 0 0 0 6.5 0Z" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 5.95v3.1M12.75 7.5h2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
           </div>
         </div>
-        <div class="mt-4">
-          <p class="text-xl font-bold text-slate-800">{{ kpiData.totalDonasi.value }}</p>
-        </div>
+        
+        <div class="relative mt-4">
+          <button 
+            @click.stop="isDonationDropdownOpen = !isDonationDropdownOpen"
+            class="flex items-center gap-1.5 text-[11px] font-bold text-[#003793] transition-opacity hover:opacity-80"
+          >
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Sumber Dana</span>
+          </button>
 
-        <!-- Dropdown / Breakdown -->
-        <div 
-          v-if="isDonationDropdownOpen"
-          class="absolute top-full left-0 right-0 mt-2 z-10 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
-        >
-          <div class="space-y-3">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-              <span class="text-sm text-slate-600 font-medium">Donasi IOM</span>
-              <span class="text-sm font-bold text-emerald-600">{{ kpiData.totalDonasi.breakdown.iom }}</span>
+          <!-- Floating Tooltip -->
+          <div 
+            v-if="isDonationDropdownOpen"
+            class="absolute bottom-full left-0 z-20 mb-3 w-52 rounded-xl bg-white border border-[#8c8c94] p-3.5 shadow-xl animate-in fade-in zoom-in-95 duration-200"
+          >
+            <div class="space-y-2.5">
+              <div v-for="(val, key) in kpiData.totalDonasi.breakdown" :key="key" class="flex justify-between items-center">
+                <span class="text-[10px] font-bold text-slate-500">{{ key === 'iom' ? 'Donasi IOM' : 'Komitmen OTA' }}</span>
+                <span class="text-xs font-black text-slate-900">{{ val }}</span>
+              </div>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-slate-600 font-medium">Komitmen Dana OTA</span>
-              <span class="text-sm font-bold text-emerald-600">{{ kpiData.totalDonasi.breakdown.ota }}</span>
-            </div>
+            <!-- Arrow -->
+            <div class="absolute -bottom-[5px] left-4 h-2.5 w-2.5 rotate-45 bg-white border-b border-r border-[#8c8c94]"></div>
           </div>
         </div>
       </div>
 
       <!-- Card 5: Total Anggota -->
-      <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ">
-        <div class="flex items-center justify-between">
-          <h3 class="text-slate-500 text-sm font-medium">{{ kpiData.totalAnggota.title }}</h3>
-          <div class="p-2 bg-indigo-50 text-indigo-500 rounded-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+      <div class="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400">Total Anggota</p>
+            <p class="mt-2 text-3xl font-black text-slate-900">{{ kpiData.totalAnggota.value }}</p>
+          </div>
+          <div class="rounded-xl bg-slate-50 p-2.5 text-slate-600 transition-colors group-hover:bg-slate-100">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7">
+              <path d="M15 19.25a6.5 6.5 0 0 0-13 0" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8.5 12.25a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16.25 11.75 18 13.5l3.25-4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
         </div>
-        <div class="mt-4">
-          <p class="text-2xl font-bold text-slate-800 sm:text-3xl">{{ kpiData.totalAnggota.value }}</p>
-          <p class="text-xs text-green-500 mt-1 relative top-2 font-medium">{{ kpiData.totalAnggota.description }}</p>
-        </div>
+        <p class="mt-4 text-[10px] font-bold tracking-tight text-emerald-600 bg-emerald-50 px-2 py-1 rounded inline-block w-fit">
+          {{ kpiData.totalAnggota.description }}
+        </p>
       </div>
 
     </div>
@@ -205,20 +208,27 @@
     <div class="mb-6">
       <button 
         @click="isChartsVisible = !isChartsVisible"
-        class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:bg-slate-50 transition-colors focus:outline-none"
+        class="group flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:bg-blue-50/30 focus:outline-none"
       >
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <div class="flex items-center gap-4">
+          <div class="rounded-xl bg-blue-50 p-2.5 text-blue-600 transition-colors group-hover:bg-blue-100">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7">
+              <path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75H3v-6.75Z" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25h-4.5V8.625Z" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75h-4.5V4.125Z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <span class="font-bold text-slate-700 text-lg">Visualisasi Statistik & Grafik</span>
+          <div class="text-left">
+            <h4 class="text-xs font-bold text-blue-600">Analisis Data</h4>
+            <span class="text-lg font-black text-slate-800">Visualisasi Statistik & Grafik</span>
+          </div>
         </div>
         <svg 
-          class="w-5 h-5 text-slate-400 transition-transform duration-200" 
+          class="w-5 h-5 text-slate-400 transition-transform duration-300" 
           :class="{ 'rotate-180': isChartsVisible }"
           fill="none" stroke="currentColor" viewBox="0 0 24 24"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
         </svg>
       </button>
     </div>
@@ -328,83 +338,102 @@
     </div>
     </div> <!-- END of isChartsVisible Wrapper -->
 
-    <!-- CARD REDIRECT DASHBOARD PEMBAYARAN -->
-    <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Keuangan & Pembayaran</p>
-          <h3 class="mt-1 text-lg font-bold text-slate-800">Dashboard Pembayaran</h3>
-          <p class="mt-1 max-w-2xl text-sm text-slate-500">Data kartu dan grafik yang sama tersedia di halaman terpisah. Buka halaman ini jika ingin fokus ke monitoring pembayaran.</p>
-        </div>
-        <button
-          type="button"
-          class="inline-flex items-center justify-center gap-2 rounded-full bg-[#003793] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-[#002d6d]"
-          @click="goToPaymentDashboard"
-        >
-          Buka Dashboard Pembayaran
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+    <!-- ── Quick Navigation Links ──────────────────────────────── -->
+    <div class="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <!-- Dashboard Pembayaran -->
+      <div 
+        class="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-blue-200 hover:shadow-md cursor-pointer"
+        @click="goToPaymentDashboard"
+      >
+        <div class="rounded-2xl bg-blue-50 p-4 text-blue-600 transition-colors group-hover:bg-blue-100">
+          <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7">
+            <path d="M4 19.25h16" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6.25 16.25v-4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11.75 16.25v-8.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M17.25 16.25v-11.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4.75 5.75h5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4.75 8.75h3.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-        </button>
+        </div>
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest text-blue-600">Keuangan & Donasi</p>
+          <h3 class="text-lg font-black text-slate-800">Dashboard Pembayaran</h3>
+          <p class="mt-1 text-sm text-slate-500 leading-relaxed">
+            Monitor aliran dana, konfirmasi manual, dan rekonsiliasi Midtrans.
+          </p>
+        </div>
+        <div class="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100">
+          <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Dashboard Merchandise -->
+      <div 
+        class="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-sky-200 hover:shadow-md cursor-pointer"
+        @click="goToMerchandiseDashboard"
+      >
+        <div class="rounded-2xl bg-sky-50 p-4 text-sky-600 transition-colors group-hover:bg-sky-100">
+          <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7">
+            <path d="M4.5 8.5 12 4.5l7.5 4-7.5 4-7.5-4Z" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4.5 8.5v7l7.5 4 7.5-4v-7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 12.5v7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8.25 15.75v-2M12 16.75v-3M15.75 17.5v-4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest text-sky-600">E-Commerce & Logistik</p>
+          <h3 class="text-lg font-black text-slate-800">Dashboard Merchandise</h3>
+          <p class="mt-1 text-sm text-slate-500 leading-relaxed">
+            Kelola stok produk, pesanan baru, dan status pengiriman barang.
+          </p>
+        </div>
+        <div class="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100">
+          <svg class="h-6 w-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
       </div>
     </div>
 
-    <!-- CARD REDIRECT DASHBOARD MERCHANDISE -->
-    <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-blue-600">Merchandise & Transaksi</p>
-          <h3 class="mt-1 text-lg font-bold text-slate-800">Dashboard Merchandise</h3>
-          <p class="mt-1 max-w-2xl text-sm text-slate-500">Lihat ringkasan pesanan dan monitoring merchandise pada halaman terpisah.</p>
-        </div>
-        <button
-          type="button"
-          class="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-blue-700"
-          @click="goToMerchandiseDashboard"
-        >
-          Buka Dashboard Merchandise
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- TABEL BAWAH: PENGAJUAN & LOG AKTIVITAS -->
-    <div class="mb-6 grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
+    <!-- ── Data Tables Section ────────────────────────────────── -->
+    <div class="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
       
       <!-- Tabel Kiri: Pengajuan Bantuan Terbaru -->
-      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-white">
-          <h3 class="text-slate-700 font-bold text-lg">Pengajuan Bantuan Terbaru</h3>
+      <div class="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-100 bg-white px-6 py-4">
+          <div>
+            <h3 class="text-lg font-black text-slate-800">Pengajuan Bantuan Terbaru</h3>
+            <p class="text-xs font-medium text-slate-500">Antrian verifikasi berkas mahasiswa.</p>
+          </div>
+          <div class="rounded-lg bg-slate-50 p-2 text-slate-400">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
         </div>
         <div class="overflow-x-auto">
-          <table class="min-w-full text-sm text-left">
-            <thead class="bg-slate-50 text-slate-500">
+          <table class="min-w-full text-sm">
+            <thead class="bg-blue-900">
               <tr>
-                <th class="px-6 py-3 font-semibold">Nama Pemohon</th>
-                <th class="px-6 py-3 font-semibold">NIM</th>
-                <th class="px-6 py-3 font-semibold text-center">Status</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Nama Pemohon</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">NIM</th>
+                <th class="px-6 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-blue-100">Status</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-              <tr v-for="submission in recentSubmissions" :key="submission.id" class="hover:bg-slate-50 transition-colors">
-                <td class="px-6 py-4 font-medium text-slate-800">
-                  {{ submission.name }}
-                  <div class="text-xs text-slate-400 mt-1">{{ submission.type }} &bull; {{ submission.date }}</div>
+              <tr v-for="submission in recentSubmissions" :key="submission.id" class="transition-colors hover:bg-blue-50/30">
+                <td class="px-6 py-4">
+                  <p class="font-bold text-slate-900">{{ submission.name }}</p>
+                  <p class="mt-0.5 text-[10px] font-bold uppercase tracking-tight text-slate-400">{{ submission.type }} • {{ submission.date }}</p>
                 </td>
-                <td class="px-6 py-4 text-slate-600">{{ submission.nim }}</td>
+                <td class="px-6 py-4 font-mono font-medium text-slate-600">{{ submission.nim }}</td>
                 <td class="px-6 py-4 text-center">
                   <span 
-                    class="px-3 py-1 text-xs font-semibold rounded-full"
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-tight"
                     :class="{
-                      'bg-slate-100 text-slate-500': submission.status === 'Tidak Diketahui',
-                      'bg-indigo-50 text-indigo-600': submission.status === 'Verifikasi Berkas',
-                      'bg-purple-50 text-purple-600': submission.status === 'Wawancara',
-                      'bg-yellow-50 text-yellow-600': submission.status === 'Menunggu',
-                      'bg-blue-50 text-blue-600': submission.status === 'Diproses',
-                      'bg-green-50 text-green-600': submission.status === 'Disetujui',
-                      'bg-red-50 text-red-600': submission.status === 'Ditolak'
+                      'bg-slate-50 text-slate-400 border-slate-200': submission.status === 'Tidak Diketahui',
+                      'bg-indigo-50 text-indigo-700 border-indigo-100': submission.status === 'Verifikasi Berkas',
+                      'bg-purple-50 text-purple-700 border-purple-100': submission.status === 'Wawancara',
+                      'bg-amber-50 text-amber-700 border-amber-100': submission.status === 'Menunggu',
+                      'bg-blue-50 text-blue-700 border-blue-100': submission.status === 'Diproses',
+                      'bg-emerald-50 text-emerald-700 border-emerald-100': submission.status === 'Disetujui',
+                      'bg-rose-50 text-rose-700 border-rose-100': submission.status === 'Ditolak'
                     }"
                   >
                     {{ submission.status }}
@@ -417,37 +446,43 @@
       </div>
 
       <!-- Tabel Kanan: Log Aktivitas Terbaru -->
-      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-white">
-          <h3 class="text-slate-700 font-bold text-lg">Log Aktivitas Terbaru</h3>
+      <div class="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-100 bg-white px-6 py-4">
+          <div>
+            <h3 class="text-lg font-black text-slate-800">Log Aktivitas Terbaru</h3>
+            <p class="text-xs font-medium text-slate-500">Riwayat perubahan status terakhir.</p>
+          </div>
+          <div class="rounded-lg bg-slate-50 p-2 text-slate-400">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
         </div>
         <div class="overflow-x-auto">
-          <table class="min-w-full text-sm text-left">
-            <thead class="bg-slate-50 text-slate-500">
+          <table class="min-w-full text-sm">
+            <thead class="bg-blue-900">
               <tr>
-                <th class="px-6 py-3 font-semibold">Admin</th>
-                <th class="px-6 py-3 font-semibold">Waktu</th>
-                <th class="px-6 py-3 font-semibold">Perubahan Status</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Admin</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Waktu</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Perubahan Status</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-              <tr v-for="log in activityLogs" :key="log.id" class="hover:bg-slate-50 transition-colors">
-                <td class="px-6 py-4 font-medium text-slate-800">{{ log.admin }}</td>
-                <td class="px-6 py-4 text-slate-500 text-xs">{{ log.time }}</td>
+              <tr v-for="log in activityLogs" :key="log.id" class="transition-colors hover:bg-blue-50/30">
+                <td class="px-6 py-4 font-bold text-slate-900">{{ log.admin }}</td>
+                <td class="px-6 py-4 font-medium text-slate-500 text-xs">{{ log.time }}</td>
                 <td class="px-6 py-4">
-                  <div class="flex items-center space-x-2 text-xs font-medium">
-                    <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded">{{ log.oldStatus }}</span>
-                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                  <div class="flex items-center gap-2">
+                    <span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-500">{{ log.oldStatus }}</span>
+                    <svg class="h-3 w-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     <span 
-                      class="px-2 py-1 rounded"
+                      class="rounded px-1.5 py-0.5 text-[10px] font-bold"
                       :class="{
-                        'bg-slate-100 text-slate-500': log.newStatus === 'Tidak Diketahui',
-                        'bg-indigo-50 text-indigo-600': log.newStatus === 'Verifikasi Berkas',
-                        'bg-purple-50 text-purple-600': log.newStatus === 'Wawancara',
+                        'bg-slate-100 text-slate-400': log.newStatus === 'Tidak Diketahui',
+                        'bg-indigo-50 text-indigo-700': log.newStatus === 'Verifikasi Berkas',
+                        'bg-purple-50 text-purple-700': log.newStatus === 'Wawancara',
                         'bg-yellow-50 text-yellow-600': log.newStatus === 'Menunggu',
-                        'bg-blue-50 text-blue-600': log.newStatus === 'Diproses',
-                        'bg-green-50 text-green-600': log.newStatus === 'Disetujui',
-                        'bg-red-50 text-red-600': log.newStatus === 'Ditolak'
+                        'bg-blue-50 text-blue-700': log.newStatus === 'Diproses',
+                        'bg-emerald-50 text-emerald-700': log.newStatus === 'Disetujui',
+                        'bg-rose-50 text-rose-700': log.newStatus === 'Ditolak'
                       }"
                     >
                       {{ log.newStatus }}
@@ -462,55 +497,48 @@
 
     </div>
 
-    <!-- CSV Upload (Dev Only) -->
-    <div
-      class="mt-6 p-4 border border-dashed border-gray-400 rounded-md bg-gray-50 max-w-md"
-    >
-      <p class="text-sm font-semibold text-gray-600 mb-2">
-        Upload Dummy CSV
-      </p>
+    <!-- ── Developer Tools Section ────────────────────────────── -->
+    <div class="mt-12 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 opacity-60 grayscale transition-all hover:opacity-100 hover:grayscale-0">
+      <div class="mb-4 flex items-center gap-3">
+        <div class="rounded-lg bg-slate-200 p-2 text-slate-600">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h4 class="text-sm font-black text-slate-700 uppercase tracking-widest">Developer Sandbox</h4>
+          <p class="text-xs text-slate-500 font-medium">Tools untuk pengujian data csv dummy.</p>
+        </div>
+      </div>
 
-      <input
-        type="file"
-        accept=".csv"
-        class="block w-full text-sm text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
-        @change="handleCsvUpload"
-      />
+      <div class="max-w-md">
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Import Dummy CSV</label>
+        <div class="flex items-center gap-3">
+          <input
+            type="file"
+            accept=".csv"
+            class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[11px] file:font-black file:uppercase file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer transition-all"
+            @change="handleCsvUpload"
+          />
+        </div>
+      </div>
 
-      <div v-if="csvRows.length" class="mt-3 overflow-x-auto">
-
-        <p class="text-xs text-gray-500 mb-1">
-          {{ csvRows.length - 1 }} rows loaded
-        </p>
-
-        <table class="text-xs border-collapse w-full">
-
-          <thead>
-            <tr>
-              <th
-                v-for="header in csvRows[0]"
-                :key="header"
-                class="border border-gray-300 bg-gray-200 px-2 py-1 text-left"
-              >
-                {{ header }}
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr v-for="(row,i) in csvRows.slice(1,6)" :key="i">
-              <td
-                v-for="(cell,j) in row"
-                :key="j"
-                class="border border-gray-300 px-2 py-1"
-              >
-                {{ cell }}
-              </td>
-            </tr>
-          </tbody>
-
-        </table>
-
+      <div v-if="csvRows.length" class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center">
+          <p class="text-[10px] font-black uppercase text-slate-400">Preview Data ({{ csvRows.length - 1 }} baris)</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-[10px]">
+            <thead>
+              <tr class="bg-slate-50">
+                <th v-for="header in csvRows[0]" :key="header" class="border-b border-slate-200 px-4 py-2 text-left font-bold text-slate-500 uppercase">{{ header }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="(row,i) in csvRows.slice(1,6)" :key="i">
+                <td v-for="(cell,j) in row" :key="j" class="px-4 py-2 text-slate-600 font-medium">{{ cell }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 

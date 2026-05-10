@@ -1,10 +1,10 @@
 <template>
-    <div class="relative mt-2 rounded-md shadow-sm">
-        <label class="text-sm font-semibold capitalize text-slate-900">{{ label.replace(/_/g, " ") }} {{ required ? '*' : '' }}</label>
+    <div class="space-y-1.5">
+        <label class="block text-sm font-bold text-slate-700 capitalize">{{ label.replace(/_/g, " ") }} {{ required ? '*' : '' }}</label>
         <AppSelect
           v-model="inputValue"
           :options="selectOptions"
-          button-class="bg-gray-50 border-gray-300 text-gray-900"
+          :placeholder="`Pilih ${label.toLowerCase()}...`"
           @change="updateValue"
         />
     </div>

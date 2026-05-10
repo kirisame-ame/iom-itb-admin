@@ -88,42 +88,46 @@
           <form @submit.prevent="register">
             <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
               <div>
-                <label class="text-gray-700" for="username">Username</label>
+                <label class="block text-sm font-bold text-slate-700" for="username">Username</label>
                 <input
-                  class="w-full mt-2 border-gray-200 rounded-md focus:border-indigo-600 focus:ring focus:ring-opacity-40 focus:ring-indigo-500"
+                  class="w-full mt-1.5 border-[#8c8c94] rounded-lg focus:border-indigo-600 focus:ring focus:ring-opacity-20 focus:ring-indigo-500 text-sm"
                   type="text"
                   v-model="user.username"
+                  placeholder="Enter username"
                 />
               </div>
 
               <div>
-                <label class="text-gray-700" for="emailAddress"
+                <label class="block text-sm font-bold text-slate-700" for="emailAddress"
                   >Email Address</label
                 >
                 <input
-                  class="w-full mt-2 border-gray-200 rounded-md focus:border-indigo-600 focus:ring focus:ring-opacity-40 focus:ring-indigo-500"
+                  class="w-full mt-1.5 border-[#8c8c94] rounded-lg focus:border-indigo-600 focus:ring focus:ring-opacity-20 focus:ring-indigo-500 text-sm"
                   type="email"
                   v-model="user.email"
+                  placeholder="Enter email address"
                 />
               </div>
 
               <div>
-                <label class="text-gray-700" for="password">Password</label>
+                <label class="block text-sm font-bold text-slate-700" for="password">Password</label>
                 <input
-                  class="w-full mt-2 border-gray-200 rounded-md focus:border-indigo-600 focus:ring focus:ring-opacity-40 focus:ring-indigo-500"
+                  class="w-full mt-1.5 border-[#8c8c94] rounded-lg focus:border-indigo-600 focus:ring focus:ring-opacity-20 focus:ring-indigo-500 text-sm"
                   type="password"
                   v-model="user.password"
+                  placeholder="••••••••"
                 />
               </div>
 
               <div>
-                <label class="text-gray-700" for="passwordConfirmation"
+                <label class="block text-sm font-bold text-slate-700" for="passwordConfirmation"
                   >Password Confirmation</label
                 >
                 <input
-                  class="w-full mt-2 border-gray-200 rounded-md focus:border-indigo-600 focus:ring focus:ring-opacity-40 focus:ring-indigo-500"
+                  class="w-full mt-1.5 border-[#8c8c94] rounded-lg focus:border-indigo-600 focus:ring focus:ring-opacity-20 focus:ring-indigo-500 text-sm"
                   type="password"
                   v-model="user.confirm"
+                  placeholder="••••••••"
                 />
               </div>
             </div>

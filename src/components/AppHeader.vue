@@ -7,17 +7,17 @@
       min-w-0
       gap-3
       px-3
-      py-2
+      py-3
       sm:px-4
       lg:px-6
       bg-white
-      border-b-4 border-indigo-600
+      border-b border-slate-200
     "
   >
     <div class="flex min-w-0 items-center">
       <button
         @click="isOpen = true"
-        class="mr-1 shrink-0 rounded-lg p-1.5 text-gray-500 hover:bg-slate-100 focus:outline-none lg:hidden"
+        class="mr-2 shrink-0 rounded-lg p-1.5 text-gray-500 hover:bg-slate-100 focus:outline-none lg:hidden"
         aria-label="Buka menu"
       >
         <svg
@@ -38,11 +38,11 @@
 
       <div class="flex min-w-0 items-center gap-1.5 sm:mx-2 lg:mx-0">
         <div class="flex min-w-0 flex-col">
-          <h1 class="truncate text-lg font-bold leading-none text-[#003793] sm:text-2xl lg:text-4xl">
+          <h1 class="truncate text-xl font-bold leading-none text-slate-900 sm:text-2xl">
             Dashboard Admin
           </h1>
-          <p class="text-xs text-gray-600 mt-1.5 hidden sm:block">
-            Ikatan Orang Tua Mahasiswa Institut Teknologi Bandung
+          <p class="text-[11px] font-medium text-slate-500 mt-1 hidden sm:block uppercase tracking-wider">
+            Ikatan Orang Tua Mahasiswa ITB
           </p>
         </div>
       </div>

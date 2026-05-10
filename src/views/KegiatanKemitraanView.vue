@@ -94,11 +94,21 @@
             <thead>
               <tr class="bg-blue-900">
                 <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Gambar</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Kegiatan</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Mitra</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Lokasi</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Periode</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Status</th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Kegiatan" :active="sortPriority('name') > 0" :direction="sortDirectionFor('name')" :priority="sortPriority('name')" @click="toggleSort('name', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Mitra" :active="sortPriority('kemitraanName') > 0" :direction="sortDirectionFor('kemitraanName')" :priority="sortPriority('kemitraanName')" @click="toggleSort('kemitraanName', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Lokasi" :active="sortPriority('location') > 0" :direction="sortDirectionFor('location')" :priority="sortPriority('location')" @click="toggleSort('location', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Periode" :active="sortPriority('startDate') > 0" :direction="sortDirectionFor('startDate')" :priority="sortPriority('startDate')" @click="toggleSort('startDate', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Status" :active="sortPriority('status') > 0" :direction="sortDirectionFor('status')" :priority="sortPriority('status')" @click="toggleSort('status', $event)" />
+                </th>
                 <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Aksi</th>
               </tr>
             </thead>
@@ -175,6 +185,14 @@ import Breadcrumb from '../components/AppBreadcrumb.vue';
 import { confirmDelete, errorAlert, successAlert } from '@/utils/swal';
 import AppSelect from '@/components/input/AppSelect.vue';
 import type { EntityId, KegiatanKemitraan } from '@/types/domain';
+import SortButton from '@/components/table/SortButton.vue';
+
+type SortDirection = 'asc' | 'desc';
+type KegiatanSortKey = 'name' | 'kemitraanName' | 'location' | 'startDate' | 'status';
+type SortRule = {
+  key: KegiatanSortKey;
+  direction: SortDirection;
+};
 
 const store = useStore();
 
@@ -186,6 +204,7 @@ const selectedImage = ref('');
 const searchQuery = ref('');
 const statusFilter = ref('');
 const isLoading = ref(true);
+const sortRules = ref<SortRule[]>([{ key: 'startDate', direction: 'desc' }]);
 const statusFilterOptions = [
   { value: '', label: 'Semua' },
   { value: 'planned', label: 'Direncanakan' },
@@ -212,9 +231,10 @@ const computedData = computed<KegiatanKemitraan[]>(() => {
   return Array.isArray(list) ? list : list?.data || [];
 });
 
-const filteredData = computed(() =>
-  computedData.value.filter((k) => !statusFilter.value || k?.status === statusFilter.value)
-);
+const filteredData = computed(() => {
+  const items = computedData.value.filter((k) => !statusFilter.value || k?.status === statusFilter.value);
+  return [...items].sort((a, b) => compareKegiatan(a, b, sortRules.value));
+});
 
 const kpiCards = computed(() => {
   const items = filteredData.value;
@@ -261,6 +281,69 @@ let searchTimer: ReturnType<typeof setTimeout> | null = null;
 const onSearch = () => {
   if (searchTimer) clearTimeout(searchTimer);
   searchTimer = setTimeout(getData, 350);
+};
+
+const normalizeText = (value: unknown) => String(value ?? '').toLowerCase();
+
+const normalizeDate = (value: unknown) => {
+  if (!value) return 0;
+  const timestamp = new Date(String(value)).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const compareValue = (left: string | number, right: string | number) => {
+  if (typeof left === 'number' && typeof right === 'number') return left - right;
+  return String(left).localeCompare(String(right), 'id', { numeric: true, sensitivity: 'base' });
+};
+
+const compareKegiatan = (
+  left: KegiatanKemitraan,
+  right: KegiatanKemitraan,
+  rules: SortRule[],
+) => {
+  const getValue = (item: KegiatanKemitraan, key: KegiatanSortKey) => {
+    if (key === 'startDate') return normalizeDate(item?.startDate);
+    if (key === 'kemitraanName') return normalizeText(item?.kemitraan?.name);
+    return normalizeText(item?.[key]);
+  };
+
+  for (const rule of rules) {
+    const result = compareValue(getValue(left, rule.key), getValue(right, rule.key));
+    if (result !== 0) {
+      return result * (rule.direction === 'asc' ? 1 : -1);
+    }
+  }
+
+  return 0;
+};
+
+const defaultSortDirection = (key: KegiatanSortKey): SortDirection =>
+  key === 'startDate' ? 'desc' : 'asc';
+
+const sortPriority = (key: KegiatanSortKey) => {
+  const index = sortRules.value.findIndex((rule) => rule.key === key);
+  return index === -1 ? 0 : index + 1;
+};
+
+const sortDirectionFor = (key: KegiatanSortKey): SortDirection => {
+  return sortRules.value.find((rule) => rule.key === key)?.direction || defaultSortDirection(key);
+};
+
+const toggleSort = (key: KegiatanSortKey, event?: MouseEvent) => {
+  const currentRule = sortRules.value.find((rule) => rule.key === key);
+  const nextRule: SortRule = {
+    key,
+    direction: currentRule?.direction === 'asc' ? 'desc' : 'asc',
+  };
+
+  if (event?.shiftKey) {
+    sortRules.value = currentRule
+      ? sortRules.value.map((rule) => (rule.key === key ? nextRule : rule))
+      : [...sortRules.value, { key, direction: defaultSortDirection(key) }];
+    return;
+  }
+
+  sortRules.value = currentRule ? [nextRule] : [{ key, direction: defaultSortDirection(key) }];
 };
 
 onMounted(getData);

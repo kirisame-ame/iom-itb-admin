@@ -80,13 +80,23 @@
             <thead>
               <tr class="bg-blue-900">
                 <th class="w-20 whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Gambar</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Produk</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Harga</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Stok</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Kategori</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Produk" :active="sortPriority('name') > 0" :direction="sortDirectionFor('name')" :priority="sortPriority('name')" @click="toggleSort('name', $event)" />
+                </th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Harga" :active="sortPriority('price') > 0" :direction="sortDirectionFor('price')" :priority="sortPriority('price')" @click="toggleSort('price', $event)" />
+                </th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Stok" :active="sortPriority('stock') > 0" :direction="sortDirectionFor('stock')" :priority="sortPriority('stock')" @click="toggleSort('stock', $event)" />
+                </th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Kategori" :active="sortPriority('kategori') > 0" :direction="sortDirectionFor('kategori')" :priority="sortPriority('kategori')" @click="toggleSort('kategori', $event)" />
+                </th>
                 <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Deskripsi</th>
                 <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Link</th>
-                <th class="whitespace-nowrap px-5 py-3.5 text-left text-sm font-semibold text-blue-100">Diperbarui</th>
+                <th class="whitespace-nowrap px-5 py-3.5 text-left">
+                  <SortButton label="Diperbarui" :active="sortPriority('updatedAt') > 0" :direction="sortDirectionFor('updatedAt')" :priority="sortPriority('updatedAt')" @click="toggleSort('updatedAt', $event)" />
+                </th>
                 <th class="whitespace-nowrap px-5 py-3.5 text-right text-sm font-semibold text-blue-100">Aksi</th>
               </tr>
             </thead>
@@ -227,6 +237,14 @@ import IcTrash from '@/assets/svg/ic-trash.vue';
 import IcEdit from '@/assets/svg/ic-edit.vue';
 import IcPlus from '@/assets/svg/ic-plus.vue';
 import AppSelect from '@/components/input/AppSelect.vue';
+import SortButton from '@/components/table/SortButton.vue';
+
+type SortDirection = 'asc' | 'desc';
+type MerchandiseSortKey = 'name' | 'price' | 'stock' | 'kategori' | 'updatedAt';
+type SortRule = {
+  key: MerchandiseSortKey;
+  direction: SortDirection;
+};
 
 type MerchandiseItem = {
   id: number;
@@ -251,6 +269,7 @@ const page = ref(1);
 const limit = ref(5);
 const search = ref(""); 
 const title = ref("Merchandise"); 
+const sortRules = ref<SortRule[]>([{ key: 'updatedAt', direction: 'desc' }]);
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 const pageLimitOptions = [
   { value: 5, label: '5' },
@@ -272,7 +291,8 @@ const handleModalClose = async () => {
 
 const computedData = computed<MerchandiseItem[]>(() => {
   const merchandises = store.getters.merchandises;
-  return merchandises?.data || [];
+  const items = merchandises?.data || [];
+  return [...items].sort((a, b) => compareMerchandise(a, b, sortRules.value));
 });
 
 const pagination = computed(() => {
@@ -285,6 +305,74 @@ const lowStockCount = computed(() => computedData.value.filter((item) => {
   return stock > 0 && stock <= 5;
 }).length);
 const emptyStockCount = computed(() => computedData.value.filter((item) => Number(item?.stock || 0) <= 0).length);
+
+const normalizeText = (value: unknown) => String(value ?? '').toLowerCase();
+
+const normalizeNumber = (value: unknown) => {
+  const numeric = Number(value ?? 0);
+  return Number.isFinite(numeric) ? numeric : 0;
+};
+
+const normalizeDate = (value: unknown) => {
+  if (!value) return 0;
+  const timestamp = new Date(String(value)).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const compareValue = (left: string | number, right: string | number) => {
+  if (typeof left === 'number' && typeof right === 'number') return left - right;
+  return String(left).localeCompare(String(right), 'id', { numeric: true, sensitivity: 'base' });
+};
+
+const compareMerchandise = (
+  left: MerchandiseItem,
+  right: MerchandiseItem,
+  rules: SortRule[],
+) => {
+  const getValue = (item: MerchandiseItem, key: MerchandiseSortKey) => {
+    if (key === 'price' || key === 'stock') return normalizeNumber(item?.[key]);
+    if (key === 'updatedAt') return normalizeDate(item?.updatedAt);
+    return normalizeText(item?.[key]);
+  };
+
+  for (const rule of rules) {
+    const result = compareValue(getValue(left, rule.key), getValue(right, rule.key));
+    if (result !== 0) {
+      return result * (rule.direction === 'asc' ? 1 : -1);
+    }
+  }
+
+  return 0;
+};
+
+const defaultSortDirection = (key: MerchandiseSortKey): SortDirection =>
+  key === 'name' || key === 'kategori' ? 'asc' : 'desc';
+
+const sortPriority = (key: MerchandiseSortKey) => {
+  const index = sortRules.value.findIndex((rule) => rule.key === key);
+  return index === -1 ? 0 : index + 1;
+};
+
+const sortDirectionFor = (key: MerchandiseSortKey): SortDirection => {
+  return sortRules.value.find((rule) => rule.key === key)?.direction || defaultSortDirection(key);
+};
+
+const toggleSort = (key: MerchandiseSortKey, event?: MouseEvent) => {
+  const currentRule = sortRules.value.find((rule) => rule.key === key);
+  const nextRule: SortRule = {
+    key,
+    direction: currentRule?.direction === 'asc' ? 'desc' : 'asc',
+  };
+
+  if (event?.shiftKey) {
+    sortRules.value = currentRule
+      ? sortRules.value.map((rule) => (rule.key === key ? nextRule : rule))
+      : [...sortRules.value, { key, direction: defaultSortDirection(key) }];
+    return;
+  }
+
+  sortRules.value = currentRule ? [nextRule] : [{ key, direction: defaultSortDirection(key) }];
+};
 
 const getData = async () => {
   isLoading.value = true;

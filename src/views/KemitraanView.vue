@@ -85,12 +85,20 @@
             <thead>
               <tr class="bg-blue-900">
                 <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Logo</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Nama Mitra</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">PIC</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Telepon PIC</th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Nama Mitra" :active="sortPriority('name') > 0" :direction="sortDirectionFor('name')" :priority="sortPriority('name')" @click="toggleSort('name', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="PIC" :active="sortPriority('picName') > 0" :direction="sortDirectionFor('picName')" :priority="sortPriority('picName')" @click="toggleSort('picName', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Telepon PIC" :active="sortPriority('picPhone') > 0" :direction="sortDirectionFor('picPhone')" :priority="sortPriority('picPhone')" @click="toggleSort('picPhone', $event)" />
+                </th>
                 <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Deskripsi</th>
                 <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">MoU</th>
-                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Dibuat</th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Dibuat" :active="sortPriority('createdAt') > 0" :direction="sortDirectionFor('createdAt')" :priority="sortPriority('createdAt')" @click="toggleSort('createdAt', $event)" />
+                </th>
                 <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Aksi</th>
               </tr>
             </thead>
@@ -174,6 +182,14 @@ import { useStore } from 'vuex';
 import Breadcrumb from '../components/AppBreadcrumb.vue';
 import Swal from 'sweetalert2';
 import type { ApiErrorResponse, EntityId, Kemitraan } from '@/types/domain';
+import SortButton from '@/components/table/SortButton.vue';
+
+type SortDirection = 'asc' | 'desc';
+type KemitraanSortKey = 'name' | 'picName' | 'picPhone' | 'createdAt';
+type SortRule = {
+  key: KemitraanSortKey;
+  direction: SortDirection;
+};
 
 const store = useStore();
 
@@ -184,6 +200,7 @@ const isImageModalOpen = ref(false);
 const selectedImage = ref('');
 const searchQuery = ref('');
 const isLoading = ref(true);
+const sortRules = ref<SortRule[]>([{ key: 'createdAt', direction: 'desc' }]);
 
 const openModal = () => {
   dataUpdate.value = {};
@@ -200,8 +217,8 @@ const handleModalClose = async () => {
 
 const computedData = computed<Kemitraan[]>(() => {
   const list = store.getters.kemitraan;
-  if (Array.isArray(list)) return list;
-  return list?.data || [];
+  const items = Array.isArray(list) ? list : list?.data || [];
+  return [...items].sort((a, b) => compareKemitraan(a, b, sortRules.value));
 });
 
 const kpiCards = computed(() => {
@@ -249,6 +266,68 @@ let searchTimer: ReturnType<typeof setTimeout> | null = null;
 const onSearch = () => {
   if (searchTimer) clearTimeout(searchTimer);
   searchTimer = setTimeout(getData, 350);
+};
+
+const normalizeText = (value: unknown) => String(value ?? '').toLowerCase();
+
+const normalizeDate = (value: unknown) => {
+  if (!value) return 0;
+  const timestamp = new Date(String(value)).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const compareValue = (left: string | number, right: string | number) => {
+  if (typeof left === 'number' && typeof right === 'number') return left - right;
+  return String(left).localeCompare(String(right), 'id', { numeric: true, sensitivity: 'base' });
+};
+
+const compareKemitraan = (
+  left: Kemitraan,
+  right: Kemitraan,
+  rules: SortRule[],
+) => {
+  const getValue = (item: Kemitraan, key: KemitraanSortKey) => {
+    if (key === 'createdAt') return normalizeDate(item?.createdAt);
+    return normalizeText(item?.[key]);
+  };
+
+  for (const rule of rules) {
+    const result = compareValue(getValue(left, rule.key), getValue(right, rule.key));
+    if (result !== 0) {
+      return result * (rule.direction === 'asc' ? 1 : -1);
+    }
+  }
+
+  return 0;
+};
+
+const defaultSortDirection = (key: KemitraanSortKey): SortDirection =>
+  key === 'createdAt' ? 'desc' : 'asc';
+
+const sortPriority = (key: KemitraanSortKey) => {
+  const index = sortRules.value.findIndex((rule) => rule.key === key);
+  return index === -1 ? 0 : index + 1;
+};
+
+const sortDirectionFor = (key: KemitraanSortKey): SortDirection => {
+  return sortRules.value.find((rule) => rule.key === key)?.direction || defaultSortDirection(key);
+};
+
+const toggleSort = (key: KemitraanSortKey, event?: MouseEvent) => {
+  const currentRule = sortRules.value.find((rule) => rule.key === key);
+  const nextRule: SortRule = {
+    key,
+    direction: currentRule?.direction === 'asc' ? 'desc' : 'asc',
+  };
+
+  if (event?.shiftKey) {
+    sortRules.value = currentRule
+      ? sortRules.value.map((rule) => (rule.key === key ? nextRule : rule))
+      : [...sortRules.value, { key, direction: defaultSortDirection(key) }];
+    return;
+  }
+
+  sortRules.value = currentRule ? [nextRule] : [{ key, direction: defaultSortDirection(key) }];
 };
 
 onMounted(getData);

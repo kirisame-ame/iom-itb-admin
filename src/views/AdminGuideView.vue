@@ -22,7 +22,7 @@
         </div>
       </section>
 
-      <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section class="mb-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
         <div class="grid gap-4 lg:grid-cols-[1fr_260px]">
           <div>
             <label for="search" class="mb-2 block text-sm font-semibold text-slate-900">
@@ -39,7 +39,7 @@
                 v-model="searchKeyword"
                 type="text"
                 placeholder="Cari: donasi, status, upload, fakultas, pembayaran..."
-                class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-[#003793] focus:ring-4 focus:ring-[#003793]/10"
+                class="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-11 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-[#8c8c94]/20"
               />
             </div>
           </div>
@@ -57,8 +57,8 @@
       </section>
 
       <div class="grid gap-6 lg:grid-cols-[310px_1fr]">
-        <aside class="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-6">
-          <div class="mb-4 flex items-center justify-between">
+        <aside class="h-fit rounded-2xl border border-slate-100 bg-white shadow-sm lg:sticky lg:top-6">
+          <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <h2 class="text-base font-semibold text-slate-700">
               Daftar Menu
             </h2>
@@ -73,17 +73,18 @@
             </button>
           </div>
 
-          <div v-if="filteredDocumentation.length > 0" class="space-y-1.5">
+          <div v-if="filteredDocumentation.length > 0" class="overflow-hidden divide-y divide-slate-100">
             <button
               v-for="feature in filteredDocumentation"
               :key="feature.id"
               type="button"
-              class="w-full rounded-xl border px-4 py-3 text-left transition"
+              class="block w-full rounded-none px-5 py-3 text-left transition"
               :class="
                 selectedFeatureId === feature.id
-                  ? 'border-[#003793] bg-[#003793] text-white shadow-sm'
-                  : 'border-transparent bg-white text-slate-700 hover:border-[#003793]/20 hover:bg-[#003793]/5'
+                  ? 'bg-[#003793] text-white'
+                  : 'bg-white text-slate-700 hover:bg-slate-50 hover:shadow-[inset_4px_0_0_rgba(0,55,147,0.28)]'
               "
+              :style="guideNavButtonStyle(feature.id)"
               @click="selectFeature(feature.id)"
             >
               <span class="block text-sm font-semibold">
@@ -91,14 +92,14 @@
               </span>
               <span
                 class="mt-1 block text-xs"
-                :class="selectedFeatureId === feature.id ? 'text-white/70' : 'text-slate-500'"
+                :class="selectedFeatureId === feature.id ? 'text-white/75' : 'text-slate-500'"
               >
                 {{ feature.category }}
               </span>
             </button>
           </div>
 
-          <div v-else class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center">
+          <div v-else class="m-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5 text-center">
             <p class="text-sm font-semibold text-slate-900">Tidak ada hasil</p>
             <p class="mt-1 text-xs leading-5 text-slate-500">
               Coba ubah kata kunci atau kategori.
@@ -109,18 +110,18 @@
         <main>
           <article
             v-if="selectedFeature"
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm"
           >
-            <header class="border-b border-slate-200 bg-white px-6 py-6 sm:px-8">
+            <header class="border-b border-slate-100 bg-white px-6 py-6 sm:px-8">
               <div class="mb-4 flex flex-wrap items-center gap-2">
-                <span class="rounded-full bg-[#003793]/10 px-3 py-1 text-xs font-bold text-[#003793]">
+                <span class="rounded-full bg-[#003793]/10 px-3 py-1 text-sm font-semibold text-[#003793]">
                   {{ selectedFeature.category }}
                 </span>
 
                 <router-link
                   v-if="selectedFeature.route"
                   :to="selectedFeature.route"
-                  class="inline-flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1 text-xs font-bold text-slate-600 transition hover:border-[#003793]/30 hover:bg-[#003793]/5 hover:text-[#003793]"
+                  class="inline-flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1 text-sm font-semibold text-slate-600 transition hover:border-[#003793]/30 hover:bg-[#003793]/5 hover:text-[#003793]"
                 >
                   Buka fitur
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -139,7 +140,7 @@
               </p>
             </header>
 
-            <div class="space-y-8 px-6 py-6 sm:px-8">
+            <div class="divide-y divide-slate-100 px-6 sm:px-8">
               <GuideSection
                 v-if="selectedFeature.tableColumns.length"
                 title="Kolom yang Ditampilkan"
@@ -174,9 +175,9 @@
                 :items="selectedFeature.statusValues"
               />
 
-              <section>
+              <section class="py-6">
                 <div class="mb-4 flex items-center gap-3">
-                  <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#003793]/10 text-[#003793]">
+                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#003793]/10 text-[#003793]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75H21M8.25 12H21M8.25 17.25H21M3.75 6.75H3.758V6.758H3.75V6.75ZM3.75 12H3.758V12.008H3.75V12ZM3.75 17.25H3.758V17.258H3.75V17.25Z" />
                     </svg>
@@ -187,11 +188,11 @@
                   </div>
                 </div>
 
-                <div class="space-y-4">
+                <div class="divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-100">
                   <div
                     v-for="(step, index) in selectedFeature.steps"
                     :key="`${selectedFeature.id}-${index}`"
-                    class="rounded-2xl border border-slate-200 bg-white p-5"
+                    class="bg-white p-4"
                   >
                     <div class="flex gap-4">
                       <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#003793] text-sm font-bold text-white">
@@ -225,7 +226,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineComponent, h, ref, watch } from "vue";
+import { computed, defineComponent, h, ref, watch, type CSSProperties } from "vue";
 import AppSelect from '@/components/input/AppSelect.vue';
 
 interface GuideStep {
@@ -252,6 +253,39 @@ interface AdminDocumentation {
   steps: GuideStep[];
 }
 
+const guideIconPaths: Record<string, string[]> = {
+  "Kolom yang Ditampilkan": [
+    "M4.5 6.75h15",
+    "M4.5 12h15",
+    "M4.5 17.25h15",
+    "M8.25 4.5v15",
+    "M15.75 4.5v15",
+  ],
+  "Filter dan Pencarian": [
+    "m21 21-4.35-4.35",
+    "M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z",
+    "M5.25 7.5h10.5",
+    "M7.5 10.5h6",
+  ],
+  "Field Form": [
+    "M6.75 3.75h7.5L18 7.5v12.75H6.75V3.75Z",
+    "M14.25 3.75V7.5H18",
+    "M9 11.25h6",
+    "M9 14.25h6",
+    "M9 17.25h3",
+  ],
+  "Tombol dan Aksi": [
+    "M6 12h12",
+    "m13.5 6 6 6-6 6",
+    "M4.5 6.75h4.125",
+    "M4.5 17.25h4.125",
+  ],
+  "Nilai Status / Opsi": [
+    "M9 12.75 11.25 15 15.75 9",
+    "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+  ],
+};
+
 const GuideSection = defineComponent({
   name: "GuideSection",
   props: {
@@ -261,10 +295,31 @@ const GuideSection = defineComponent({
   },
   setup(props) {
     return () =>
-      h("section", {}, [
+      h("section", { class: "py-6" }, [
         h("div", { class: "mb-4 flex items-center gap-3" }, [
-          h("div", { class: "flex h-9 w-9 items-center justify-center rounded-xl bg-[#003793]/10 text-[#003793]" }, [
-            h("span", { class: "text-base font-black" }, "•"),
+          h("div", { class: "flex h-9 w-9 items-center justify-center rounded-lg bg-[#003793]/10 text-[#003793]" }, [
+            h(
+              "svg",
+              {
+                xmlns: "http://www.w3.org/2000/svg",
+                class: "h-5 w-5",
+                fill: "none",
+                viewBox: "0 0 24 24",
+                stroke: "currentColor",
+                "stroke-width": "1.8",
+              },
+              (guideIconPaths[props.title] || [
+                "M12 6.75h.008v.008H12V6.75Z",
+                "M11.25 10.5H12v6.75h.75",
+                "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+              ]).map((path) =>
+                h("path", {
+                  d: path,
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round",
+                })
+              )
+            ),
           ]),
           h("div", {}, [
             h("h3", { class: "text-lg font-bold text-slate-900" }, props.title),
@@ -273,11 +328,11 @@ const GuideSection = defineComponent({
         ]),
         h(
           "div",
-          { class: "grid gap-3 md:grid-cols-2" },
+          { class: "divide-y divide-slate-200 overflow-hidden rounded-lg border-2 border-slate-200" },
           props.items.map((item) =>
-            h("div", { class: "rounded-xl border border-slate-200 bg-slate-50 p-4" }, [
-              h("p", { class: "text-sm font-bold text-slate-900" }, item.title),
-              h("p", { class: "mt-1 text-sm leading-6 text-slate-600" }, item.description),
+            h("div", { class: "grid gap-2 bg-white p-4 md:grid-cols-[180px_1fr] md:gap-0" }, [
+              h("p", { class: "text-sm font-bold text-slate-900 md:border-r md:border-slate-200 md:pr-4" }, item.title),
+              h("p", { class: "text-sm leading-6 text-slate-600 md:pl-4" }, item.description),
             ])
           )
         ),
@@ -988,6 +1043,16 @@ watch(filteredDocumentation, (items) => {
 
 const selectFeature = (featureId: string) => {
   selectedFeatureId.value = featureId;
+};
+
+const guideNavButtonStyle = (featureId: string): CSSProperties => {
+  if (selectedFeatureId.value !== featureId) {
+    return {};
+  }
+
+  return {
+    boxShadow: "inset 6px 0 0 #ffffff, inset 0 0 0 1px rgba(255,255,255,0.12)",
+  };
 };
 
 const resetFilter = () => {

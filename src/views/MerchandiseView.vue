@@ -32,23 +32,24 @@
       </section>
 
       <section class="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <p class="text-sm font-semibold text-slate-500">Total Produk</p>
           <p class="mt-2 text-2xl font-bold text-blue-900">{{ pagination?.totalEntries || computedData.length }}</p>
         </div>
-        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <p class="text-sm font-semibold text-slate-500">Stok Rendah</p>
           <p class="mt-2 text-2xl font-bold text-amber-700">{{ lowStockCount }}</p>
         </div>
-        <div class="rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <p class="text-sm font-semibold text-slate-500">Stok Habis</p>
           <p class="mt-2 text-2xl font-bold text-red-700">{{ emptyStockCount }}</p>
         </div>
       </section>
 
-      <section class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-[auto,1fr] lg:w-auto lg:flex lg:flex-wrap lg:items-center">
-          <div class="relative">
+      <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="grid gap-3 sm:grid-cols-[160px_1fr] lg:max-w-2xl lg:grid-cols-[160px_320px]">
+          <div>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Per Halaman</label>
             <AppSelect
               v-model="limit"
               :options="pageLimitOptions"
@@ -56,31 +57,24 @@
             />
           </div>
 
-          <div class="relative">
+          <div>
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Cari</label>
+            <div class="relative">
             <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
             </svg>
             <input
               v-model="search"
               placeholder="Cari merchandise..."
-              class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 lg:w-64"
+              class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-700 placeholder-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-[#8c8c94]/20"
               @input="onSearchInput"
             />
+            </div>
           </div>
         </div>
-
-        <p class="text-xs text-slate-500">
-          Menampilkan
-          <span class="font-semibold text-slate-700">{{ pagination?.start || 0 }}</span>
-          -
-          <span class="font-semibold text-slate-700">{{ pagination?.end || 0 }}</span>
-          dari
-          <span class="font-semibold text-slate-700">{{ pagination?.totalEntries || 0 }}</span>
-          entri
-        </p>
       </section>
 
-      <section class="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-sm">
+      <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
           <table class="min-w-full">
             <thead>
@@ -174,7 +168,7 @@
                     </button>
                     <button
                       type="button"
-                      class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
+                      class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100"
                       @click.prevent="deleteItem(u.id)"
                     >
                       <IcTrash />

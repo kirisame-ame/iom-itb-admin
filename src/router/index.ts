@@ -31,6 +31,7 @@ import ActivityEditorView from "@/views/ActivityEditorView.vue";
 import ActivityPreviewView from "@/views/ActivityPreviewView.vue";
 import AdminGuideView from "@/views/AdminGuideView.vue";
 import MerchandiseDashboard from "@/views/MerchandiseDashboardView.vue";
+import EmailTemplate from "@/views/EmailTemplateView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -172,6 +173,12 @@ const routes: Array<RouteRecordRaw> = [
     name: "Panduan Admin",
     component: AdminGuideView,
   },
+  {
+    path: "/email-templates",
+    name: "Template Email",
+    component: EmailTemplate,
+  },
+
   { path: "/:pathMatch(.*)*", component: NotFound },
 ];
 

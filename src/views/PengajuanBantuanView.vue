@@ -69,8 +69,9 @@
               <tr class="bg-blue-900">
                 <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider w-10 whitespace-nowrap">No</th>
                 <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Status</th>
+                <th class="px-5 py-3.5 text-center text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Ubah Status</th>
+                <th class="px-5 py-3.5 text-center text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Detail</th>
                 <th class="px-5 py-3.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Tanggal Kirim</th>
-                <th class="px-5 py-3.5 text-center text-xs font-semibold text-blue-100 uppercase tracking-wider whitespace-nowrap">Aksi</th>
                 <th
                   v-for="col in columns"
                   :key="col"
@@ -83,7 +84,7 @@
             <tbody>
               <template v-if="isLoading">
                 <tr v-for="i in limit" :key="i" class="border-b border-slate-100">
-                  <td v-for="c in columns.length + 4" :key="c" class="px-5 py-4">
+                  <td v-for="c in columns.length + 5" :key="c" class="px-5 py-4">
                     <div class="h-4 bg-slate-100 rounded animate-pulse w-full max-w-[120px]" />
                   </td>
                 </tr>
@@ -91,7 +92,7 @@
 
               <template v-else-if="!computedData.length">
                 <tr>
-                  <td :colspan="columns.length + 4" class="px-5 py-12 text-center text-sm text-slate-400 italic">
+                  <td :colspan="columns.length + 5" class="px-5 py-12 text-center text-sm text-slate-400 italic">
                     Tidak ada data ditemukan.
                   </td>
                 </tr>
@@ -109,19 +110,30 @@
                   <td class="px-5 py-4 whitespace-nowrap">
                     <StatusBadge :status="item.status" />
                   </td>
-                  <td class="px-5 py-4 text-sm text-slate-500 whitespace-nowrap">
-                    {{ formatDate(item.submittedAt) }}
+                  <td class="px-5 py-4 text-center whitespace-nowrap">
+                    <button
+                      @click="openUpdateStatus(item)"
+                      class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-full hover:bg-blue-100 hover:border-blue-300 transition-colors"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/>
+                      </svg>
+                      Ubah Status
+                    </button>
                   </td>
                   <td class="px-5 py-4 text-center whitespace-nowrap">
                     <button
                       @click="openDetail(item)"
-                      class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-800 rounded-full hover:bg-blue-700 transition-colors shadow-sm"
+                      class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-blue-800 bg-blue-50 rounded-full hover:bg-blue-100 transition-colors"
                     >
                       <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
                       </svg>
                       Detail
                     </button>
+                  </td>
+                  <td class="px-5 py-4 text-sm text-slate-500 whitespace-nowrap">
+                    {{ formatDate(item.submittedAt) }}
                   </td>
                   <td
                     v-for="col in columns"
@@ -195,6 +207,12 @@
         v-model="detailOpen"
         :item="selectedItem"
         :loading="detailLoading"
+      />
+
+      <UpdateStatusPengajuanModal
+        v-model="updateStatusOpen"
+        :item="selectedItem"
+        :loading="updateStatusLoading"
         @saved="onSaved"
       />
     </div>
@@ -211,6 +229,7 @@ import {
 import type { PengajuanBantuan } from '@/store/pengajuanBantuan.module'
 import StatusBadge from '@/components/StatusBadge.vue'
 import DetailPengajuanModal from '@/components/modal/DetailPengajuan.vue'
+import UpdateStatusPengajuanModal from '@/components/modal/UpdateStatusPengajuan.vue'
 import Breadcrumb from '@/components/AppBreadcrumb.vue'
 import AppSelect from '@/components/input/AppSelect.vue'
 
@@ -305,6 +324,9 @@ const selectedItem  = computed<PengajuanBantuan | null>(
   () => store.getters['pengajuanBantuan/pengajuanBantuanDetail'],
 )
 
+const updateStatusOpen    = ref(false)
+const updateStatusLoading = ref(false)
+
 const openDetail = async (item: PengajuanBantuan) => {
   detailOpen.value    = true
   detailLoading.value = true
@@ -312,12 +334,14 @@ const openDetail = async (item: PengajuanBantuan) => {
   detailLoading.value = false
 }
 
+const openUpdateStatus = async (item: PengajuanBantuan) => {
+  updateStatusOpen.value    = true
+  updateStatusLoading.value = true
+  await store.dispatch(`pengajuanBantuan/${GET_PENGAJUAN_BANTUAN_BY_ID}`, item.tallySubmissionId)
+  updateStatusLoading.value = false
+}
+
 const onSaved = async () => {
-  if (selectedItem.value) {
-    detailLoading.value = true
-    await store.dispatch(`pengajuanBantuan/${GET_PENGAJUAN_BANTUAN_BY_ID}`, selectedItem.value.tallySubmissionId)
-    detailLoading.value = false
-  }
   await getData()
 }
 </script>

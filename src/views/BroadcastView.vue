@@ -45,7 +45,7 @@
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
             <div>
-              <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Pengaturan</p>
+              <p class="text-sm font-semibold text-slate-500">Pengaturan</p>
               <p class="mt-1 text-2xl font-black text-slate-900">{{ settings.length }}</p>
             </div>
           </div>
@@ -61,7 +61,7 @@
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             </div>
             <div>
-              <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Penerima</p>
+              <p class="text-sm font-semibold text-slate-500">Penerima</p>
               <p class="mt-1 text-2xl font-black text-slate-900">{{ members.length > 0 ? members.length : 'Lihat' }}</p>
             </div>
           </div>
@@ -77,7 +77,7 @@
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </div>
             <div>
-              <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Log Pengiriman</p>
+              <p class="text-sm font-semibold text-slate-500">Log Pengiriman</p>
               <p class="mt-1 text-2xl font-black text-slate-900">{{ logs.pagination?.total || 'Cek' }}</p>
             </div>
           </div>
@@ -99,13 +99,13 @@
           <table class="min-w-full text-sm">
             <thead class="bg-blue-900">
               <tr>
-                <th class="px-4 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Nama</th>
-                <th class="px-4 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Jenis Iuran</th>
-                <th class="px-4 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Interval</th>
-                <th class="px-4 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Jadwal</th>
-                <th class="px-4 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Status</th>
-                <th class="px-4 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Terakhir Dikirim</th>
-                <th class="px-4 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-blue-100">Aksi</th>
+                <th class="px-4 py-3.5 text-left text-[11px] font-bold text-blue-100">Nama</th>
+                <th class="px-4 py-3.5 text-left text-[11px] font-bold text-blue-100">Jenis Iuran</th>
+                <th class="px-4 py-3.5 text-left text-[11px] font-bold text-blue-100">Interval</th>
+                <th class="px-4 py-3.5 text-left text-[11px] font-bold text-blue-100">Jadwal</th>
+                <th class="px-4 py-3.5 text-left text-[11px] font-bold text-blue-100">Status</th>
+                <th class="px-4 py-3.5 text-left text-[11px] font-bold text-blue-100">Terakhir Dikirim</th>
+                <th class="px-4 py-3.5 text-center text-[11px] font-bold text-blue-100">Aksi</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 bg-white">
@@ -171,10 +171,10 @@
           <table class="min-w-full text-sm">
             <thead class="bg-blue-900">
               <tr>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Nama</th>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">NIM / Relasi</th>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">No. WhatsApp</th>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Email</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">Nama</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">NIM / Relasi</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">No. WhatsApp</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">Email</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 bg-white">
@@ -223,11 +223,11 @@
           <table class="min-w-full text-sm">
             <thead class="bg-blue-900">
               <tr>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Waktu</th>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Broadcast</th>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Penerima</th>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Kanal WhatsApp</th>
-                <th class="px-6 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-100">Kanal Email</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">Waktu</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">Broadcast</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">Penerima</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">Kanal WhatsApp</th>
+                <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">Kanal Email</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 bg-white">

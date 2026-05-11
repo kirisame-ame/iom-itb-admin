@@ -293,6 +293,7 @@ const navGroups: NavGroup[] = [
       { name: "Donasi", label: "Donasi", to: "/donasi", icon: "handCoins" },
       { name: "Fakultas", label: "Fakultas", to: "/fakultas", icon: "school" },
       { name: "Dana Bantuan", label: "Dana Bantuan", to: "/dana-bantuan", icon: "piggyBank" },
+      { name: "Broadcast", label: "Broadcast Pesan", to: "/broadcast", icon: "mail" },
       { name: "Template Email", label: "Template Email", to: "/email-templates", icon: "mailCheck"},
     ],
   },

@@ -32,6 +32,7 @@ import ActivityPreviewView from "@/views/ActivityPreviewView.vue";
 import AdminGuideView from "@/views/AdminGuideView.vue";
 import MerchandiseDashboard from "@/views/MerchandiseDashboardView.vue";
 import EmailTemplate from "@/views/EmailTemplateView.vue";
+import Broadcast from "@/views/BroadcastView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -177,6 +178,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/email-templates",
     name: "Template Email",
     component: EmailTemplate,
+  },
+  {
+    path: "/broadcast",
+    name: "Broadcast",
+    component: Broadcast,
   },
 
   { path: "/:pathMatch(.*)*", component: NotFound },

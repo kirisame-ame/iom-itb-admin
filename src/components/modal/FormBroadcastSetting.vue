@@ -1,102 +1,113 @@
 <template>
-  <div class="fixed z-[998] bg-black top-0 right-0 w-full h-screen opacity-[0.4]"></div>
-  <div class="fixed z-[999] flex justify-center items-center w-screen h-screen top-0 right-0" @click="closeModal">
-    <div ref="modalContent" @click.stop>
-      <div class="w-[560px] max-w-[95vw] overflow-hidden bg-white border rounded-md shadow-md">
-        <form @submit.prevent="handleSubmit" novalidate>
-          <div class="flex items-center justify-between px-5 py-3 text-gray-700 border-b">
-            <h3 class="text-sm font-semibold capitalize text-slate-900">{{ title }}</h3>
-            <button type="button" @click="closeModal">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+  <div class="fixed inset-0 z-[999] flex items-center justify-center p-4 backdrop-blur-sm bg-slate-900/50" @click.self="closeModal">
+    <div ref="modalContent" class="w-full max-w-[760px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl" @click.stop>
+      <form @submit.prevent="handleSubmit" novalidate>
+        <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+          <div>
+            <h3 class="text-lg font-bold capitalize text-slate-900">{{ title }}</h3>
+            <p class="mt-1 text-sm text-slate-500">Konfigurasi pesan pengingat otomatis via WhatsApp & Email.</p>
           </div>
+          <button type="button" class="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" @click="closeModal">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-          <div class="px-5 py-5 text-gray-700 bg-gray-50 border-b max-h-[75vh] overflow-y-auto space-y-4">
+        <div class="max-h-[75vh] overflow-y-auto bg-white">
+          <div class="divide-y divide-slate-100">
             <!-- Name -->
-            <div>
-              <label class="block mb-1.5 text-sm font-semibold text-slate-900">Nama Setting <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-1 gap-3 px-5 py-4 md:grid-cols-[200px_1fr] md:items-start">
+              <div>
+                <label class="text-sm font-semibold text-slate-900">Nama Pengaturan <span class="text-red-500">*</span></label>
+                <p class="mt-0.5 text-xs text-slate-400">Judul internal untuk membedakan broadcast.</p>
+              </div>
               <input
                 v-model="form.name"
                 type="text"
-                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                placeholder="cth: Pengingat Iuran Wajib Bulanan"
+                class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                placeholder="mis. Pengingat Iuran Wajib Bulanan"
               />
             </div>
 
             <!-- Jenis Iuran -->
-            <div>
-              <label class="block mb-1.5 text-sm font-semibold text-slate-900">Jenis Iuran <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-1 gap-3 px-5 py-4 md:grid-cols-[200px_1fr] md:items-start">
+              <div>
+                <label class="text-sm font-semibold text-slate-900">Jenis Iuran <span class="text-red-500">*</span></label>
+                <p class="mt-0.5 text-xs text-slate-400">Variabel {{jenisIuran}} pada pesan.</p>
+              </div>
               <input
                 v-model="form.jenisIuran"
                 type="text"
-                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                placeholder="cth: Iuran Wajib Bulanan"
+                class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                placeholder="mis. Iuran Wajib Bulanan"
               />
             </div>
 
-            <!-- Interval + Day -->
-            <div class="flex gap-3">
-              <div class="flex-1">
-                <label class="block mb-1.5 text-sm font-semibold text-slate-900">Interval <span class="text-red-500">*</span></label>
-                <select
-                  v-model="form.scheduleInterval"
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                >
-                  <option value="" disabled>-- Pilih --</option>
-                  <option value="weekly">Mingguan</option>
-                  <option value="monthly">Bulanan</option>
-                  <option value="3months">3 Bulanan</option>
-                </select>
+            <!-- Interval & Schedule -->
+            <div class="grid grid-cols-1 gap-3 px-5 py-4 md:grid-cols-[200px_1fr] md:items-start">
+              <div>
+                <label class="text-sm font-semibold text-slate-900">Jadwal Pengiriman <span class="text-red-500">*</span></label>
+                <p class="mt-0.5 text-xs text-slate-400">Interval dan waktu eksekusi otomatis.</p>
               </div>
-              <div class="flex-1">
-                <label class="block mb-1.5 text-sm font-semibold text-slate-900">
-                  {{ form.scheduleInterval === 'weekly' ? 'Hari (1=Sen, 7=Min)' : 'Tanggal (1-31)' }}
-                  <span class="text-red-500">*</span>
-                </label>
+              <div class="grid grid-cols-2 gap-3">
+                <AppSelect
+                  v-model="form.scheduleInterval"
+                  :options="[
+                    { value: 'weekly', label: 'Mingguan' },
+                    { value: 'monthly', label: 'Bulanan' },
+                    { value: '3months', label: '3 Bulanan' }
+                  ]"
+                  button-class="bg-slate-50 text-slate-800 focus:ring-blue-500/20"
+                />
                 <input
                   v-model.number="form.scheduleDay"
                   type="number"
                   :min="1"
                   :max="form.scheduleInterval === 'weekly' ? 7 : 31"
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  placeholder="cth: 1"
+                  class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  :placeholder="form.scheduleInterval === 'weekly' ? 'Hari ke- (1-7)' : 'Tanggal (1-31)'"
                 />
               </div>
             </div>
 
             <!-- Template -->
-            <div>
-              <label class="block mb-1.5 text-sm font-semibold text-slate-900">
-                Template Pesan <span class="text-red-500">*</span>
-                <span class="text-xs text-gray-400 ml-1">(gunakan &#123;&#123;name&#125;&#125; dan &#123;&#123;jenisIuran&#125;&#125;)</span>
-              </label>
+            <div class="grid grid-cols-1 gap-3 px-5 py-4 md:grid-cols-[200px_1fr] md:items-start">
+              <div>
+                <label class="text-sm font-semibold text-slate-900">Template Pesan <span class="text-red-500">*</span></label>
+                <p class="mt-0.5 text-xs text-slate-400">Gunakan {{name}} dan {{jenisIuran}} sebagai variabel dinamis.</p>
+              </div>
               <textarea
                 v-model="form.template"
                 rows="5"
-                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 placeholder="Halo {{name}}, ini adalah pengingat pembayaran {{jenisIuran}} IOM ITB. Mohon segera melunasi iuran Anda. Terima kasih."
               ></textarea>
             </div>
 
             <!-- Status -->
-            <div class="flex items-center gap-3">
-              <input type="checkbox" id="isActive" v-model="form.isActive" class="w-4 h-4 accent-indigo-600" />
-              <label for="isActive" class="text-sm font-medium text-slate-900">Aktifkan jadwal otomatis</label>
+            <div class="grid grid-cols-1 gap-3 px-5 py-4 md:grid-cols-[200px_1fr] md:items-start">
+              <div>
+                <label class="text-sm font-semibold text-slate-900">Status Aktif</label>
+                <p class="mt-0.5 text-xs text-slate-400">Pesan akan dikirim otomatis jika aktif.</p>
+              </div>
+              <label class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer w-fit">
+                <input type="checkbox" v-model="form.isActive" class="h-4 w-4 rounded border-slate-300 text-blue-700 focus:ring-blue-500" />
+                Jadwal Aktif
+              </label>
             </div>
           </div>
+        </div>
 
-          <div class="flex items-center justify-between px-5 py-3">
-            <button type="button" @click="closeModal" class="px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
-              Batal
-            </button>
-            <button type="submit" :disabled="isLoading" class="px-4 py-1.5 text-sm text-white bg-indigo-600 rounded-md hover:bg-indigo-500 disabled:opacity-60">
-              {{ isLoading ? 'Menyimpan...' : 'Simpan' }}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div class="flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4">
+          <button type="button" @click="closeModal" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+            Batal
+          </button>
+          <button type="submit" :disabled="isLoading" class="rounded-lg bg-[#003793] px-6 py-2 text-sm font-bold text-white shadow-sm hover:bg-blue-800 transition-all disabled:cursor-not-allowed disabled:opacity-60">
+            {{ isLoading ? 'Menyimpan...' : 'Simpan Pengaturan' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -106,8 +117,12 @@ import { defineComponent, ref, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { POST_BROADCAST_SETTING, PUT_BROADCAST_SETTING } from '@/store/broadcast.module';
 import Swal from 'sweetalert2';
+import AppSelect from '@/components/input/AppSelect.vue';
 
 export default defineComponent({
+  components: {
+    AppSelect,
+  },
   props: {
     title: { type: String, required: true },
     id: { type: Number, required: false },
@@ -142,7 +157,12 @@ export default defineComponent({
       if (!form.template.trim()) errors.push('Template pesan wajib diisi.');
 
       if (errors.length) {
-        Swal.fire('Validasi', errors.join('<br>'), 'warning');
+        Swal.fire({
+          title: 'Validasi',
+          html: errors.join('<br>'),
+          icon: 'warning',
+          confirmButtonColor: '#003793',
+        });
         return;
       }
 
@@ -155,7 +175,12 @@ export default defineComponent({
         }
         closeModal();
       } catch (err: any) {
-        Swal.fire('Error', err?.response?.data?.message || 'Terjadi kesalahan.', 'error');
+        Swal.fire({
+          title: 'Error',
+          text: err?.response?.data?.message || 'Terjadi kesalahan.',
+          icon: 'error',
+          confirmButtonColor: '#003793',
+        });
         isLoading.value = false;
       }
     };

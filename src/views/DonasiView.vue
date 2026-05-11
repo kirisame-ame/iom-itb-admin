@@ -132,16 +132,17 @@
                 <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Metode</th>
                 <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Status</th>
                 <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Bukti Manual</th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
               <tr v-if="isLoading">
-                <td v-for="c in 10" :key="c" class="px-4 py-4">
+                <td v-for="c in 11" :key="c" class="px-4 py-4">
                   <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
                 </td>
               </tr>
               <tr v-else-if="computedData.length === 0">
-                <td colspan="10" class="px-4 py-12 text-sm text-center text-slate-400 italic">Belum ada donasi.</td>
+                <td colspan="11" class="px-4 py-12 text-sm text-center text-slate-400 italic">Belum ada donasi.</td>
               </tr>
               <tr
                 v-else
@@ -184,6 +185,15 @@
                   >Lihat</button>
                   <span v-else class="text-gray-400">—</span>
                 </td>
+                <td class="px-4 py-3 text-right align-middle">
+                  <button
+                    type="button"
+                    class="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+                    @click.prevent="editItem(u)"
+                  >
+                    Edit
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -216,6 +226,8 @@ import { ref, computed, onMounted } from 'vue';
 import { GET_DONASI } from '@/store/donasi.module';
 import ModalForm from '@/components/modal/FormDonation.vue';
 import IcLink from '@/assets/svg/ic-link.vue';
+import IcEdit from '@/assets/svg/ic-edit.vue';
+import Swal from 'sweetalert2';
 import { useStore } from 'vuex';
 import { formatDate } from '@/utils';
 import Breadcrumb from '@/components/AppBreadcrumb.vue';
@@ -293,6 +305,12 @@ const donationTypeFilterOptions = [
 const openAddModal = () => {
   currentId.value = undefined;
   dataUpdate.value = {};
+  isOpened.value = true;
+};
+
+const editItem = (item: DonationRow) => {
+  dataUpdate.value = { ...item };
+  currentId.value = String(item.id);
   isOpened.value = true;
 };
 

@@ -71,7 +71,7 @@
 
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
-                <label class="text-sm font-semibold text-slate-900">Fakultas</label>
+                <label class="text-sm font-semibold text-slate-900">Fakultas <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Opsional, untuk kode unik fakultas.</p>
               </div>
               <div>
@@ -128,8 +128,45 @@
               />
             </div>
 
+<div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
+              <div>
+                <label class="text-sm font-semibold text-slate-900">Bank</label>
+                <p class="mt-0.5 text-xs text-slate-400">Bank atau sumber transfer.</p>
+              </div>
+              <input
+                v-model="formData.data.bank"
+                type="text"
+                class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                placeholder="mis. BCA"
+              />
+            </div>
+
             <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
               <div>
+                <label class="text-sm font-semibold text-slate-900">Metode Pembayaran</label>
+                <p class="mt-0.5 text-xs text-slate-400">Kanal atau sumber bayar.</p>
+              </div>
+              <AppSelect
+                v-model="formData.data.paymentMethod"
+                :options="paymentMethodOptions"
+                button-class="bg-slate-50 text-slate-800 focus:ring-blue-500/20"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-center">
+              <div>
+                <label class="text-sm font-semibold text-slate-900">Status Pembayaran</label>
+                <p class="mt-0.5 text-xs text-slate-400">Status transaksi.</p>
+              </div>
+              <AppSelect
+                v-model="formData.data.paymentStatus"
+                :options="paymentStatusOptions"
+                button-class="bg-slate-50 text-slate-800 focus:ring-blue-500/20"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 px-5 py-3 md:grid-cols-[170px_1fr] md:items-start">
+              <div class="md:pt-2">
                 <label class="text-sm font-semibold text-slate-900">Notifikasi <span class="text-red-500">*</span></label>
                 <p class="mt-0.5 text-xs text-slate-400">Pilih kanal pengiriman notifikasi.</p>
               </div>
@@ -310,6 +347,19 @@ export default defineComponent({
       { value: 'email', label: 'Email' },
     ];
 
+    const isEditMode = Boolean(props.id);
+    const paymentMethodOptions = [
+      { value: 'manual', label: 'Manual' },
+      { value: 'midtrans', label: 'Midtrans' },
+    ];
+    const paymentStatusOptions = [
+      { value: 'pending', label: 'Menunggu' },
+      { value: 'settlement', label: 'Lunas' },
+      { value: 'expired', label: 'Kedaluwarsa' },
+      { value: 'failed', label: 'Gagal' },
+      { value: 'refunded', label: 'Dikembalikan' },
+    ];
+
     const formData = reactive({
       id: '',
       data: {
@@ -325,6 +375,8 @@ export default defineComponent({
         nameIsHidden: initialData.options?.nameIsHidden || initialData.nameIsHidden || false,
         isHambaAllah: initialData.options?.isHambaAllah || initialData.isHambaAllah || false,
         image: initialData.proof || '',
+        paymentMethod: initialData.paymentMethod || 'manual',
+        paymentStatus: initialData.paymentStatus || (isEditMode ? initialData.paymentStatus : 'settlement'),
       } as DonationPayload,
     });
 
@@ -458,7 +510,7 @@ export default defineComponent({
       }
     });
 
-    return {
+return {
       modalContent,
       closeModal,
       handleSubmit,
@@ -481,6 +533,8 @@ export default defineComponent({
       onImageUrlInput,
       onImageChange,
       removeImage,
+      paymentMethodOptions,
+      paymentStatusOptions,
     };
   },
 });

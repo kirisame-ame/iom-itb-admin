@@ -205,8 +205,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import axios from 'axios'
 import Swal from 'sweetalert2'
 import { UPDATE_STATUS_PENGAJUAN } from '@/store/pengajuanBantuan.module'
 import type { PengajuanBantuan, StatusPengajuan } from '@/store/pengajuanBantuan.module'
@@ -215,6 +216,8 @@ import AppSelect from '@/components/input/AppSelect.vue'
 import ConfirmDialog from '@/components/modal/ConfirmDialog.vue'
 import logoUrl from '@/assets/image/IOM-ITB-PrimaryLogo-white.png'
 
+const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:3000'
+
 const EMAIL_STATUS_LABELS: Record<string, string> = {
   VERIFIKASI_BERKAS: 'Sedang Dalam Proses Verifikasi Berkas',
   DIPANGGIL_WAWANCARA: 'Dipanggil Wawancara',
@@ -222,6 +225,24 @@ const EMAIL_STATUS_LABELS: Record<string, string> = {
   KEPUTUSAN_DITOLAK: 'Keputusan Akhir Ditolak',
   TIDAK_DIKETAHUI: 'Tidak Diketahui',
 }
+
+// Fetched from the DB template so preview stays in sync with what is actually sent
+const emailTemplateBody    = ref('')
+const emailTemplateSubject = ref('')
+
+onMounted(async () => {
+  try {
+    const res       = await axios.get(`${API_URL}/email-templates`)
+    const templates = Array.isArray(res.data) ? res.data : []
+    const t         = templates.find((x: any) => x.key === 'pengajuan_bantuan_status_update')
+    if (t) {
+      emailTemplateBody.value    = t.body    || ''
+      emailTemplateSubject.value = t.subject || ''
+    }
+  } catch {
+    // fail silently, preview falls back to inline default
+  }
+})
 
 const statusOptions = [
   { value: 'TIDAK_DIKETAHUI',    label: 'Status Tidak Diketahui' },
@@ -287,16 +308,48 @@ function escapeHtml(v: string | undefined | null): string {
     .replace(/'/g, '&#39;')
 }
 
+const FALLBACK_EMAIL_BODY = `Halo {{name}},
+
+Status pengajuan bantuan Anda telah diperbarui. Berikut detail terbaru:
+
+ID Pengajuan: {{submission_id}}
+Status: {{status}}
+{{catatan_line}}
+Waktu Update: {{updated_at}}
+
+Silakan login ke sistem untuk melihat detail pengajuan Anda.
+
+Terima kasih,
+Tim Pengajuan Bantuan IOM ITB`
+
 const emailPreviewHtml = computed(() => {
   const statusLabel  = EMAIL_STATUS_LABELS[formStatus.value] ?? formStatus.value ?? 'Tidak Diketahui'
-  const safeName     = escapeHtml(recipientName.value)
-  const safeId       = escapeHtml(props.item?.tallySubmissionId)
-  const safeStatus   = escapeHtml(statusLabel)
-  const safeCatatan  = escapeHtml(formKeterangan.value)
   const nowStr       = new Date().toLocaleString('id-ID', {
     day: '2-digit', month: 'long', year: 'numeric',
     hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta',
   })
+  const catatanLine  = formKeterangan.value ? `Catatan: ${formKeterangan.value}` : ''
+
+  const vars: Record<string, string> = {
+    name:         recipientName.value || '-',
+    submission_id: props.item?.tallySubmissionId || '-',
+    status:       statusLabel,
+    catatan_line: catatanLine,
+    updated_at:   nowStr,
+  }
+
+  let body = emailTemplateBody.value || FALLBACK_EMAIL_BODY
+  for (const [k, v] of Object.entries(vars)) {
+    body = body.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), escapeHtml(v))
+  }
+
+  const bodyHtml = body
+    .split('\n')
+    .map(line => line.trim()
+      ? `<p style="margin:0 0 12px;">${line}</p>`
+      : '<br />'
+    )
+    .join('')
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #222;">
@@ -306,32 +359,10 @@ const emailPreviewHtml = computed(() => {
         <p style="margin: 4px 0 0; font-size: 13px; opacity: 0.9;">IOM ITB</p>
       </div>
       <div style="border: 1px solid #e5e7eb; border-top: none; padding: 24px; border-radius: 0 0 8px 8px;">
-        <p style="margin: 0 0 12px;">Halo <strong>${safeName || '-'}</strong>,</p>
-        <p style="margin: 0 0 20px;">Status pengajuan bantuan Anda telah diperbarui. Berikut detail terbaru pengajuan Anda:</p>
-        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-          <tbody>
-            <tr>
-              <td style="padding: 8px 0; color: #6b7280; width: 40%;">ID Pengajuan</td>
-              <td style="padding: 8px 0; text-align: right; font-weight: 500;">${safeId}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0; color: #6b7280;">Status</td>
-              <td style="padding: 8px 0; text-align: right; font-weight: 700; color: #2563eb;">${safeStatus}</td>
-            </tr>
-            ${formKeterangan.value ? `
-            <tr>
-              <td style="padding: 8px 0; color: #6b7280;">Catatan</td>
-              <td style="padding: 8px 0; text-align: right;">${safeCatatan}</td>
-            </tr>` : ''}
-            <tr>
-              <td style="padding: 8px 0; color: #6b7280;">Waktu Update</td>
-              <td style="padding: 8px 0; text-align: right;">${nowStr}</td>
-            </tr>
-          </tbody>
-        </table>
-        <p style="margin: 24px 0 0;">Silakan login ke sistem untuk melihat detail pengajuan Anda.</p>
-        <p style="margin: 24px 0 0;">Terima kasih,<br/><strong>Tim Pengajuan Bantuan IOM ITB</strong></p>
-        <p style="margin: 24px 0 0; font-size: 12px; color: #9ca3af; text-align: center;">Email ini dikirim otomatis, mohon tidak membalas email ini.</p>
+        ${bodyHtml}
+        <p style="margin: 24px 0 0; font-size: 12px; color: #9ca3af; text-align: center;">
+          Email ini dikirim otomatis, mohon tidak membalas email ini.
+        </p>
       </div>
     </div>
   `

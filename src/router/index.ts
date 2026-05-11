@@ -31,7 +31,7 @@ import ActivityEditorView from "@/views/ActivityEditorView.vue";
 import ActivityPreviewView from "@/views/ActivityPreviewView.vue";
 import AdminGuideView from "@/views/AdminGuideView.vue";
 import MerchandiseDashboard from "@/views/MerchandiseDashboardView.vue";
-import EmailTemplate from "@/views/EmailTemplateView.vue";
+import TemplatePesan from "@/views/TemplatePesanView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -174,9 +174,14 @@ const routes: Array<RouteRecordRaw> = [
     component: AdminGuideView,
   },
   {
+    path: "/template-pesan",
+    name: "Template Pesan",
+    component: TemplatePesan,
+  },
+  // Backward-compat redirect for old bookmarks/links
+  {
     path: "/email-templates",
-    name: "Template Email",
-    component: EmailTemplate,
+    redirect: "/template-pesan",
   },
 
   { path: "/:pathMatch(.*)*", component: NotFound },

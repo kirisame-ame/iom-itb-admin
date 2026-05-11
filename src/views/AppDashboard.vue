@@ -652,6 +652,11 @@ const normalizeDateKey = (value: string) => {
   return formatDateKey(new Date(value))
 }
 
+const formatMonthLabel = (dateValue: string) => {
+  const date = new Date(dateValue)
+  return date.toLocaleDateString('id-ID', { month: 'short' })
+}
+
 const formatTrendLabel = (dateValue: string, range: string) => {
   const date = new Date(dateValue)
 
@@ -663,6 +668,24 @@ const formatTrendLabel = (dateValue: string, range: string) => {
     day: '2-digit',
     month: 'short'
   })
+}
+
+const buildTrendCategories = (items: Array<{ date: string }>, range: string) => {
+  const normalizedRange = String(range).toLowerCase()
+
+  if (normalizedRange === 'week') {
+    return items.map((x) => formatTrendLabel(x.date, range))
+  }
+
+  if (normalizedRange === 'year') {
+    return items.map((x) => {
+      const date = new Date(x.date)
+      return date.getDate() === 1 ? formatMonthLabel(x.date) : ''
+    })
+  }
+
+  const step = normalizedRange === '3months' ? 14 : 7
+  return items.map((x, index) => (index % step === 0 ? formatTrendLabel(x.date, range) : ''))
 }
 
 const loadCharts = async (range = selectedTrendRange.value) => {
@@ -712,7 +735,7 @@ const loadCharts = async (range = selectedTrendRange.value) => {
     trenChartOptions.value = {
       ...trenChartOptions.value,
       xaxis: {
-        categories: filledTrendItems.map((x: any) => formatTrendLabel(x.date, range))
+        categories: buildTrendCategories(filledTrendItems, range)
       }
     }
 

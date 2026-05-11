@@ -246,7 +246,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
-import axios from 'axios'
+import ApiService from '@/store/api.service'
 import Swal from 'sweetalert2'
 import Breadcrumb from '@/components/AppBreadcrumb.vue'
 import PreviewPesanModal from '@/components/modal/PreviewPesanModal.vue'
@@ -278,8 +278,6 @@ const channelTabs = [
   { value: 'email',     label: 'Email' },
   { value: 'whatsapp',  label: 'WhatsApp' },
 ]
-
-const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:3000'
 
 // ── Filtering ──────────────────────────────────────────────────────────────
 const filteredTemplates = computed(() =>
@@ -369,8 +367,8 @@ const SAMPLE_VALUES: Record<string, string> = {
 const fetchTemplates = async () => {
   isLoading.value = true
   try {
-    const res  = await axios.get(`${API_URL}/email-templates`)
-    const data = Array.isArray(res.data) ? res.data : res.data?.data || []
+    const res  = await ApiService.get<any>('email-templates')
+    const data = Array.isArray(res) ? res : (res as any)?.data || []
     templates.value = data
     if (data.length > 0) selectTemplate(data[0])
   } catch (err) {
@@ -414,7 +412,7 @@ const saveTemplate = async () => {
     const payload: Record<string, string> = { body: form.value.body }
     if (isEmail) payload.subject = form.value.subject
 
-    await axios.put(`${API_URL}/email-templates/${selectedTemplate.value.key}`, payload)
+    await ApiService.put<any>(`email-templates/${selectedTemplate.value.key}`, payload)
 
     await Swal.fire({ title: 'Berhasil', text: 'Template berhasil disimpan.', icon: 'success', confirmButtonColor: '#1e40af', confirmButtonText: 'OK' })
 

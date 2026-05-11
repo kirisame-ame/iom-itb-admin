@@ -157,7 +157,7 @@
 
 <script setup lang="ts">
 import { ref, computed, reactive, watch } from 'vue'
-import axios from 'axios'
+import ApiService from '@/store/api.service'
 import logoUrl from '@/assets/image/IOM-ITB-PrimaryLogo-blue.png'
 import logoWhiteUrl from '@/assets/image/IOM-ITB-PrimaryLogo-white.png'
 
@@ -178,8 +178,6 @@ const props = defineProps<{
 }>()
 
 defineEmits<{ (e: 'close'): void }>()
-
-const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:3000'
 
 const testRecipient = ref('')
 const isSending     = ref(false)
@@ -325,7 +323,7 @@ const sendTest = async () => {
   isSending.value = true
   testResult.value = null
   try {
-    await axios.post(`${API_URL}/email-templates/${props.template.key}/test-send`, {
+    await ApiService.post<any>(`email-templates/${props.template.key}/test-send`, {
       recipient: testRecipient.value.trim(),
       variables: { ...localVars },
     })

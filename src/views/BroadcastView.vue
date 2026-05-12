@@ -11,6 +11,12 @@
       @close="handleModalClose"
     />
 
+    <!-- Modal Form Recipient -->
+    <FormBroadcastRecipient
+      v-if="recipientModalOpen"
+      @close="handleRecipientModalClose"
+    />
+
     <div class="mt-8 space-y-5">
       <!-- ── Page Header ─────────────────────────────────────────── -->
       <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
@@ -160,11 +166,18 @@
 
       <!-- Tab: Penerima -->
       <div v-if="activeTab === 'recipients'" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+        <div class="flex items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
           <div>
             <h2 class="text-base font-bold text-slate-900">Daftar Penerima Default</h2>
-            <p class="mt-1 text-xs text-slate-500">Anggota aktif yang memiliki kontak (WhatsApp/Email).</p>
+            <p class="mt-1 text-xs text-slate-500">Anggota yang akan menerima broadcast jika setting tidak menentukan penerima sendiri.</p>
           </div>
+          <button
+            class="inline-flex items-center gap-2 rounded-full bg-[#003793] px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-blue-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            @click="openAddRecipient"
+          >
+            <IcPlus class="w-4 h-4"/>
+            Tambah Penerima
+          </button>
         </div>
 
         <div class="overflow-x-auto">
@@ -175,17 +188,18 @@
                 <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">NIM / Relasi</th>
                 <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">No. WhatsApp</th>
                 <th class="px-6 py-3.5 text-left text-[11px] font-bold text-blue-100">Email</th>
+                <th class="px-6 py-3.5 text-center text-[11px] font-bold text-blue-100">Aksi</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 bg-white">
               <tr v-if="loadingMembers">
-                <td colspan="4" class="px-6 py-10 text-center">
+                <td colspan="5" class="px-6 py-10 text-center">
                   <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-[#003793] border-t-transparent"></div>
                   <p class="mt-2 text-sm font-medium text-slate-500">Memuat kontak...</p>
                 </td>
               </tr>
               <tr v-else-if="!members.length">
-                <td colspan="4" class="px-6 py-10 text-center text-sm text-slate-400 italic">Tidak ada data anggota dengan kontak valid.</td>
+                <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-400 italic">Belum ada penerima. Klik "Tambah Penerima" untuk menambah.</td>
               </tr>
               <tr v-else v-for="m in members" :key="m.id" class="transition-colors hover:bg-blue-50/40">
                 <td class="px-6 py-4 font-bold text-slate-900">{{ m.name }}</td>
@@ -193,10 +207,15 @@
                 <td class="px-6 py-4">
                   <span class="inline-flex items-center gap-1 font-mono text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">
                     <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                    {{ m.noWhatsapp || 'Tidak Ada' }}
+                    {{ m.noWhatsapp || '-' }}
                   </span>
                 </td>
                 <td class="px-6 py-4 text-slate-600">{{ m.email || '-' }}</td>
+                <td class="px-6 py-4 text-center">
+                  <button class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus" @click="deleteRecipient(m.id)">
+                    <IcTrash class="w-4 h-4"/>
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -296,8 +315,10 @@ import {
   RUN_BROADCAST,
   GET_BROADCAST_LOGS,
   GET_BROADCAST_MEMBERS,
+  DELETE_BROADCAST_MEMBER,
 } from '@/store/broadcast.module';
 import FormBroadcastSetting from '@/components/modal/FormBroadcastSetting.vue';
+import FormBroadcastRecipient from '@/components/modal/FormBroadcastRecipient.vue';
 
 const store = useStore();
 
@@ -306,6 +327,7 @@ const activeTab = ref('settings');
 const modalOpen = ref(false);
 const editingId = ref<number | undefined>(undefined);
 const editingData = ref<any>({});
+const recipientModalOpen = ref(false);
 
 const loadingSettings = ref(true);
 const loadingMembers = ref(false);
@@ -334,6 +356,37 @@ watch(activeTab, async (tab) => {
     await loadLogs();
   }
 });
+
+const openAddRecipient = () => {
+  recipientModalOpen.value = true;
+};
+
+const handleRecipientModalClose = async () => {
+  recipientModalOpen.value = false;
+  loadingMembers.value = true;
+  await store.dispatch(GET_BROADCAST_MEMBERS);
+  loadingMembers.value = false;
+};
+
+const deleteRecipient = async (id: number) => {
+  const confirm = await Swal.fire({
+    title: 'Hapus penerima ini?',
+    text: 'Penerima tidak akan menerima broadcast lagi.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, hapus',
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#8c8c94',
+    cancelButtonText: 'Batal'
+  });
+  if (!confirm.isConfirmed) return;
+  try {
+    await store.dispatch(DELETE_BROADCAST_MEMBER, id);
+    await store.dispatch(GET_BROADCAST_MEMBERS);
+  } catch (err: any) {
+    Swal.fire({ title: 'Error', text: err?.response?.data?.message || 'Gagal menghapus.', icon: 'error', confirmButtonColor: '#003793' });
+  }
+};
 
 const loadLogs = async () => {
   loadingLogs.value = true;

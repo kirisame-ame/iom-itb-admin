@@ -16,6 +16,7 @@ import kegiatanKemitraan from "./kegiatanKemitraan.module";
 import kemitraan from "./kemitraan.module";
 import dashboard from './dashboard.module';
 import paymentDashboard from "./paymentDashboard.module";
+import broadcast from "./broadcast.module";
 
 export default createStore({
   modules: {
@@ -36,5 +37,6 @@ export default createStore({
     kemitraan,
     dashboard,
     paymentDashboard,
+    broadcast,
   },
 });

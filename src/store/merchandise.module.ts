@@ -17,6 +17,8 @@ export const POST_MERCHANDISE = "postMerchandise";
 export const PUT_MERCHANDISE = "putMerchandise";
 export const DELETE_MERCHANDISE = "deleteMerchandise";
 export const GET_MERCHANDISE_CATEGORIES = "getMerchandiseCategories";
+export const POST_MERCHANDISE_CATEGORY = "postMerchandiseCategory";
+export const PUT_MERCHANDISE_CATEGORY = "putMerchandiseCategory";
 export const DELETE_MERCHANDISE_CATEGORY = "deleteMerchandiseCategory";
 
 // Definisikan tipe untuk state
@@ -85,6 +87,16 @@ const actions = {
       [GET_MERCHANDISE_CATEGORIES](): Promise<string[]> {
         return ApiService.get<ApiDataResponse<string[]>>("/merchandises/categories")
           .then((response) => response.data || []);
+      },
+      [POST_MERCHANDISE_CATEGORY](context: VuexContext, category: string): Promise<void> {
+        return ApiService.post<ApiDataResponse<{ category: string }>>("/merchandises/categories", { category })
+          .then(() => undefined);
+      },
+      [PUT_MERCHANDISE_CATEGORY](context: VuexContext, payload: { oldCategory: string; category: string }): Promise<void> {
+        return ApiService.put<ApiDataResponse<{ category: string; affectedCount: number }>>(
+          `/merchandises/categories/${encodeURIComponent(payload.oldCategory)}`,
+          { category: payload.category },
+        ).then(() => undefined);
       },
       [DELETE_MERCHANDISE_CATEGORY](context: VuexContext, category: string): Promise<void> {
         return ApiService.delete(`/merchandises/categories/${encodeURIComponent(category)}`);

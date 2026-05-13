@@ -27,6 +27,44 @@
           </div>
 
           <div class="px-5 py-4">
+            <form class="mb-5 rounded-lg border border-slate-200 bg-slate-50 p-4" @submit.prevent="submitCategory">
+              <label class="block text-sm font-bold text-slate-900">
+                {{ editingCategory ? 'Edit Kategori' : 'Tambah Kategori' }}
+              </label>
+              <div class="mt-2 flex flex-col gap-2 sm:flex-row">
+                <input
+                  v-model="categoryName"
+                  type="text"
+                  class="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder-slate-400 transition focus:outline-none focus:ring-2 focus:ring-blue-900/10"
+                  placeholder="Nama kategori merchandise"
+                  :disabled="isSavingCategory"
+                />
+                <div class="flex gap-2">
+                  <button
+                    type="submit"
+                    class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    :disabled="isSavingCategory || !categoryName.trim()"
+                  >
+                    <IcPlus v-if="!editingCategory" class="h-4 w-4" />
+                    <IcEdit v-else class="h-4 w-4" />
+                    {{ isSavingCategory ? 'Menyimpan...' : editingCategory ? 'Simpan' : 'Tambah' }}
+                  </button>
+                  <button
+                    v-if="editingCategory"
+                    type="button"
+                    class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+                    :disabled="isSavingCategory"
+                    @click="cancelEditCategory"
+                  >
+                    Batal
+                  </button>
+                </div>
+              </div>
+              <p class="mt-2 text-xs text-slate-500">
+                Edit kategori akan memperbarui semua produk yang memakai kategori lama.
+              </p>
+            </form>
+
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h4 class="text-sm font-bold text-slate-900">Kategori Merchandise</h4>
@@ -56,15 +94,26 @@
                   class="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3 last:border-b-0"
                 >
                   <span class="text-sm font-semibold text-slate-700">{{ category }}</span>
-                  <button
-                    type="button"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
-                    :disabled="deletingCategory === category"
-                    @click="deleteCategory(category)"
-                  >
-                    <IcTrash class="h-3.5 w-3.5" />
-                    {{ deletingCategory === category ? 'Menghapus...' : 'Hapus' }}
-                  </button>
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      :disabled="isSavingCategory || deletingCategory === category"
+                      @click="startEditCategory(category)"
+                    >
+                      <IcEdit class="h-3.5 w-3.5" />
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      :disabled="deletingCategory === category"
+                      @click="deleteCategory(category)"
+                    >
+                      <IcTrash class="h-3.5 w-3.5" />
+                      {{ deletingCategory === category ? 'Menghapus...' : 'Hapus' }}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -308,6 +357,8 @@ import {
   GET_MERCHANDISES,
   DELETE_MERCHANDISE,
   GET_MERCHANDISE_CATEGORIES,
+  POST_MERCHANDISE_CATEGORY,
+  PUT_MERCHANDISE_CATEGORY,
   DELETE_MERCHANDISE_CATEGORY,
 } from "@/store/merchandise.module";
 import ModalForm from "../components/modal/FormMerchandise.vue";
@@ -356,6 +407,9 @@ const title = ref("Merchandise");
 const sortRules = ref<SortRule[]>([{ key: 'updatedAt', direction: 'desc' }]);
 const categoryOptions = ref<string[]>([]);
 const deletingCategory = ref<string | null>(null);
+const editingCategory = ref<string | null>(null);
+const categoryName = ref("");
+const isSavingCategory = ref(false);
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 const pageLimitOptions = [
   { value: 5, label: '5' },
@@ -375,6 +429,7 @@ const openManageModal = async () => {
 
 const closeManageModal = () => {
   isManageOpened.value = false;
+  cancelEditCategory();
 };
 
 const handleModalClose = async () => {
@@ -489,6 +544,52 @@ const loadCategories = async () => {
     categoryOptions.value = await store.dispatch(GET_MERCHANDISE_CATEGORIES);
   } finally {
     isLoadingCategories.value = false;
+  }
+};
+
+const startEditCategory = (category: string) => {
+  editingCategory.value = category;
+  categoryName.value = category;
+};
+
+const cancelEditCategory = () => {
+  editingCategory.value = null;
+  categoryName.value = "";
+};
+
+const submitCategory = async () => {
+  const nextCategory = categoryName.value.trim();
+  if (!nextCategory) return;
+
+  isSavingCategory.value = true;
+  try {
+    if (editingCategory.value) {
+      await store.dispatch(PUT_MERCHANDISE_CATEGORY, {
+        oldCategory: editingCategory.value,
+        category: nextCategory,
+      });
+    } else {
+      await store.dispatch(POST_MERCHANDISE_CATEGORY, nextCategory);
+    }
+
+    cancelEditCategory();
+    await Promise.all([getData(), loadCategories()]);
+    Swal.fire({
+      title: "Tersimpan",
+      text: "Kategori merchandise telah disimpan.",
+      icon: "success",
+      confirmButtonColor: '#1e40af',
+      confirmButtonText: "OK"
+    });
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Gagal",
+      text: err instanceof Error ? err.message : "Gagal menyimpan kategori merchandise.",
+      confirmButtonColor: '#1e40af',
+    });
+  } finally {
+    isSavingCategory.value = false;
   }
 };
 

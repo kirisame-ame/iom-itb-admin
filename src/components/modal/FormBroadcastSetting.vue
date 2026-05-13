@@ -118,6 +118,7 @@ import { useStore } from 'vuex';
 import { POST_BROADCAST_SETTING, PUT_BROADCAST_SETTING } from '@/store/broadcast.module';
 import Swal from 'sweetalert2';
 import AppSelect from '@/components/input/AppSelect.vue';
+import type { ApiErrorResponse, BroadcastScheduleInterval, BroadcastSetting, BroadcastSettingPayload } from '@/types/domain';
 
 export default defineComponent({
   components: {
@@ -132,14 +133,16 @@ export default defineComponent({
     const store = useStore();
     const isLoading = ref(false);
     const modalContent = ref(null);
+    const initialData = props.data as Partial<BroadcastSetting>;
 
-    const form = reactive({
-      name: props.data?.name || '',
-      jenisIuran: props.data?.jenisIuran || '',
-      scheduleInterval: props.data?.scheduleInterval || '',
-      scheduleDay: props.data?.scheduleDay || 1,
-      template: props.data?.template || 'Halo {{name}}, ini adalah pengingat pembayaran {{jenisIuran}} IOM ITB. Mohon segera melunasi iuran Anda. Terima kasih.',
-      isActive: props.data?.isActive !== undefined ? props.data.isActive : true,
+    const form = reactive<BroadcastSettingPayload>({
+      name: initialData.name || '',
+      jenisIuran: initialData.jenisIuran || '',
+      scheduleInterval: initialData.scheduleInterval || '' as BroadcastScheduleInterval,
+      scheduleDay: initialData.scheduleDay || 1,
+      template: initialData.template || 'Halo {{name}}, ini adalah pengingat pembayaran {{jenisIuran}} IOM ITB. Mohon segera melunasi iuran Anda. Terima kasih.',
+      isActive: initialData.isActive !== undefined ? initialData.isActive : true,
+      recipients: initialData.recipients || [],
     });
 
     const closeModal = () => {
@@ -174,10 +177,11 @@ export default defineComponent({
           await store.dispatch(POST_BROADCAST_SETTING, { ...form });
         }
         closeModal();
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const apiError = err as ApiErrorResponse;
         Swal.fire({
           title: 'Error',
-          text: err?.response?.data?.message || 'Terjadi kesalahan.',
+          text: apiError?.response?.data?.message || apiError?.message || 'Terjadi kesalahan.',
           icon: 'error',
           confirmButtonColor: '#003793',
         });

@@ -218,3 +218,67 @@ export interface PaymentDashboardData {
   dailyTrend?: PaymentSummaryItem[];
   recentPayments?: PaymentSummaryItem[];
 }
+
+export type BroadcastScheduleInterval = "weekly" | "monthly" | "3months";
+export type BroadcastDeliveryStatus = "sent" | "failed" | "skipped";
+
+export interface BroadcastRecipient {
+  id: string;
+  name: string;
+  noWhatsapp: string | null;
+  email: string | null;
+  nim?: string | null;
+}
+
+export interface BroadcastSetting {
+  id: number;
+  name: string;
+  scheduleDay: number;
+  scheduleInterval: BroadcastScheduleInterval;
+  jenisIuran: string;
+  template: string;
+  recipients: BroadcastRecipient[];
+  isActive: boolean;
+  lastRunAt: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export type BroadcastSettingPayload = Pick<
+  BroadcastSetting,
+  "name" | "scheduleDay" | "scheduleInterval" | "jenisIuran" | "template" | "isActive"
+> & {
+  recipients?: BroadcastRecipient[];
+};
+
+export type BroadcastRecipientPayload = Pick<BroadcastRecipient, "name" | "nim" | "noWhatsapp" | "email">;
+
+export interface BroadcastLog {
+  id: number;
+  broadcastSettingId: number;
+  broadcastName: string;
+  recipientName: string | null;
+  waNumber: string | null;
+  email: string | null;
+  waStatus: BroadcastDeliveryStatus;
+  emailStatus: BroadcastDeliveryStatus;
+  waError: string | null;
+  emailError: string | null;
+  sentAt: string | null;
+}
+
+export interface BroadcastLogsResponse {
+  data: BroadcastLog[];
+  pagination: {
+    total?: number;
+    page?: number;
+    totalPages?: number;
+    limit?: number;
+  };
+}
+
+export interface BroadcastRunResponse {
+  sent: number;
+  attempted: number;
+  logs: BroadcastLog[];
+}

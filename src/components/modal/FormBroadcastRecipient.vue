@@ -124,6 +124,13 @@ import { defineComponent, ref, reactive } from 'vue';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
 import { POST_BROADCAST_MEMBER, IMPORT_BROADCAST_MEMBERS } from '@/store/broadcast.module';
+import type { ApiErrorResponse, BroadcastRecipientPayload } from '@/types/domain';
+
+interface BroadcastImportResult {
+  inserted: number;
+  skipped: number;
+  total: number;
+}
 
 export default defineComponent({
   setup(_props, { emit }) {
@@ -133,7 +140,7 @@ export default defineComponent({
     const fileInput = ref<HTMLInputElement | null>(null);
     const selectedFile = ref<File | null>(null);
 
-    const form = reactive({
+    const form = reactive<BroadcastRecipientPayload>({
       name: '',
       nim: '',
       noWhatsapp: '',
@@ -145,7 +152,7 @@ export default defineComponent({
     const submitManual = async () => {
       const errors: string[] = [];
       if (!form.name.trim()) errors.push('Nama wajib diisi.');
-      if (!form.noWhatsapp.trim() && !form.email.trim()) errors.push('Minimal salah satu dari No. WhatsApp atau Email wajib diisi.');
+      if (!String(form.noWhatsapp || '').trim() && !String(form.email || '').trim()) errors.push('Minimal salah satu dari No. WhatsApp atau Email wajib diisi.');
       if (errors.length) {
         Swal.fire({ title: 'Validasi', html: errors.join('<br>'), icon: 'warning', confirmButtonColor: '#003793' });
         return;
@@ -154,8 +161,9 @@ export default defineComponent({
       try {
         await store.dispatch(POST_BROADCAST_MEMBER, { ...form });
         emit('close', { added: 1 });
-      } catch (err: any) {
-        Swal.fire({ title: 'Error', text: err?.response?.data?.message || 'Gagal menyimpan.', icon: 'error', confirmButtonColor: '#003793' });
+      } catch (err: unknown) {
+        const apiError = err as ApiErrorResponse;
+        Swal.fire({ title: 'Error', text: apiError?.response?.data?.message || apiError?.message || 'Gagal menyimpan.', icon: 'error', confirmButtonColor: '#003793' });
         isLoading.value = false;
       }
     };
@@ -169,7 +177,7 @@ export default defineComponent({
       if (!selectedFile.value) return;
       isLoading.value = true;
       try {
-        const result: any = await store.dispatch(IMPORT_BROADCAST_MEMBERS, selectedFile.value);
+        const result = await store.dispatch(IMPORT_BROADCAST_MEMBERS, selectedFile.value) as BroadcastImportResult;
         Swal.fire({
           title: 'Berhasil',
           text: `${result?.inserted ?? 0} penerima ditambahkan${result?.skipped ? `, ${result.skipped} baris dilewati` : ''}.`,
@@ -177,8 +185,9 @@ export default defineComponent({
           confirmButtonColor: '#003793',
         });
         emit('close', { added: result?.inserted ?? 0 });
-      } catch (err: any) {
-        Swal.fire({ title: 'Error', text: err?.response?.data?.message || 'Gagal mengimpor.', icon: 'error', confirmButtonColor: '#003793' });
+      } catch (err: unknown) {
+        const apiError = err as ApiErrorResponse;
+        Swal.fire({ title: 'Error', text: apiError?.response?.data?.message || apiError?.message || 'Gagal mengimpor.', icon: 'error', confirmButtonColor: '#003793' });
         isLoading.value = false;
       }
     };

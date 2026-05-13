@@ -16,6 +16,8 @@ export const SET_MERCHANDISES = "setMerchandises";
 export const POST_MERCHANDISE = "postMerchandise";
 export const PUT_MERCHANDISE = "putMerchandise";
 export const DELETE_MERCHANDISE = "deleteMerchandise";
+export const GET_MERCHANDISE_CATEGORIES = "getMerchandiseCategories";
+export const DELETE_MERCHANDISE_CATEGORY = "deleteMerchandiseCategory";
 
 // Definisikan tipe untuk state
 interface State {
@@ -79,6 +81,13 @@ const actions = {
             .then(() => resolve())
             .catch((err) => reject(err));
         });
+      },
+      [GET_MERCHANDISE_CATEGORIES](): Promise<string[]> {
+        return ApiService.get<ApiDataResponse<string[]>>("/merchandises/categories")
+          .then((response) => response.data || []);
+      },
+      [DELETE_MERCHANDISE_CATEGORY](context: VuexContext, category: string): Promise<void> {
+        return ApiService.delete(`/merchandises/categories/${encodeURIComponent(category)}`);
       },
 };
 

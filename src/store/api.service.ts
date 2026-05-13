@@ -11,7 +11,7 @@ interface ApiServiceType {
   query<T>(resource: string, params?: object): Promise<T>;
   get<T>(resource: string, params?: object): Promise<T>;
   post<T>(resource: string, params: object): Promise<T>;
-  upload<T>(resource: string, params: File): Promise<T>;
+  upload<T>(resource: string, params: object): Promise<T>;
   update<T>(resource: string, slug: string, params: object): Promise<T>;
   put<T>(resource: string, params: object): Promise<T>;
   patch<T>(resource: string, params: object): Promise<T>;

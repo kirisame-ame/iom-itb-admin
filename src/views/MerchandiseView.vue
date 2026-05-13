@@ -47,6 +47,50 @@
       </section>
 
       <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Kategori Merchandise</h2>
+            <p class="mt-1 text-xs text-slate-500">Menghapus kategori akan mengosongkan kategori pada produk terkait.</p>
+          </div>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            :disabled="isLoadingCategories"
+            @click="loadCategories"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <div class="mt-4">
+          <div v-if="isLoadingCategories" class="flex flex-wrap gap-2">
+            <div v-for="i in 3" :key="i" class="h-9 w-28 animate-pulse rounded-full bg-slate-100"></div>
+          </div>
+          <p v-else-if="!categoryOptions.length" class="rounded-lg border border-dashed border-slate-200 px-4 py-3 text-sm text-slate-400">
+            Belum ada kategori merchandise.
+          </p>
+          <div v-else class="flex flex-wrap gap-2">
+            <span
+              v-for="category in categoryOptions"
+              :key="category"
+              class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 py-1.5 pl-3 pr-1.5 text-sm font-semibold text-slate-700"
+            >
+              {{ category }}
+              <button
+                type="button"
+                class="inline-flex h-6 w-6 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="deletingCategory === category"
+                :title="`Hapus kategori ${category}`"
+                @click="deleteCategory(category)"
+              >
+                <IcTrash class="h-3.5 w-3.5" />
+              </button>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="grid gap-3 sm:grid-cols-[160px_1fr] lg:max-w-2xl lg:grid-cols-[160px_320px]">
           <div>
             <label class="block mb-1.5 text-sm font-semibold text-slate-900">Per Halaman</label>
@@ -227,7 +271,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { GET_MERCHANDISES, DELETE_MERCHANDISE } from "@/store/merchandise.module";
+import {
+  GET_MERCHANDISES,
+  DELETE_MERCHANDISE,
+  GET_MERCHANDISE_CATEGORIES,
+  DELETE_MERCHANDISE_CATEGORY,
+} from "@/store/merchandise.module";
 import ModalForm from "../components/modal/FormMerchandise.vue";
 import { useStore } from 'vuex';
 import Breadcrumb from '../components/AppBreadcrumb.vue';
@@ -263,6 +312,7 @@ const store = useStore();
 
 const isOpened = ref(false); 
 const isLoading = ref(true); 
+const isLoadingCategories = ref(false);
 const dataUpdate = ref<Partial<MerchandiseItem>>({}); 
 const currentId = ref<string | undefined>(undefined); 
 const page = ref(1);
@@ -270,6 +320,8 @@ const limit = ref(5);
 const search = ref(""); 
 const title = ref("Merchandise"); 
 const sortRules = ref<SortRule[]>([{ key: 'updatedAt', direction: 'desc' }]);
+const categoryOptions = ref<string[]>([]);
+const deletingCategory = ref<string | null>(null);
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 const pageLimitOptions = [
   { value: 5, label: '5' },
@@ -388,6 +440,15 @@ const getData = async () => {
   return data;
 };
 
+const loadCategories = async () => {
+  isLoadingCategories.value = true;
+  try {
+    categoryOptions.value = await store.dispatch(GET_MERCHANDISE_CATEGORIES);
+  } finally {
+    isLoadingCategories.value = false;
+  }
+};
+
 const onSearchInput = () => {
   if (searchTimer) clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
@@ -397,7 +458,7 @@ const onSearchInput = () => {
 };
 
 onMounted(async () => {
-  await getData();
+  await Promise.all([getData(), loadCategories()]);
 });
 
 const formatDate = (dateString?: string) => {
@@ -470,5 +531,42 @@ const deleteItem = async (id: number) => {
             }
           }
         });
+};
+
+const deleteCategory = async (category: string) => {
+  const result = await Swal.fire({
+    title: 'Hapus kategori merch?',
+    text: `Kategori "${category}" akan dilepas dari semua produk yang memakainya. Produk tidak akan dihapus.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Ya, hapus kategori',
+    cancelButtonText: 'Batal'
+  });
+
+  if (!result.isConfirmed) return;
+
+  deletingCategory.value = category;
+  try {
+    await store.dispatch(DELETE_MERCHANDISE_CATEGORY, category);
+    await Promise.all([getData(), loadCategories()]);
+    Swal.fire({
+      title: "Terhapus",
+      text: "Kategori merchandise telah dihapus.",
+      icon: "success",
+      confirmButtonColor: '#1e40af',
+      confirmButtonText: "OK"
+    });
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Gagal",
+      text: err instanceof Error ? err.message : "Gagal menghapus kategori merchandise.",
+      confirmButtonColor: '#1e40af',
+    });
+  } finally {
+    deletingCategory.value = null;
+  }
 };
 </script>

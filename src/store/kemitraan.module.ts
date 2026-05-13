@@ -18,6 +18,8 @@ export const POST_KEMITRAAN = "postKemitraan";
 export const PUT_KEMITRAAN = "putKemitraan";
 export const DELETE_KEMITRAAN = "deleteKemitraan";
 
+const KEMITRAAN_ADMIN_ENDPOINT = "/kemitraan/admin";
+
 // Define the state type
 interface State {
     kemitraan: Kemitraan[];
@@ -42,7 +44,7 @@ type VuexContext = ActionContext<State, RootState>;
 const actions: ActionTree<State, RootState> = {
     [GET_KEMITRAAN](context: VuexContext, params: ApiActionParams<ApiQueryParams> = {}): Promise<Kemitraan[]> {
         return new Promise((resolve, reject) => {
-            ApiService.get<ApiDataResponse<Kemitraan[]>>("/kemitraan", params.data || {})
+            ApiService.get<ApiDataResponse<Kemitraan[]>>(KEMITRAAN_ADMIN_ENDPOINT, params.data || {})
                 .then(response => {
                     const { data } = response;
                     context.commit(SET_KEMITRAAN, data);
@@ -56,7 +58,7 @@ const actions: ActionTree<State, RootState> = {
     },
     [POST_KEMITRAAN](context: VuexContext, params: ApiActionParams<KemitraanPayload>): Promise<Kemitraan[]> {
         return new Promise((resolve, reject) => {
-            ApiService.post<ApiDataResponse<Kemitraan[]>>("/kemitraan", params.data || {})
+            ApiService.post<ApiDataResponse<Kemitraan[]>>(KEMITRAAN_ADMIN_ENDPOINT, params.data || {})
                 .then(({ data }) => {
                     resolve(data);
                 })
@@ -67,7 +69,7 @@ const actions: ActionTree<State, RootState> = {
     },
     [PUT_KEMITRAAN](context: VuexContext, params: ApiActionParams<KemitraanPayload>): Promise<Kemitraan[]> {
         return new Promise((resolve, reject) => {
-            ApiService.put<ApiDataResponse<Kemitraan[]>>(`/kemitraan/${params.id}`, params.data || {})
+            ApiService.put<ApiDataResponse<Kemitraan[]>>(`${KEMITRAAN_ADMIN_ENDPOINT}/${params.id}`, params.data || {})
                 .then(({ data }) => {
                     resolve(data);
                 })
@@ -78,7 +80,7 @@ const actions: ActionTree<State, RootState> = {
     },
     [DELETE_KEMITRAAN](context: VuexContext, params: ApiActionParams): Promise<void> {
         return new Promise((resolve, reject) => {
-            ApiService.delete(`/kemitraan/${params.id}`)
+            ApiService.delete(`${KEMITRAAN_ADMIN_ENDPOINT}/${params.id}`)
                 .then(() => {
                     resolve();
                 })

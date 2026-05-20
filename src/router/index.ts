@@ -33,6 +33,8 @@ import AdminGuideView from "@/views/AdminGuideView.vue";
 import MerchandiseDashboard from "@/views/MerchandiseDashboardView.vue";
 import Broadcast from "@/views/BroadcastView.vue";
 import TemplatePesan from "@/views/TemplatePesanView.vue";
+import Unauthorized from "@/views/AppUnauthorized.vue";
+import { canAccess } from "@/utils/permissions";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -42,11 +44,17 @@ const routes: Array<RouteRecordRaw> = [
     meta: { layout: "empty" },
   },
   {
-  path: "/select",
-  name: "AppSelector",
-  component: AppSelectorView,
-  meta: { layout: "empty" },
-},
+    path: "/select",
+    name: "AppSelector",
+    component: AppSelectorView,
+    meta: { layout: "empty" },
+  },
+  {
+    path: "/unauthorized",
+    name: "Unauthorized",
+    component: Unauthorized,
+    meta: { layout: "empty" },
+  },
   {
     path: "/dashboard",
     name: "Dashboard",
@@ -246,6 +254,7 @@ router.beforeEach(async (to, _from, next) => {
       const selectedApp = store.getters["appSelector/selectedApp"];
       const selectedRole = store.getters["appSelector/selectedRole"];
       const webApp = apps.find((app: any) => app.id === "web");
+      const canEnterRoute = () => canAccess(store.getters.currentRoles || [], to.meta.roles);
 
       if (!webApp) {
         next({ name: "AppSelector", query: { reason: "no-web-access" } });
@@ -257,6 +266,10 @@ router.beforeEach(async (to, _from, next) => {
 
         if (webApp.roles.length === 1) {
           await store.dispatch(`appSelector/${SET_SELECTED_ROLE}`, webApp.roles[0]);
+          if (!canEnterRoute()) {
+            next({ name: "Unauthorized" });
+            return;
+          }
           next();
           return;
         }
@@ -268,11 +281,20 @@ router.beforeEach(async (to, _from, next) => {
       if (!selectedRole) {
         if (selectedApp.roles.length === 1) {
           await store.dispatch(`appSelector/${SET_SELECTED_ROLE}`, selectedApp.roles[0]);
+          if (!canEnterRoute()) {
+            next({ name: "Unauthorized" });
+            return;
+          }
           next();
           return;
         }
 
         next({ name: "AppSelector" });
+        return;
+      }
+
+      if (!canEnterRoute()) {
+        next({ name: "Unauthorized" });
         return;
       }
     }

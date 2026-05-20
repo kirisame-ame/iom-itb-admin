@@ -28,7 +28,7 @@
       </div>
 
       <nav class="mt-4 pb-7">
-        <div v-for="group in navGroups" :key="group.label" class="mt-5 first:mt-0">
+        <div v-for="group in filteredNavGroups" :key="group.label" class="mt-5 first:mt-0">
           <p class="mb-1.5 px-5 text-[13px] font-semibold text-blue-100">
             {{ group.label }}
           </p>
@@ -69,8 +69,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vuex";
 import { useSidebar } from "../hooks/useSidebar";
 import sidebarLogo from "@/assets/image/IOM-ITB-PrimaryLogo-white.png";
+import { canAccess } from "@/utils/permissions";
 
 type IconName =
   | "dashboard"
@@ -109,6 +112,7 @@ interface NavItem {
   label: string;
   to: string;
   icon: IconName;
+  roles?: string[];
 }
 
 interface NavGroup {
@@ -117,6 +121,7 @@ interface NavGroup {
 }
 
 const { isOpen } = useSidebar();
+const store = useStore();
 
 const icons: Record<IconName, string[]> = {
   dashboard: [
@@ -318,6 +323,17 @@ const navGroups: NavGroup[] = [
     ],
   },
 ];
+
+const filteredNavGroups = computed(() => {
+  const roles = store.getters.currentRoles || [];
+
+  return navGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => canAccess(roles, item.roles)),
+    }))
+    .filter((group) => group.items.length > 0);
+});
 </script>
 
 <style scoped>

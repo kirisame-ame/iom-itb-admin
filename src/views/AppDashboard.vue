@@ -797,8 +797,8 @@ const fetchDashboard = async () => {
     let totalOTADonasiAmount = 0
 
     try {
-      // Hit Bankes Asli API to aggregate data
-      const bankesUrl = process.env.VUE_APP_API_BANKES_URL || 'http://195.110.58.17:13031/api/dashboard/mahasiswa'
+      // Hit Bankes Asli API to aggregate data (Via Nginx Proxy)
+      const bankesUrl = process.env.VUE_APP_API_BANKES_URL || '/ext-api/bankes'
       const responseBankes = await fetch(bankesUrl)
       const bankesRes = await responseBankes.json()
       const bankesData = bankesRes.data || []
@@ -817,8 +817,8 @@ const fetchDashboard = async () => {
     }
 
     try {
-      // Hit OTA-KU API.
-      const otaUrl = process.env.VUE_APP_API_OTA_URL || 'http://195.110.58.17:13000/api/dashboard/ota'
+      // Hit OTA-KU API. (Via Nginx Proxy)
+      const otaUrl = process.env.VUE_APP_API_OTA_URL || '/ext-api/ota'
       const response = await fetch(otaUrl)
       const otaRes = await response.json()
       const otaData = otaRes.data || []

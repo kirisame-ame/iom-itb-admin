@@ -798,7 +798,8 @@ const fetchDashboard = async () => {
 
     try {
       // Hit Bankes Asli API to aggregate data
-      const responseBankes = await fetch('http://195.110.58.17:13000/api/dashboard/bankes')
+      const bankesUrl = process.env.VUE_APP_API_BANKES_URL || 'http://195.110.58.17:13031/api/dashboard/mahasiswa'
+      const responseBankes = await fetch(bankesUrl)
       const bankesRes = await responseBankes.json()
       const bankesData = bankesRes.data || []
       
@@ -817,7 +818,8 @@ const fetchDashboard = async () => {
 
     try {
       // Hit OTA-KU API.
-      const response = await fetch('http://195.110.58.17:13000/api/dashboard/ota')
+      const otaUrl = process.env.VUE_APP_API_OTA_URL || 'http://195.110.58.17:13000/api/dashboard/ota'
+      const response = await fetch(otaUrl)
       const otaRes = await response.json()
       const otaData = otaRes.data || []
       

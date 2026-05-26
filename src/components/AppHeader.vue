@@ -231,7 +231,7 @@
       
       <div class="relative">
         <div class="flex items-center gap-2">
-        <span class="hidden max-w-[220px] truncate text-sm text-slate-600 md:inline">{{ currentUser?.email }}</span>
+        <span class="hidden max-w-[220px] truncate text-sm font-semibold text-slate-700 md:inline">{{ userDisplayName }}</span>
         <button
           @click="dropdownOpen = !dropdownOpen"
           class="
@@ -244,7 +244,9 @@
             rounded-full
             shadow
             focus:outline-none
+            focus:ring-2 focus:ring-blue-500/30
           "
+          aria-label="Buka menu akun"
         >
           <img
             class="object-cover w-full h-full"
@@ -274,88 +276,60 @@
               absolute
               right-0
               z-20
-              w-48
-              py-1
+              w-80
+              overflow-hidden
               mt-2
               bg-white
               rounded-lg
+              border border-slate-200
               shadow-xl
             "
           >
-            <a
-              href="#"
-              class="
-                px-4
-                py-2
-                flex
-                rounded-md
-                text-sm text-gray-700
-                hover:bg-indigo-600 hover:text-white
-              "
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-              Profile</a
-            >
-            <a
-              href="#"
-              class="
-                flex
-                rounded-md
-                px-4
-                py-2
-                text-sm text-gray-700
-                hover:bg-indigo-600 hover:text-white
-              "
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              Settings</a
-            >
+            <div class="border-b border-slate-100 bg-slate-50 px-4 py-4">
+              <div class="flex items-start gap-3">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#003793] text-sm font-bold text-white shadow-sm">
+                  <img
+                    class="h-full w-full object-cover"
+                    :src="require('@/assets/image/logo.webp')"
+                    alt=""
+                  />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-bold text-slate-950">{{ userDisplayName }}</p>
+                  <p class="mt-0.5 truncate text-xs text-slate-500">{{ userEmail }}</p>
+                </div>
+              </div>
+              <dl class="mt-4 grid grid-cols-1 gap-2 text-xs">
+                <div class="flex items-center justify-between gap-3">
+                  <dt class="font-semibold text-slate-500">Username</dt>
+                  <dd class="min-w-0 truncate font-medium text-slate-800">{{ userUsername }}</dd>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <dt class="font-semibold text-slate-500">Role</dt>
+                  <dd class="min-w-0 truncate font-medium text-slate-800">{{ selectedRoleName }}</dd>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <dt class="font-semibold text-slate-500">Aplikasi</dt>
+                  <dd class="min-w-0 truncate font-medium text-slate-800">{{ selectedAppName }}</dd>
+                </div>
+              </dl>
+            </div>
             <button
               @click="logout"
               class="
                 flex
+                items-center
+                gap-2
                 px-4
-                py-2
-                rounded-md
-                text-sm text-gray-700
-                hover:bg-indigo-600 hover:text-white
+                py-3
+                text-sm font-semibold text-red-600
+                hover:bg-red-50
                 w-full
               "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-1"
+                class="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -408,6 +382,23 @@ const {
 } = usePaymentNotifications(canViewPaymentNotifications);
 
 const currentUser = computed(() => store.getters.currentUser);
+const selectedRole = computed(() => store.getters["appSelector/selectedRole"]);
+const selectedApp = computed(() => store.getters["appSelector/selectedApp"]);
+const userEmail = computed(() => currentUser.value?.email || "-");
+const userUsername = computed(() =>
+  currentUser.value?.preferredUsername ||
+  currentUser.value?.preferred_username ||
+  currentUser.value?.username ||
+  "-"
+);
+const userDisplayName = computed(() =>
+  currentUser.value?.name ||
+  userUsername.value ||
+  userEmail.value ||
+  "Admin"
+);
+const selectedRoleName = computed(() => selectedRole.value?.name || selectedRole.value?.id || "-");
+const selectedAppName = computed(() => selectedApp.value?.name || "-");
 const dashboardTitle = computed(() => (
   selectedRoleId.value ? ROLE_DASHBOARD_TITLES[selectedRoleId.value] || "Dashboard Admin" : "Dashboard Admin"
 ));

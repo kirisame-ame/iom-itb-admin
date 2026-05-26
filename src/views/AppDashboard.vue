@@ -574,7 +574,11 @@ const canViewFinanceDashboard = computed(() => canAccess(FINANCE_ROLES, selected
 const canViewSecretariatDashboard = computed(() => canAccess(SECRETARIAT_ROLES, selectedRoleId.value))
 const canViewAdminTools = computed(() => canAccess(ADMIN_FULL_ROLES, selectedRoleId.value))
 const selectedTrendRange = ref('week')
-const dashboardApiBaseUrl = (process.env.VUE_APP_DASHBOARD_API_URL || '').replace(/\/+$/, '')
+
+const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '')
+const bankesDashboardApiUrl = trimTrailingSlash(process.env.VUE_APP_BANKES_DASHBOARD_API_URL || '')
+const otaDashboardApiUrl = trimTrailingSlash(process.env.VUE_APP_OTA_DASHBOARD_API_URL || '')
+
 const trendRangeOptions = [
   { value: 'week', label: '7 Hari' },
   { value: 'month', label: '1 Bulan' },
@@ -800,15 +804,15 @@ const goToMerchandiseDashboard = () => {
   router.push('/merchandise-dashboard')
 }
 
-async function fetchExternalDashboardData<T>(path: string): Promise<T[]> {
-  if (!dashboardApiBaseUrl) {
-    throw new Error('VUE_APP_DASHBOARD_API_URL is not configured')
+async function fetchExternalDashboardData<T>(endpoint: string, label: string, envKey: string): Promise<T[]> {
+  if (!endpoint) {
+    throw new Error(`${label} dashboard API URL is not configured. Set ${envKey}.`)
   }
 
-  const response = await fetch(`${dashboardApiBaseUrl}${path}`)
+  const response = await fetch(endpoint)
 
   if (!response.ok) {
-    throw new Error(`Dashboard API request failed with status ${response.status}`)
+    throw new Error(`${label} dashboard API request failed with status ${response.status}`)
   }
 
   const result = await response.json()
@@ -835,7 +839,11 @@ const fetchDashboard = async () => {
     if (canViewBantuanDashboard.value) {
     try {
       // Hit Bankes Asli API to aggregate data
-      const bankesData = await fetchExternalDashboardData<any>('/api/dashboard/mahasiswa')
+      const bankesData = await fetchExternalDashboardData<any>(
+        bankesDashboardApiUrl,
+        'Bankes',
+        'VUE_APP_BANKES_DASHBOARD_API_URL'
+      )
       
       // Count pending (Logika baru berdasarkan bankesStatus: 'unverified')
       totalBankesPending = bankesData.filter((mhs: any) => mhs.bankesStatus === 'unverified').length
@@ -854,7 +862,11 @@ const fetchDashboard = async () => {
     if (canViewFinanceDashboard.value) {
     try {
       // Hit OTA-KU API.
-      const otaData = await fetchExternalDashboardData<any>('/api/dashboard/ota')
+      const otaData = await fetchExternalDashboardData<any>(
+        otaDashboardApiUrl,
+        'OTA-KU',
+        'VUE_APP_OTA_DASHBOARD_API_URL'
+      )
       
       // Sum the funds from all OTAs (Asumsi tim merek mengeluarkan property 'funds')
       totalOTADonasiAmount = otaData.reduce((sum: number, ota: any) => sum + (ota.funds || 0), 0)

@@ -33,6 +33,20 @@ import AdminGuideView from "@/views/AdminGuideView.vue";
 import MerchandiseDashboard from "@/views/MerchandiseDashboardView.vue";
 import Broadcast from "@/views/BroadcastView.vue";
 import TemplatePesan from "@/views/TemplatePesanView.vue";
+import Unauthorized from "@/views/AppUnauthorized.vue";
+import {
+  ADMIN_FULL_ROLES,
+  ALL_ADMIN_WEB_ROLES,
+  BANTUAN_ROLES,
+  COMMUNICATION_ROLES,
+  CONTENT_ROLES,
+  DANA_BANTUAN_ROLES,
+  DASHBOARD_ROLES,
+  FINANCE_ROLES,
+  KEMITRAAN_ROLES,
+  SECRETARIAT_ROLES,
+  canAccess,
+} from "@/utils/permissions";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -42,142 +56,172 @@ const routes: Array<RouteRecordRaw> = [
     meta: { layout: "empty" },
   },
   {
-  path: "/select",
-  name: "AppSelector",
-  component: AppSelectorView,
-  meta: { layout: "empty" },
-},
+    path: "/select",
+    name: "AppSelector",
+    component: AppSelectorView,
+    meta: { layout: "empty" },
+  },
+  {
+    path: "/unauthorized",
+    name: "Unauthorized",
+    component: Unauthorized,
+    meta: { layout: "empty" },
+  },
   {
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard,
+    meta: { roles: DASHBOARD_ROLES },
   },
   {
     path: "/forms",
     name: "Forms",
     component: Forms,
+    meta: { roles: ADMIN_FULL_ROLES },
   },
   {
     path: "/cards",
     name: "Cards",
     component: Card,
+    meta: { roles: ADMIN_FULL_ROLES },
   },
   {
     path: "/tables",
     name: "Tables",
     component: Tables,
+    meta: { roles: ADMIN_FULL_ROLES },
   },
   {
     path: "/ui-elements",
     name: "UIElements",
     component: UIElements,
+    meta: { roles: ADMIN_FULL_ROLES },
   },
   {
     path: "/merchandise",
     name: "Merchandise",
     component: Merchandises,
+    meta: { roles: FINANCE_ROLES },
   },
   {
     path: "/kegiatan",
     name: "Kegiatan",
     component: Activities,
+    meta: { roles: CONTENT_ROLES },
   },
   {
     path: "/users",
     name: "Users",
     component: Users,
+    meta: { roles: ADMIN_FULL_ROLES },
   },
   {
     path: "/members",
     name: "Members",
     component: Members,
+    meta: { roles: SECRETARIAT_ROLES },
   },
   {
     path: "/donasi",
     name: "Donasi",
     component: Donasi,
+    meta: { roles: FINANCE_ROLES },
   },
   {
     path: "/dashboard-pembayaran",
     name: "Dashboard Pembayaran",
     component: PaymentDashboard,
+    meta: { roles: FINANCE_ROLES },
   },
   {
     path: "/fakultas",
     name: "Fakultas",
     component: Fakultas,
+    meta: { roles: FINANCE_ROLES },
   },
   {
     path: "/dana-bantuan",
     name: "Dana Bantuan",
     component: DanaBantuan,
+    meta: { roles: DANA_BANTUAN_ROLES },
   },
   {
     path: "/orangtua-asuh",
     name: "Orangtua Asuh",
     component: OrangtuaAsuh,
+    meta: { roles: BANTUAN_ROLES },
   },
   {
     path: "/pengajuan-bantuan",
     name: "Pengajuan Bantuan",
     component: PengajuanBantuan,
+    meta: { roles: BANTUAN_ROLES },
   },
   {
     path: "/pendataan-anggota",
     name: "Pendataan Anggota",
     component: PendataanAnggota,
+    meta: { roles: SECRETARIAT_ROLES },
   },
   {
     path: "/kemitraan",
     name: "Kemitraan",
     component: Kemitraan,
+    meta: { roles: KEMITRAAN_ROLES },
   },
   {
     path: "/kegiatan-kemitraan",
     name: "Kegiatan Kemitraan",
     component: KegiatanKemitraan,
+    meta: { roles: KEMITRAAN_ROLES },
   },
   {
     path: "/transactions",
     name: "Transactions",
     component: Transactions,
+    meta: { roles: FINANCE_ROLES },
   },
   {
     path: "/merchandise-dashboard",
     name: "Merchandise Dashboard",
     component: MerchandiseDashboard,
+    meta: { roles: FINANCE_ROLES },
   },
   {
     path: "/modal",
     name: "Modal",
     component: Modal,
+    meta: { roles: ADMIN_FULL_ROLES },
   },
   {
     path: "/charts",
     name: "Chart",
     component: Chart,
+    meta: { roles: ADMIN_FULL_ROLES },
   },
   {
     path: "/kegiatan/:id/edit",
     name: "KegiatanEditor",
     component: ActivityEditorView,
-    meta: { layout: "empty" },
+    meta: { layout: "empty", roles: CONTENT_ROLES },
   },
   {
     path: "/kegiatan/:id/preview",
     name: "KegiatanPreview",
     component: ActivityPreviewView,
-    meta: { layout: "empty" },
+    meta: { layout: "empty", roles: CONTENT_ROLES },
   },
   {
     path: "/panduan-admin",
     name: "Panduan Admin",
     component: AdminGuideView,
+    meta: { roles: ALL_ADMIN_WEB_ROLES },
   },
   {
     path: "/template-pesan",
     name: "Template Pesan",
     component: TemplatePesan,
+    meta: { roles: COMMUNICATION_ROLES },
   },
   // Backward-compat redirect for old bookmarks/links
   {
@@ -188,6 +232,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/broadcast",
     name: "Broadcast",
     component: Broadcast,
+    meta: { roles: COMMUNICATION_ROLES },
   },
 
   { path: "/:pathMatch(.*)*", component: NotFound },
@@ -212,6 +257,7 @@ router.beforeEach(async (to, _from, next) => {
 
   const isLoginRoute = to.name === "Login";
   const isSelectorRoute = to.name === "AppSelector";
+  const isUnauthorizedRoute = to.name === "Unauthorized";
 
   if (!KeycloakService.isAuthenticated()) {
     if (isLoginRoute) {
@@ -241,7 +287,7 @@ router.beforeEach(async (to, _from, next) => {
       return;
     }
 
-    if (!isSelectorRoute) {
+    if (!isSelectorRoute && !isUnauthorizedRoute) {
       const apps = store.getters["appSelector/allApps"] || [];
       const selectedApp = store.getters["appSelector/selectedApp"];
       const selectedRole = store.getters["appSelector/selectedRole"];
@@ -257,6 +303,10 @@ router.beforeEach(async (to, _from, next) => {
 
         if (webApp.roles.length === 1) {
           await store.dispatch(`appSelector/${SET_SELECTED_ROLE}`, webApp.roles[0]);
+          if (!canAccess(to.meta.roles, webApp.roles[0].id)) {
+            next({ name: "Unauthorized" });
+            return;
+          }
           next();
           return;
         }
@@ -268,11 +318,20 @@ router.beforeEach(async (to, _from, next) => {
       if (!selectedRole) {
         if (selectedApp.roles.length === 1) {
           await store.dispatch(`appSelector/${SET_SELECTED_ROLE}`, selectedApp.roles[0]);
+          if (!canAccess(to.meta.roles, selectedApp.roles[0].id)) {
+            next({ name: "Unauthorized" });
+            return;
+          }
           next();
           return;
         }
 
         next({ name: "AppSelector" });
+        return;
+      }
+
+      if (!canAccess(to.meta.roles, selectedRole.id)) {
+        next({ name: "Unauthorized" });
         return;
       }
     }

@@ -250,6 +250,8 @@ import ApiService from '@/store/api.service'
 import Swal from 'sweetalert2'
 import Breadcrumb from '@/components/AppBreadcrumb.vue'
 import PreviewPesanModal from '@/components/modal/PreviewPesanModal.vue'
+import { usePermissions } from '@/hooks/usePermissions'
+import { canAccessTemplate } from '@/utils/permissions'
 
 type MessageTemplate = {
   id?: number
@@ -270,6 +272,7 @@ const channelFilter    = ref('')
 const isLoading        = ref(false)
 const isSaving         = ref(false)
 const showPreviewModal = ref(false)
+const { selectedRoleId } = usePermissions()
 
 const form = ref({ subject: '', body: '' })
 
@@ -369,8 +372,16 @@ const fetchTemplates = async () => {
   try {
     const res  = await ApiService.get<any>('email-templates')
     const data = Array.isArray(res) ? res : (res as any)?.data || []
-    templates.value = data
-    if (data.length > 0) selectTemplate(data[0])
+    const visibleTemplates = data.filter((template: MessageTemplate) =>
+      canAccessTemplate(template, selectedRoleId.value)
+    )
+    templates.value = visibleTemplates
+    if (visibleTemplates.length > 0) {
+      selectTemplate(visibleTemplates[0])
+    } else {
+      selectedTemplate.value = null
+      form.value = { subject: '', body: '' }
+    }
   } catch (err) {
     console.error(err)
     await Swal.fire({ title: 'Gagal', text: 'Gagal mengambil template pesan.', icon: 'error', confirmButtonColor: '#1e40af', confirmButtonText: 'OK' })

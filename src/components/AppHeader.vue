@@ -39,7 +39,7 @@
       <div class="flex min-w-0 items-center gap-1.5 sm:mx-2 lg:mx-0">
         <div class="flex min-w-0 flex-col">
           <h1 class="truncate text-xl font-bold leading-none text-slate-900 sm:text-2xl">
-            Dashboard Admin
+            {{ dashboardTitle }}
           </h1>
           <p class="text-[11px] font-medium text-slate-500 mt-1 hidden sm:block uppercase tracking-wider">
             Ikatan Orang Tua Mahasiswa ITB
@@ -49,7 +49,7 @@
     </div>
 
     <div class="flex shrink-0 items-center">
-      <div class="hidden items-center sm:flex">
+      <div v-if="canViewPaymentNotifications" class="hidden items-center sm:flex">
         <div class="relative">
           <button
             type="button"
@@ -382,10 +382,17 @@ import { useSidebar } from "../hooks/useSidebar";
 import { usePaymentNotifications } from "@/hooks/usePaymentNotifications";
 import { useStore } from "vuex";
 import { LOGOUT } from "@/store/auth.module";
+import {
+  FINANCE_ROLES,
+  ROLE_DASHBOARD_TITLES,
+  canAccess,
+} from "@/utils/permissions";
 
 const store = useStore();
 const dropdownOpen = ref(false);
 const { isOpen } = useSidebar();
+const selectedRoleId = computed<string | null>(() => store.getters["appSelector/selectedRole"]?.id || null);
+const canViewPaymentNotifications = computed(() => canAccess(FINANCE_ROLES, selectedRoleId.value));
 const {
   isOpen: notificationOpen,
   isLoading: notificationLoading,
@@ -398,9 +405,12 @@ const {
   close: closeNotifications,
   isUnread: isNotificationUnread,
   iconClass: notificationIconClass,
-} = usePaymentNotifications();
+} = usePaymentNotifications(canViewPaymentNotifications);
 
 const currentUser = computed(() => store.getters.currentUser);
+const dashboardTitle = computed(() => (
+  selectedRoleId.value ? ROLE_DASHBOARD_TITLES[selectedRoleId.value] || "Dashboard Admin" : "Dashboard Admin"
+));
 
 const logout = async () => {
   await store.dispatch(LOGOUT);

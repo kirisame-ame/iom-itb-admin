@@ -168,8 +168,13 @@
             </svg>
           </button>
         </div>
-        <div class="overflow-y-auto px-6 py-6">
-          <div v-html="emailPreviewHtml" />
+        <div class="overflow-y-auto bg-slate-100 px-6 py-6">
+          <iframe
+            :srcdoc="emailPreviewIframeHtml"
+            class="w-full border-0"
+            style="height: 650px;"
+            sandbox="allow-same-origin"
+          />
           <p class="mt-4 text-xs text-center text-slate-400">
             * Logo dan waktu pengiriman yang tepat dapat berbeda pada email sebenarnya.
           </p>
@@ -214,7 +219,9 @@ import type { PengajuanBantuan, StatusPengajuan } from '@/store/pengajuanBantuan
 import { STATUS_LABELS } from '@/utils/statusLabels'
 import AppSelect from '@/components/input/AppSelect.vue'
 import ConfirmDialog from '@/components/modal/ConfirmDialog.vue'
-import logoUrl from '@/assets/image/IOM-ITB-PrimaryLogo-white.png'
+import { buildEmailPreviewDocument } from '@/utils/emailPreviewRenderer'
+import logoBlueUrl from '@/assets/image/IOM-ITB-PrimaryLogo-blue.png'
+import logoWhiteUrl from '@/assets/image/IOM-ITB-PrimaryLogo-white.png'
 
 const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:3000'
 
@@ -299,15 +306,6 @@ const simpanConfirmMessage = computed(() => {
   return `Status pengajuan #${props.item?.id} akan diubah menjadi "${label}". Tidak ada email pemohon, perubahan disimpan tanpa notifikasi. Lanjutkan?`
 })
 
-function escapeHtml(v: string | undefined | null): string {
-  return String(v ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
-
 const FALLBACK_EMAIL_BODY = `Halo {{name}},
 
 Status pengajuan bantuan Anda telah diperbarui. Berikut detail terbaru:
@@ -322,7 +320,7 @@ Silakan login ke sistem untuk melihat detail pengajuan Anda.
 Terima kasih,
 Tim Pengajuan Bantuan IOM ITB`
 
-const emailPreviewHtml = computed(() => {
+const emailPreviewIframeHtml = computed(() => {
   const statusLabel  = EMAIL_STATUS_LABELS[formStatus.value] ?? formStatus.value ?? 'Tidak Diketahui'
   const nowStr       = new Date().toLocaleString('id-ID', {
     day: '2-digit', month: 'long', year: 'numeric',
@@ -340,32 +338,15 @@ const emailPreviewHtml = computed(() => {
 
   let body = emailTemplateBody.value || FALLBACK_EMAIL_BODY
   for (const [k, v] of Object.entries(vars)) {
-    body = body.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), escapeHtml(v))
+    body = body.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), v)
   }
 
-  const bodyHtml = body
-    .split('\n')
-    .map(line => line.trim()
-      ? `<p style="margin:0 0 12px;">${line}</p>`
-      : '<br />'
-    )
-    .join('')
-
-  return `
-    <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #222;">
-      <div style="background: #2563eb; color: #fff; padding: 20px 24px; border-radius: 8px 8px 0 0; text-align: center;">
-        <img src="${logoUrl}" alt="IOM ITB" style="max-width: 180px; height: auto; margin-bottom: 16px;" />
-        <h1 style="margin: 0; font-size: 20px;">Update Status Pengajuan Bantuan</h1>
-        <p style="margin: 4px 0 0; font-size: 13px; opacity: 0.9;">IOM ITB</p>
-      </div>
-      <div style="border: 1px solid #e5e7eb; border-top: none; padding: 24px; border-radius: 0 0 8px 8px;">
-        ${bodyHtml}
-        <p style="margin: 24px 0 0; font-size: 12px; color: #9ca3af; text-align: center;">
-          Email ini dikirim otomatis, mohon tidak membalas email ini.
-        </p>
-      </div>
-    </div>
-  `
+  return buildEmailPreviewDocument({
+    title: 'Update Status Pengajuan Bantuan',
+    bodyText: body,
+    logoBlueUrl,
+    logoWhiteUrl,
+  })
 })
 
 const showCloseConfirm  = ref(false)

@@ -66,7 +66,7 @@
                 </svg>
                 <p class="text-xs font-bold text-amber-800">Test Kirim</p>
               </div>
-              <p class="mb-3 text-[11px] text-amber-700">Pesan uji coba. Email akan ditandai [TEST] dan tidak memengaruhi data produksi.</p>
+              <p class="mb-3 text-[11px] text-amber-700">{{ testSendDescription }}</p>
 
               <label class="mb-1 block text-xs font-semibold text-slate-700">
                 {{ template.channel === 'whatsapp' ? 'Nomor WhatsApp' : 'Alamat Email' }}
@@ -158,7 +158,8 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch } from 'vue'
 import ApiService from '@/store/api.service'
-import logoUrl from '@/assets/image/IOM-ITB-PrimaryLogo-blue.png'
+import { buildEmailPreviewDocument, escapeHtml, linkify } from '@/utils/emailPreviewRenderer'
+import logoBlueUrl from '@/assets/image/IOM-ITB-PrimaryLogo-blue.png'
 import logoWhiteUrl from '@/assets/image/IOM-ITB-PrimaryLogo-white.png'
 
 type MessageTemplate = {
@@ -217,9 +218,6 @@ watch(inputVars, (newVal) => {
 
 const variableTag = (name: string) => `{{${name}}}`
 
-const escHtml = (s: string) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-
 const substituteVars = (text: string) => {
   let result = text
   for (const [k, v] of Object.entries(localVars)) {
@@ -228,29 +226,20 @@ const substituteVars = (text: string) => {
   return result.replace(/\{\{([a-zA-Z0-9_]+)\}\}/g, '($1)')
 }
 
-const linkify = (escaped: string) =>
-  escaped.replace(/(https?:\/\/[^\s<>&"]+)/g, url =>
-    `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:underline;word-break:break-all;">${url}</a>`
-  )
-
-const textToHtmlParagraphs = (text: string) =>
-  text
-    .split('\n')
-    .map(line => line.trim()
-      ? `<p style="margin:0 0 12px;">${linkify(escHtml(line))}</p>`
-      : '<br />'
-    )
-    .join('')
-
 const waPreviewHtml = computed(() => {
   const text = substituteVars(props.body)
   if (!text) return '(pesan kosong)'
-  return linkify(escHtml(text)).replace(/\n/g, '<br />')
+  return linkify(escapeHtml(text)).replace(/\n/g, '<br />')
 })
 
 const renderedSubject = computed(() => substituteVars(props.subject))
 const previewTime    = computed(() =>
   new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+)
+const testSendDescription = computed(() =>
+  props.template.channel === 'whatsapp'
+    ? 'Pesan uji coba WhatsApp. Pengiriman ini tidak memengaruhi data produksi.'
+    : 'Pesan uji coba. Email akan ditandai [TEST] dan tidak memengaruhi data produksi.'
 )
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -265,57 +254,13 @@ const recipientError = computed(() => {
   return /^[+]?[0-9]{8,15}$/.test(cleaned) ? '' : 'Format nomor tidak valid (contoh: 628123456789 atau 08xxx)'
 })
 
-const previewFooterHtml = `
-  <div style="margin-top:24px;height:1px;background:#e5e7eb;"></div>
-  <div style="padding-top:20px;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-      <tr>
-        <td style="width:30%;vertical-align:middle;text-align:left;">
-          <img src="${logoUrl}" alt="IOM ITB" style="max-width:110px;height:auto;display:block;" />
-        </td>
-        <td style="width:40%;vertical-align:middle;text-align:center;">
-          <p style="margin:0;font-size:14px;color:#6b7280;font-weight:500;">Ikatan Orangtua Mahasiswa ITB</p>
-        </td>
-        <td style="width:30%;vertical-align:middle;text-align:right;white-space:nowrap;">
-          <a href="https://www.iom-itb.id/" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-left:10px;">
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/googlechrome.svg" alt="Website" width="20" height="20" style="vertical-align:middle;" />
-          </a>
-          <a href="https://www.instagram.com/iom_itb/" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-left:10px;">
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/instagram.svg" alt="Instagram" width="20" height="20" style="vertical-align:middle;" />
-          </a>
-          <a href="https://www.youtube.com/@IOM-ITB" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-left:10px;">
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/youtube.svg" alt="YouTube" width="20" height="20" style="vertical-align:middle;" />
-          </a>
-        </td>
-      </tr>
-    </table>
-  </div>`
-
 const fullEmailIframeHtml = computed(() => {
-  const bodyHtml = textToHtmlParagraphs(substituteVars(props.body))
-  return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <style>body { margin: 20px; background: #f9fafb; }</style>
-</head>
-<body>
-  <div style="font-family: Arial, sans-serif; font-size: 14px; max-width: 600px; margin: 0 auto; color: #222;">
-    <div style="background: #2563eb; color: #fff; padding: 20px 24px; border-radius: 8px 8px 0 0; text-align: center;">
-      <img src="${logoWhiteUrl}" alt="IOM ITB" style="max-width: 180px; height: auto; margin-bottom: 16px;" />
-      <h1 style="margin: 0; font-size: 20px;">${escHtml(props.template.title)}</h1>
-      <p style="margin: 4px 0 0; font-size: 13px; opacity: 0.9;">IOM ITB</p>
-    </div>
-    <div style="border: 1px solid #e5e7eb; border-top: none; padding: 24px; border-radius: 0 0 8px 8px; background: #fff;">
-      ${bodyHtml}
-      <p style="margin: 24px 0 8px; font-size: 12px; color: #9ca3af; text-align: center;">
-        Email ini dikirim otomatis, mohon tidak membalas email ini.
-      </p>
-      ${previewFooterHtml}
-    </div>
-  </div>
-</body>
-</html>`
+  return buildEmailPreviewDocument({
+    title: props.template.title,
+    bodyText: substituteVars(props.body),
+    logoBlueUrl,
+    logoWhiteUrl,
+  })
 })
 
 const sendTest = async () => {

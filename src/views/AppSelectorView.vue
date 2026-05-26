@@ -119,7 +119,7 @@
                 <component :is="iconMap[app.iconKey] || iconMap.dashboard" />
               </div>
               <span class="text-[12.5px] font-semibold text-slate-700 text-center leading-tight">
-                {{ app.name }}
+                {{ getAppDisplayName(app) }}
               </span>
             </button>
           </div>
@@ -145,7 +145,7 @@
                 : {}"
               @click="selectRole(role)"
             >
-              {{ role.name }}
+              {{ getRoleDisplayName(role) }}
             </button>
           </div>
         </div>
@@ -236,6 +236,7 @@ import IconDashboard from "@/assets/image/IconDashboard.vue";
 import IconGlobe from "@/assets/image/IconGlobe.vue";
 import IconFinance from "@/assets/image/IconFinance.vue";
 import IconLogout from "@/assets/image/IconLogout.vue";
+import { ROLE_DASHBOARD_TITLES } from "@/utils/permissions";
 
 import "@/assets/css/AppSelector.css";
 
@@ -273,6 +274,29 @@ export default defineComponent({
 
       return null;
     });
+
+    const getWebRoleTitle = (roleId?: string | null) => (
+      roleId ? ROLE_DASHBOARD_TITLES[roleId] : undefined
+    );
+
+    const getAppDisplayName = (app: App) => {
+      if (app.id !== "web") return app.name;
+
+      if (selectedApp.value?.id === app.id) {
+        return getWebRoleTitle(selectedRole.value?.id) || app.name;
+      }
+
+      if (app.roles.length === 1) {
+        return getWebRoleTitle(app.roles[0].id) || app.name;
+      }
+
+      return app.name;
+    };
+
+    const getRoleDisplayName = (role: Role) => {
+      if (selectedApp.value?.id !== "web") return role.name;
+      return getWebRoleTitle(role.id) || role.name;
+    };
 
     const loadApps = async () => {
       await store.dispatch(FETCH_JWT);
@@ -339,6 +363,7 @@ export default defineComponent({
       currentUser, accessWarning,
       isEntering, enterError, showLogoutConfirm,
       originAppId, iconMap,
+      getAppDisplayName, getRoleDisplayName,
       loadApps, selectApp, selectRole,
       handleEnter, handleLogout,
     };

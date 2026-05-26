@@ -1,5 +1,23 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 import KeycloakService from "@/services/keycloak";
+
+const SELECTED_ROLE_STORAGE_KEY = "sso_selected_role";
+
+const attachAuthHeaders = async (config: InternalAxiosRequestConfig) => {
+  const token = await KeycloakService.getValidToken();
+  config.headers = config.headers || {};
+
+  if (token) {
+    config.headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const selectedRole = window.localStorage.getItem(SELECTED_ROLE_STORAGE_KEY);
+  if (selectedRole) {
+    config.headers.set("X-Selected-Role", selectedRole);
+  }
+
+  return config;
+};
 
 // Define types for the ApiService instance
 interface ApiServiceType {
@@ -31,23 +49,8 @@ const ApiService: ApiServiceType = {
       baseURL: process.env.VUE_APP_API_UPLOAD,
     });
 
-    this.api1.interceptors.request.use(async (config) => {
-      const token = await KeycloakService.getValidToken();
-      if (token) {
-        config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
-
-    this.api2.interceptors.request.use(async (config) => {
-      const token = await KeycloakService.getValidToken();
-      if (token) {
-        config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
+    this.api1.interceptors.request.use(attachAuthHeaders);
+    this.api2.interceptors.request.use(attachAuthHeaders);
   },
 
   setHeader() {

@@ -1,4 +1,4 @@
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from "vue";
 import {
   fetchPaymentNotifications,
   markPaymentNotificationsRead,
@@ -34,7 +34,7 @@ const notificationIconClasses: Record<PaymentNotificationTone, string> = {
   amber: "bg-amber-50 text-amber-700",
 };
 
-export function usePaymentNotifications(): UsePaymentNotificationsReturn {
+export function usePaymentNotifications(enabled: Ref<boolean> | ComputedRef<boolean> | boolean = true): UsePaymentNotificationsReturn {
   const isOpen = ref(false);
   const isLoading = ref(false);
   const errorMessage = ref("");
@@ -53,6 +53,7 @@ export function usePaymentNotifications(): UsePaymentNotificationsReturn {
   });
 
   const refresh = async (): Promise<void> => {
+    if (!unref(enabled)) return;
     if (isLoading.value) return;
 
     isLoading.value = true;
@@ -96,6 +97,7 @@ export function usePaymentNotifications(): UsePaymentNotificationsReturn {
   };
 
   const toggle = (): void => {
+    if (!unref(enabled)) return;
     isOpen.value = !isOpen.value;
     if (isOpen.value) {
       // Mark as read immediately for snappy UI
@@ -119,15 +121,44 @@ export function usePaymentNotifications(): UsePaymentNotificationsReturn {
 
   const iconClass = (tone: PaymentNotificationTone): string => notificationIconClasses[tone];
 
-  onMounted(() => {
+  const startPolling = () => {
+    if (timer) return;
     refresh();
     timer = setInterval(refresh, REFRESH_INTERVAL_MS);
-  });
+  };
 
-  onBeforeUnmount(() => {
+  const stopPolling = () => {
     if (timer) {
       clearInterval(timer);
+      timer = null;
     }
+    isOpen.value = false;
+    errorMessage.value = "";
+    items.value = [];
+    unreadCount.value = 0;
+    summary.value = {
+      donationCount: 0,
+      merchandiseCount: 0,
+    };
+  };
+
+  onMounted(() => {
+    if (unref(enabled)) startPolling();
+  });
+
+  watch(
+    () => unref(enabled),
+    (canLoad) => {
+      if (canLoad) {
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    }
+  );
+
+  onBeforeUnmount(() => {
+    stopPolling();
   });
 
   return {

@@ -229,6 +229,18 @@
 <script setup lang="ts">
 import { computed, defineComponent, h, ref, watch, type CSSProperties } from "vue";
 import AppSelect from '@/components/input/AppSelect.vue';
+import { usePermissions } from "@/hooks/usePermissions";
+import {
+  ADMIN_FULL_ROLES,
+  BANTUAN_ROLES,
+  CONTENT_ROLES,
+  DANA_BANTUAN_ROLES,
+  DASHBOARD_ROLES,
+  FINANCE_ROLES,
+  KEMITRAAN_ROLES,
+  SECRETARIAT_ROLES,
+  canAccess,
+} from "@/utils/permissions";
 
 interface GuideStep {
   title: string;
@@ -984,12 +996,42 @@ const adminDocumentation: AdminDocumentation[] = [
   },
 ];
 
+const guideRouteRoles: Record<string, string[]> = {
+  "/dashboard": DASHBOARD_ROLES,
+  "/dashboard-pembayaran": FINANCE_ROLES,
+  "/kegiatan": CONTENT_ROLES,
+  "/kegiatan/new/edit": CONTENT_ROLES,
+  "/merchandise": FINANCE_ROLES,
+  "/transactions": FINANCE_ROLES,
+  "/donasi": FINANCE_ROLES,
+  "/fakultas": FINANCE_ROLES,
+  "/pengajuan-bantuan": BANTUAN_ROLES,
+  "/pendataan-anggota": SECRETARIAT_ROLES,
+  "/orangtua-asuh": BANTUAN_ROLES,
+  "/dana-bantuan": DANA_BANTUAN_ROLES,
+  "/kemitraan": KEMITRAAN_ROLES,
+  "/kegiatan-kemitraan": KEMITRAAN_ROLES,
+};
+
+const getDocumentationRoles = (item: AdminDocumentation) => {
+  if (item.route && guideRouteRoles[item.route]) {
+    return guideRouteRoles[item.route];
+  }
+
+  return ADMIN_FULL_ROLES;
+};
+
+const { selectedRoleId } = usePermissions();
 const searchKeyword = ref("");
 const selectedCategory = ref("");
-const selectedFeatureId = ref(adminDocumentation[0]?.id || "");
+const selectedFeatureId = ref("");
+
+const accessibleDocumentation = computed(() => {
+  return adminDocumentation.filter((item) => canAccess(getDocumentationRoles(item), selectedRoleId.value));
+});
 
 const categories = computed(() => {
-  return Array.from(new Set(adminDocumentation.map((item) => item.category))).sort();
+  return Array.from(new Set(accessibleDocumentation.value.map((item) => item.category))).sort();
 });
 
 const categoryOptions = computed(() => [
@@ -1000,7 +1042,7 @@ const categoryOptions = computed(() => [
 const filteredDocumentation = computed(() => {
   const keyword = searchKeyword.value.trim().toLowerCase();
 
-  return adminDocumentation.filter((item) => {
+  return accessibleDocumentation.value.filter((item) => {
     const matchCategory = selectedCategory.value
       ? item.category === selectedCategory.value
       : true;
@@ -1040,6 +1082,12 @@ watch(filteredDocumentation, (items) => {
   if (!stillExists) {
     selectedFeatureId.value = items[0].id;
   }
+}, { immediate: true });
+
+watch(categories, (items) => {
+  if (selectedCategory.value && !items.includes(selectedCategory.value)) {
+    selectedCategory.value = "";
+  }
 });
 
 const selectFeature = (featureId: string) => {
@@ -1059,6 +1107,6 @@ const guideNavButtonStyle = (featureId: string): CSSProperties => {
 const resetFilter = () => {
   searchKeyword.value = "";
   selectedCategory.value = "";
-  selectedFeatureId.value = adminDocumentation[0]?.id || "";
+  selectedFeatureId.value = accessibleDocumentation.value[0]?.id || "";
 };
 </script>

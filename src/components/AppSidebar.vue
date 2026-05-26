@@ -22,7 +22,7 @@
           </div>
           <div class="min-w-0">
             <p class="text-[17px] font-semibold leading-tight text-white">IOM ITB</p>
-            <p class="mt-0.5 text-sm font-normal leading-snug text-blue-100">Admin Dashboard</p>
+            <p class="mt-0.5 text-sm font-normal leading-snug text-blue-100">{{ dashboardTitle }}</p>
           </div>
         </div>
       </div>
@@ -73,7 +73,19 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 import { useSidebar } from "../hooks/useSidebar";
 import sidebarLogo from "@/assets/image/IOM-ITB-PrimaryLogo-white.png";
-import { canAccess } from "@/utils/permissions";
+import {
+  ALL_ADMIN_WEB_ROLES,
+  BANTUAN_ROLES,
+  COMMUNICATION_ROLES,
+  CONTENT_ROLES,
+  DANA_BANTUAN_ROLES,
+  DASHBOARD_ROLES,
+  FINANCE_ROLES,
+  KEMITRAAN_ROLES,
+  ROLE_DASHBOARD_TITLES,
+  SECRETARIAT_ROLES,
+  canAccess,
+} from "@/utils/permissions";
 
 type IconName =
   | "dashboard"
@@ -122,6 +134,10 @@ interface NavGroup {
 
 const { isOpen } = useSidebar();
 const store = useStore();
+const selectedRoleId = computed<string | null>(() => store.getters["appSelector/selectedRole"]?.id || null);
+const dashboardTitle = computed(() => (
+  selectedRoleId.value ? ROLE_DASHBOARD_TITLES[selectedRoleId.value] || "Dashboard Admin" : "Dashboard Admin"
+));
 
 const icons: Record<IconName, string[]> = {
   dashboard: [
@@ -283,54 +299,62 @@ const navGroups: NavGroup[] = [
   {
     label: "Utama",
     items: [
-      { name: "Dashboard", label: "Dashboard", to: "/dashboard", icon: "dashboard" },
-      { name: "Panduan Admin", label: "Panduan Admin", to: "/panduan-admin", icon: "bookCheck" },
+      { name: "Dashboard", label: "Dashboard", to: "/dashboard", icon: "dashboard", roles: DASHBOARD_ROLES },
+      { name: "Panduan Admin", label: "Panduan Admin", to: "/panduan-admin", icon: "bookCheck", roles: ALL_ADMIN_WEB_ROLES },
     ],
   },
   {
-    label: "Formulir Masuk",
+    label: "Formulir & Layanan",
     items: [
-      { name: "Pengajuan Bantuan", label: "Pengajuan Bantuan", to: "/pengajuan-bantuan", icon: "fileHeart" },
-      { name: "Pendataan Anggota", label: "Pendataan Anggota", to: "/pendataan-anggota", icon: "userCheck" },
-      { name: "Orangtua Asuh", label: "Orangtua Asuh", to: "/orangtua-asuh", icon: "shieldHeart" },
+      { name: "Pengajuan Bantuan", label: "Pengajuan Bantuan", to: "/pengajuan-bantuan", icon: "fileHeart", roles: BANTUAN_ROLES },
+      { name: "Pendataan Anggota", label: "Pendataan Anggota", to: "/pendataan-anggota", icon: "userCheck", roles: SECRETARIAT_ROLES },
+      { name: "Orangtua Asuh", label: "Orangtua Asuh", to: "/orangtua-asuh", icon: "shieldHeart", roles: BANTUAN_ROLES },
+      { name: "Dana Bantuan", label: "Dana Bantuan", to: "/dana-bantuan", icon: "piggyBank", roles: DANA_BANTUAN_ROLES },
     ],
   },
   {
     label: "Donasi & Pembayaran",
     items: [
-      { name: "Dashboard Pembayaran", label: "Dashboard Pembayaran", to: "/dashboard-pembayaran", icon: "paymentChart" },
-      { name: "Donasi", label: "Donasi", to: "/donasi", icon: "handCoins" },
-      { name: "Fakultas", label: "Fakultas", to: "/fakultas", icon: "school" },
-      { name: "Dana Bantuan", label: "Dana Bantuan", to: "/dana-bantuan", icon: "piggyBank" },
-      { name: "Broadcast", label: "Broadcast Pesan", to: "/broadcast", icon: "mail" },
-      { name: "Template Pesan", label: "Template Pesan", to: "/template-pesan", icon: "chatMessage" },
+      { name: "Dashboard Pembayaran", label: "Dashboard Pembayaran", to: "/dashboard-pembayaran", icon: "paymentChart", roles: FINANCE_ROLES },
+      { name: "Donasi", label: "Donasi", to: "/donasi", icon: "handCoins", roles: FINANCE_ROLES },
+      { name: "Fakultas", label: "Fakultas", to: "/fakultas", icon: "school", roles: FINANCE_ROLES },
     ],
   },
   {
-    label: "Konten & Katalog",
+    label: "Komunikasi",
     items: [
-      { name: "Kegiatan", label: "Kegiatan", to: "/kegiatan", icon: "calendarCheck" },
-      { name: "Merchandise", label: "Merchandise", to: "/merchandise", icon: "shirt" },
-      { name: "Merchandise Dashboard", label: "Dashboard Merchandise", to: "/merchandise-dashboard", icon: "packageChart" },
-      { name: "Transactions", label: "Transaksi Merchandise", to: "/transactions", icon: "receiptText" },
+      { name: "Broadcast", label: "Broadcast Pesan", to: "/broadcast", icon: "mail", roles: COMMUNICATION_ROLES },
+      { name: "Template Pesan", label: "Template Pesan", to: "/template-pesan", icon: "chatMessage", roles: COMMUNICATION_ROLES },
+    ],
+  },
+  {
+    label: "Konten",
+    items: [
+      { name: "Kegiatan", label: "Kegiatan", to: "/kegiatan", icon: "calendarCheck", roles: CONTENT_ROLES },
+    ],
+  },
+  {
+    label: "Katalog & Transaksi",
+    items: [
+      { name: "Merchandise", label: "Merchandise", to: "/merchandise", icon: "shirt", roles: FINANCE_ROLES },
+      { name: "Merchandise Dashboard", label: "Dashboard Merchandise", to: "/merchandise-dashboard", icon: "packageChart", roles: FINANCE_ROLES },
+      { name: "Transactions", label: "Transaksi Merchandise", to: "/transactions", icon: "receiptText", roles: FINANCE_ROLES },
     ],
   },
   {
     label: "Kemitraan",
     items: [
-      { name: "Kemitraan", label: "Kemitraan", to: "/kemitraan", icon: "handshake" },
-      { name: "Kegiatan Kemitraan", label: "Kegiatan Kemitraan", to: "/kegiatan-kemitraan", icon: "calendarHandshake" },
+      { name: "Kemitraan", label: "Kemitraan", to: "/kemitraan", icon: "handshake", roles: KEMITRAAN_ROLES },
+      { name: "Kegiatan Kemitraan", label: "Kegiatan Kemitraan", to: "/kegiatan-kemitraan", icon: "calendarHandshake", roles: KEMITRAAN_ROLES },
     ],
   },
 ];
 
 const filteredNavGroups = computed(() => {
-  const roles = store.getters.currentRoles || [];
-
   return navGroups
     .map((group) => ({
       ...group,
-      items: group.items.filter((item) => canAccess(roles, item.roles)),
+      items: group.items.filter((item) => canAccess(item.roles, selectedRoleId.value)),
     }))
     .filter((group) => group.items.length > 0);
 });

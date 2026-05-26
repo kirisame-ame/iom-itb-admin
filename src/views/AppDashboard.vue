@@ -26,6 +26,7 @@
       
       <!-- Card 1: Pengajuan Perlu Proses -->
       <div 
+        v-if="canViewBantuanDashboard"
         class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-indigo-200 hover:shadow-md cursor-pointer"
         @click="isPendingDropdownOpen = !isPendingDropdownOpen"
       >
@@ -71,6 +72,7 @@
 
       <!-- Card 2: Bantuan Disetujui -->
       <div 
+        v-if="canViewBantuanDashboard"
         class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-blue-200 hover:shadow-md cursor-pointer"
         @click="isApprovedDropdownOpen = !isApprovedDropdownOpen"
       >
@@ -115,6 +117,7 @@
 
       <!-- Card 3: Dashboard Merchandise -->
       <div
+        v-if="canViewFinanceDashboard"
         class="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-sky-200 hover:shadow-md cursor-pointer"
         @click="goToMerchandiseDashboard"
       >
@@ -138,6 +141,7 @@
 
       <!-- Card 4: Total Donasi -->
       <div 
+        v-if="canViewFinanceDashboard"
         class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-[#003793]/20 hover:shadow-md cursor-pointer"
         @click="isDonationDropdownOpen = !isDonationDropdownOpen"
       >
@@ -183,7 +187,7 @@
       </div>
 
       <!-- Card 5: Total Anggota -->
-      <div class="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
+      <div v-if="canViewSecretariatDashboard" class="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
         <div class="flex items-start justify-between">
           <div>
             <p class="text-xs font-bold text-slate-400">Total Anggota</p>
@@ -205,7 +209,7 @@
     </div>
 
     <!-- TOGGLE GRAFIK SECTION -->
-    <div class="mb-6">
+    <div v-if="canViewBantuanDashboard" class="mb-6">
       <button 
         @click="isChartsVisible = !isChartsVisible"
         class="group flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:bg-blue-50/30 focus:outline-none"
@@ -339,7 +343,7 @@
     </div> <!-- END of isChartsVisible Wrapper -->
 
     <!-- ── Quick Navigation Links ──────────────────────────────── -->
-    <div class="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div v-if="canViewFinanceDashboard" class="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
       <!-- Dashboard Pembayaran -->
       <div 
         class="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-blue-200 hover:shadow-md cursor-pointer"
@@ -394,7 +398,7 @@
     </div>
 
     <!-- ── Data Tables Section ────────────────────────────────── -->
-    <div class="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div v-if="canViewBantuanDashboard" class="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
       
       <!-- Tabel Kiri: Pengajuan Bantuan Terbaru -->
       <div class="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -498,7 +502,7 @@
     </div>
 
     <!-- ── Developer Tools Section ────────────────────────────── -->
-    <div class="mt-12 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 opacity-60 grayscale transition-all hover:opacity-100 hover:grayscale-0">
+    <div v-if="canViewAdminTools" class="mt-12 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 opacity-60 grayscale transition-all hover:opacity-100 hover:grayscale-0">
       <div class="mb-4 flex items-center gap-3">
         <div class="rounded-lg bg-slate-200 p-2 text-slate-600">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.7"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -547,16 +551,30 @@
 
 <script setup lang="ts">
 
-import { ref, onMounted } from "vue"
+import { computed, ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import ApiService from "@/store/api.service"
+import { usePermissions } from "@/hooks/usePermissions"
+import {
+  ADMIN_FULL_ROLES,
+  BANTUAN_ROLES,
+  FINANCE_ROLES,
+  SECRETARIAT_ROLES,
+  canAccess,
+} from "@/utils/permissions"
 
 const isPendingDropdownOpen = ref(false)
 const isApprovedDropdownOpen = ref(false)
 const isDonationDropdownOpen = ref(false)
 const isChartsVisible = ref(false)
 const router = useRouter()
+const { selectedRoleId } = usePermissions()
+const canViewBantuanDashboard = computed(() => canAccess(BANTUAN_ROLES, selectedRoleId.value))
+const canViewFinanceDashboard = computed(() => canAccess(FINANCE_ROLES, selectedRoleId.value))
+const canViewSecretariatDashboard = computed(() => canAccess(SECRETARIAT_ROLES, selectedRoleId.value))
+const canViewAdminTools = computed(() => canAccess(ADMIN_FULL_ROLES, selectedRoleId.value))
 const selectedTrendRange = ref('week')
+const dashboardApiBaseUrl = (process.env.VUE_APP_DASHBOARD_API_URL || '').replace(/\/+$/, '')
 const trendRangeOptions = [
   { value: 'week', label: '7 Hari' },
   { value: 'month', label: '1 Bulan' },
@@ -768,15 +786,33 @@ const loadCharts = async (range = selectedTrendRange.value) => {
 }
 
 const handleTrendRangeChange = () => {
+  if (!canViewBantuanDashboard.value) return
   void loadCharts(selectedTrendRange.value)
 }
 
 const goToPaymentDashboard = () => {
+  if (!canViewFinanceDashboard.value) return
   router.push('/dashboard-pembayaran')
 }
 
 const goToMerchandiseDashboard = () => {
+  if (!canViewFinanceDashboard.value) return
   router.push('/merchandise-dashboard')
+}
+
+async function fetchExternalDashboardData<T>(path: string): Promise<T[]> {
+  if (!dashboardApiBaseUrl) {
+    throw new Error('VUE_APP_DASHBOARD_API_URL is not configured')
+  }
+
+  const response = await fetch(`${dashboardApiBaseUrl}${path}`)
+
+  if (!response.ok) {
+    throw new Error(`Dashboard API request failed with status ${response.status}`)
+  }
+
+  const result = await response.json()
+  return Array.isArray(result.data) ? result.data : []
 }
 
 const fetchDashboard = async () => {
@@ -796,11 +832,10 @@ const fetchDashboard = async () => {
     let totalIOMDonasi = stats.totalDonasi || 0
     let totalOTADonasiAmount = 0
 
+    if (canViewBantuanDashboard.value) {
     try {
       // Hit Bankes Asli API to aggregate data
-      const responseBankes = await fetch('http://195.110.58.17:13000/api/dashboard/bankes')
-      const bankesRes = await responseBankes.json()
-      const bankesData = bankesRes.data || []
+      const bankesData = await fetchExternalDashboardData<any>('/api/dashboard/bankes')
       
       // Count pending (Logika baru berdasarkan bankesStatus: 'unverified')
       totalBankesPending = bankesData.filter((mhs: any) => mhs.bankesStatus === 'unverified').length
@@ -814,12 +849,12 @@ const fetchDashboard = async () => {
     } catch (e) {
       console.warn("Failed to fetch Bankes data:", e)
     }
+    }
 
+    if (canViewFinanceDashboard.value) {
     try {
       // Hit OTA-KU API.
-      const response = await fetch('http://195.110.58.17:13000/api/dashboard/ota')
-      const otaRes = await response.json()
-      const otaData = otaRes.data || []
+      const otaData = await fetchExternalDashboardData<any>('/api/dashboard/ota')
       
       // Sum the funds from all OTAs (Asumsi tim merek mengeluarkan property 'funds')
       totalOTADonasiAmount = otaData.reduce((sum: number, ota: any) => sum + (ota.funds || 0), 0)
@@ -842,6 +877,7 @@ const fetchDashboard = async () => {
 
     } catch (e) {
       console.warn("Failed to fetch OTA-KU data:", e)
+    }
     }
 
     // Apply Pendings
@@ -867,27 +903,35 @@ const fetchDashboard = async () => {
     kpiData.value.totalAnggota.description =
       `+${stats.anggotaBaru} anggota baru bulan ini`
 
-    await loadCharts(selectedTrendRange.value)
+    if (canViewBantuanDashboard.value) {
+      await loadCharts(selectedTrendRange.value)
 
-    const recentRes: any = await ApiService.get('/dashboard/recent')
-    const recent = recentRes.data || recentRes
+      const recentRes: any = await ApiService.get('/dashboard/recent')
+      const recent = recentRes.data || recentRes
 
-    recentSubmissions.value = recent.pengajuanTerbaru?.map((x:any)=>({
-      id: x.id,
-      name: x.name,
-      nim: x.nim,
-      type: x.type,
-      date: formatDate(x.submittedAt),
-      status: mapStatus(x.pengajuanStatus?.currentStatus)
-    })) || []
+      recentSubmissions.value = recent.pengajuanTerbaru?.map((x:any)=>({
+        id: x.id,
+        name: x.name,
+        nim: x.nim,
+        type: x.type,
+        date: formatDate(x.submittedAt),
+        status: mapStatus(x.pengajuanStatus?.currentStatus)
+      })) || []
 
-    activityLogs.value = recent.logAktivitas?.map((x:any)=>({
-      id: Math.random(),
-      admin: x.changedBy === 'SEEDER' ? 'Sistem' : x.changedBy,
-      time: formatDate(x.changedAt),
-      oldStatus: mapStatus(x.oldStatus),
-      newStatus: mapStatus(x.newStatus)
-    })) || []
+      activityLogs.value = recent.logAktivitas?.map((x:any)=>({
+        id: Math.random(),
+        admin: x.changedBy === 'SEEDER' ? 'Sistem' : x.changedBy,
+        time: formatDate(x.changedAt),
+        oldStatus: mapStatus(x.oldStatus),
+        newStatus: mapStatus(x.newStatus)
+      })) || []
+    } else {
+      recentSubmissions.value = []
+      activityLogs.value = []
+      trenChartSeries.value = []
+      statusChartSeries.value = []
+      penerimaChartSeries.value = [{ name: 'Total Penerima Bantuan', data: [] }]
+    }
 
   } catch (err) {
     console.error("Dashboard error:", err)

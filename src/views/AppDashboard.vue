@@ -835,7 +835,7 @@ const fetchDashboard = async () => {
     if (canViewBantuanDashboard.value) {
     try {
       // Hit Bankes Asli API to aggregate data
-      const bankesData = await fetchExternalDashboardData<any>('/api/dashboard/bankes')
+      const bankesData = await fetchExternalDashboardData<any>('/api/dashboard/mahasiswa')
       
       // Count pending (Logika baru berdasarkan bankesStatus: 'unverified')
       totalBankesPending = bankesData.filter((mhs: any) => mhs.bankesStatus === 'unverified').length

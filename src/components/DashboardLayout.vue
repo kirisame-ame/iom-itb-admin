@@ -4,7 +4,7 @@
 
     <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
       <Header />
-      <main class="min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 relative">
+      <main ref="mainScrollRef" class="min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 relative">
         <div class="p-3 sm:p-4 md:p-6 lg:p-8">
           <slot />
         </div>
@@ -40,6 +40,22 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import Header from './AppHeader.vue'
 import Sidebar from './AppSidebar.vue'
+
+const route = useRoute()
+const mainScrollRef = ref<HTMLElement | null>(null)
+
+watch(
+  () => route.fullPath,
+  async () => {
+    await nextTick()
+    if (mainScrollRef.value) {
+      mainScrollRef.value.scrollTop = 0
+      mainScrollRef.value.scrollLeft = 0
+    }
+  }
+)
 </script>

@@ -276,7 +276,7 @@
               absolute
               right-0
               z-20
-              w-80
+              w-72
               overflow-hidden
               mt-2
               bg-white
@@ -285,9 +285,9 @@
               shadow-xl
             "
           >
-            <div class="border-b border-slate-100 bg-slate-50 px-4 py-4">
-              <div class="flex items-start gap-3">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#003793] text-sm font-bold text-white shadow-sm">
+            <div class="border-b border-slate-100 bg-slate-50 px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="block h-8 w-8 shrink-0 overflow-hidden rounded-full shadow">
                   <img
                     class="h-full w-full object-cover"
                     :src="require('@/assets/image/logo.webp')"
@@ -297,22 +297,9 @@
                 <div class="min-w-0 flex-1">
                   <p class="truncate text-sm font-bold text-slate-950">{{ userDisplayName }}</p>
                   <p class="mt-0.5 truncate text-xs text-slate-500">{{ userEmail }}</p>
+                  <p v-if="showUsernameDetail" class="mt-1 truncate text-[11px] font-medium text-slate-400">@{{ userUsername }}</p>
                 </div>
               </div>
-              <dl class="mt-4 grid grid-cols-1 gap-2 text-xs">
-                <div class="flex items-center justify-between gap-3">
-                  <dt class="font-semibold text-slate-500">Username</dt>
-                  <dd class="min-w-0 truncate font-medium text-slate-800">{{ userUsername }}</dd>
-                </div>
-                <div class="flex items-center justify-between gap-3">
-                  <dt class="font-semibold text-slate-500">Role</dt>
-                  <dd class="min-w-0 truncate font-medium text-slate-800">{{ selectedRoleName }}</dd>
-                </div>
-                <div class="flex items-center justify-between gap-3">
-                  <dt class="font-semibold text-slate-500">Aplikasi</dt>
-                  <dd class="min-w-0 truncate font-medium text-slate-800">{{ selectedAppName }}</dd>
-                </div>
-              </dl>
             </div>
             <button
               @click="logout"
@@ -382,8 +369,6 @@ const {
 } = usePaymentNotifications(canViewPaymentNotifications);
 
 const currentUser = computed(() => store.getters.currentUser);
-const selectedRole = computed(() => store.getters["appSelector/selectedRole"]);
-const selectedApp = computed(() => store.getters["appSelector/selectedApp"]);
 const userEmail = computed(() => currentUser.value?.email || "-");
 const userUsername = computed(() =>
   currentUser.value?.preferredUsername ||
@@ -397,8 +382,9 @@ const userDisplayName = computed(() =>
   userEmail.value ||
   "Admin"
 );
-const selectedRoleName = computed(() => selectedRole.value?.name || selectedRole.value?.id || "-");
-const selectedAppName = computed(() => selectedApp.value?.name || "-");
+const showUsernameDetail = computed(() =>
+  userUsername.value !== "-" && userUsername.value !== userDisplayName.value
+);
 const dashboardTitle = computed(() => (
   selectedRoleId.value ? ROLE_DASHBOARD_TITLES[selectedRoleId.value] || "Dashboard Admin" : "Dashboard Admin"
 ));

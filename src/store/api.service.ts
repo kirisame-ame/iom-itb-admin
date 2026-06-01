@@ -1,5 +1,23 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 import KeycloakService from "@/services/keycloak";
+
+const SELECTED_ROLE_STORAGE_KEY = "sso_selected_role";
+
+const attachAuthHeaders = async (config: InternalAxiosRequestConfig) => {
+  const token = await KeycloakService.getValidToken();
+  config.headers = config.headers || {};
+
+  if (token) {
+    config.headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const selectedRole = window.localStorage.getItem(SELECTED_ROLE_STORAGE_KEY);
+  if (selectedRole) {
+    config.headers.set("X-Selected-Role", selectedRole);
+  }
+
+  return config;
+};
 
 // Define types for the ApiService instance
 interface ApiServiceType {
@@ -7,10 +25,11 @@ interface ApiServiceType {
   api2: AxiosInstance | null; // Upload API
   init(): void;
   setHeader(): void;
+  getRequestConfig(params: object): AxiosRequestConfig;
   query<T>(resource: string, params?: object): Promise<T>;
-  get<T>(resource: string, params?: { session?: string }): Promise<T>;
+  get<T>(resource: string, params?: object): Promise<T>;
   post<T>(resource: string, params: object): Promise<T>;
-  upload<T>(resource: string, params: File): Promise<T>;
+  upload<T>(resource: string, params: object): Promise<T>;
   update<T>(resource: string, slug: string, params: object): Promise<T>;
   put<T>(resource: string, params: object): Promise<T>;
   patch<T>(resource: string, params: object): Promise<T>;
@@ -30,23 +49,8 @@ const ApiService: ApiServiceType = {
       baseURL: process.env.VUE_APP_API_UPLOAD,
     });
 
-    this.api1.interceptors.request.use(async (config) => {
-      const token = await KeycloakService.getValidToken();
-      if (token) {
-        config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
-
-    this.api2.interceptors.request.use(async (config) => {
-      const token = await KeycloakService.getValidToken();
-      if (token) {
-        config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
+    this.api1.interceptors.request.use(attachAuthHeaders);
+    this.api2.interceptors.request.use(attachAuthHeaders);
   },
 
   setHeader() {
@@ -58,6 +62,12 @@ const ApiService: ApiServiceType = {
     }
   },
 
+  getRequestConfig(params: object) {
+    return params instanceof FormData
+      ? {}
+      : { headers: { "Content-Type": "application/json" } };
+  },
+
   // Query method for main API
   async query<T>(resource: string, params?: object): Promise<T> {
     if (!this.api1) {
@@ -66,12 +76,12 @@ const ApiService: ApiServiceType = {
 
     return this.api1.get<T>(resource, { params })
       .then(response => response.data)
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         throw new Error(`ApiService ${error}`);
       });
   },
 
-  async get<T>(resource: string, params?: { session?: string }): Promise<T> {
+  async get<T>(resource: string, params?: object): Promise<T> {
     if (!this.api1) {
       return Promise.reject(new Error("ApiService is not initialized"));
     }
@@ -85,11 +95,7 @@ const ApiService: ApiServiceType = {
     if (!this.api1) {
       return Promise.reject(new Error("ApiService is not initialized"));
     }
-      const response = await this.api1.post<T>(resource, params, {
-        headers: {
-          "Content-Type": "application/json", // Use JSON content type for main API
-        },
-      });
+      const response = await this.api1.post<T>(resource, params, this.getRequestConfig(params));
       return response.data;
   },
 
@@ -116,7 +122,7 @@ const ApiService: ApiServiceType = {
 
     return this.api1.put<T>(`${resource}/${slug}`, params)
       .then(response => response.data)
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         throw new Error(`ApiService ${error}`);
       });
   },
@@ -127,11 +133,7 @@ const ApiService: ApiServiceType = {
       return Promise.reject(new Error("ApiService is not initialized"));
     }
     
-    const response = await this.api1.put<T>(resource, params, {
-      headers: {
-        "Content-Type": "application/json", // Use JSON content type
-      },
-    });
+    const response = await this.api1.put<T>(resource, params, this.getRequestConfig(params));
 
     return response.data;
   },
@@ -144,7 +146,7 @@ const ApiService: ApiServiceType = {
 
     return this.api1.patch<T>(resource, params)
       .then(response => response.data)
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         throw new Error(`ApiService ${error}`);
       });
   },
@@ -157,7 +159,7 @@ const ApiService: ApiServiceType = {
 
     return this.api1.delete<T>(resource)
       .then(response => response.data)
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         throw new Error(`ApiService ${error}`);
       });
   }

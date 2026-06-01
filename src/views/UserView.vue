@@ -91,7 +91,7 @@
           </div>
         </div>
           <button
-            class="flex justify-between items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
+            class="flex justify-between items-center px-4 py-2 font-medium text-white capitalize transition-colors duration-200 transform bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:bg-blue-500"
             @click="openModal"
           >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-[25px]">
@@ -109,62 +109,62 @@
               <thead>
                 <tr>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Payment
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Code
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Username
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Email
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     No Telp
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Address
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                   Merchandise Id
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                   Qty
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                   Status
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Created at
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Update at
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Settings
                   </th>

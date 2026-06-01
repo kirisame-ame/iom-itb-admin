@@ -12,16 +12,18 @@ import router from "./router";
 async function bootstrap() {
 	ApiService.init();
 
-	try {
-		await KeycloakService.init();
-	} catch (error) {
-		console.error("Keycloak initialization failed", error);
-	}
+	if (process.env.VUE_APP_DEV_BYPASS_AUTH !== 'true') {
+		try {
+			await KeycloakService.init();
+		} catch (error) {
+			console.error("Keycloak initialization failed", error);
+		}
 
-	try {
-		await store.dispatch(INIT_AUTH);
-	} catch (error) {
-		console.error("Auth initialization failed", error);
+		try {
+			await store.dispatch(INIT_AUTH);
+		} catch (error) {
+			console.error("Auth initialization failed", error);
+		}
 	}
 
 	const app = createApp(App);
@@ -29,7 +31,10 @@ async function bootstrap() {
 		console.error("Vue runtime error", error);
 	};
 
-	app.use(router).use(store).use(VueApexCharts).mount("#app");
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	app.use(router).use(store).use(VueApexCharts as any);
+	await router.isReady();
+	app.mount("#app");
 }
 
 bootstrap().catch((error) => {

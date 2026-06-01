@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-inter">
+  <div class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans">
 
     <!-- Background -->
     <div class="fixed inset-0 z-0 overflow-hidden">
@@ -106,7 +106,7 @@
               @click="selectApp(app)"
             >
               <span v-if="app.id === originAppId"
-                class="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-amber-100 text-amber-800 rounded-full px-1.5 py-0.5">
+                class="absolute top-2 right-2 text-[9px] font-bold bg-amber-100 text-amber-800 rounded-full px-1.5 py-0.5">
                 Asal
               </span>
               <div
@@ -119,7 +119,7 @@
                 <component :is="iconMap[app.iconKey] || iconMap.dashboard" />
               </div>
               <span class="text-[12.5px] font-semibold text-slate-700 text-center leading-tight">
-                {{ app.name }}
+                {{ getAppDisplayName(app) }}
               </span>
             </button>
           </div>
@@ -145,9 +145,20 @@
                 : {}"
               @click="selectRole(role)"
             >
-              {{ role.name }}
+              {{ getRoleDisplayName(role) }}
             </button>
           </div>
+        </div>
+
+        <!-- Enter error -->
+        <div
+          v-if="enterError"
+          class="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-[13px]"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ enterError }}
         </div>
 
         <!-- Enter button -->
@@ -225,6 +236,7 @@ import IconDashboard from "@/assets/image/IconDashboard.vue";
 import IconGlobe from "@/assets/image/IconGlobe.vue";
 import IconFinance from "@/assets/image/IconFinance.vue";
 import IconLogout from "@/assets/image/IconLogout.vue";
+import { ROLE_DASHBOARD_TITLES } from "@/utils/permissions";
 
 import "@/assets/css/AppSelector.css";
 
@@ -237,6 +249,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const isEntering = ref(false);
+    const enterError = ref<string | null>(null);
     const showLogoutConfirm = ref(false);
 
     const iconMap: Record<string, any> = {
@@ -261,6 +274,29 @@ export default defineComponent({
 
       return null;
     });
+
+    const getWebRoleTitle = (roleId?: string | null) => (
+      roleId ? ROLE_DASHBOARD_TITLES[roleId] : undefined
+    );
+
+    const getAppDisplayName = (app: App) => {
+      if (app.id !== "web") return app.name;
+
+      if (selectedApp.value?.id === app.id) {
+        return getWebRoleTitle(selectedRole.value?.id) || app.name;
+      }
+
+      if (app.roles.length === 1) {
+        return getWebRoleTitle(app.roles[0].id) || app.name;
+      }
+
+      return app.name;
+    };
+
+    const getRoleDisplayName = (role: Role) => {
+      if (selectedApp.value?.id !== "web") return role.name;
+      return getWebRoleTitle(role.id) || role.name;
+    };
 
     const loadApps = async () => {
       await store.dispatch(FETCH_JWT);
@@ -290,6 +326,7 @@ export default defineComponent({
     const handleEnter = async () => {
       if (!canEnter.value || isEntering.value) return;
       isEntering.value = true;
+      enterError.value = null;
 
       try {
         const app = selectedApp.value!;
@@ -308,6 +345,8 @@ export default defineComponent({
         } else {
           window.location.href = redirectUrl;
         }
+      } catch (err: any) {
+        enterError.value = err?.message || 'Gagal masuk ke aplikasi. Coba lagi.';
       } finally {
         isEntering.value = false;
       }
@@ -322,8 +361,9 @@ export default defineComponent({
       apps, selectedApp, selectedRole,
       loading, error, canEnter,
       currentUser, accessWarning,
-      isEntering, showLogoutConfirm,
+      isEntering, enterError, showLogoutConfirm,
       originAppId, iconMap,
+      getAppDisplayName, getRoleDisplayName,
       loadApps, selectApp, selectRole,
       handleEnter, handleLogout,
     };

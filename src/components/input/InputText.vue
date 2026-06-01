@@ -1,11 +1,12 @@
 <template>
-    <div class="relative mt-2 rounded-md shadow-sm">
-        <label class="text-sm capitalize">{{ label.replace(/_/g, " ") }} {{ required ? '*' : '' }}</label>
+    <div class="space-y-1.5">
+        <label class="block text-sm font-bold text-slate-700 capitalize">{{ label.replace(/_/g, " ") }} {{ required ? '*' : '' }}</label>
         <input
             type="text"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            class="block w-full px-4 py-2.5 text-sm font-medium text-slate-900 bg-white border border-[#8c8c94] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400"
             v-model="inputValue"
             :required="required"
+            :placeholder="`Masukkan ${label.toLowerCase()}...`"
             @input="updateValue"
         />
     </div>

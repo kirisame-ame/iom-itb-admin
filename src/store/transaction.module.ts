@@ -1,5 +1,15 @@
 import ApiService from "./api.service";
 import { ActionContext } from "vuex";
+import type {
+    ApiActionParams,
+    ApiDataResponse,
+    PaginatedData,
+    PaginationMeta,
+    RootState,
+    Transaction,
+} from "@/types/domain";
+
+export type { Transaction } from "@/types/domain";
 
 export const GET_TRANSACTIONS = "getTransactions";
 export const SET_TRANSACTIONS = "setTransactions";
@@ -7,28 +17,18 @@ export const POST_TRANSACTION = "postTransaction";
 export const PUT_TRANSACTION = "putTransaction";
 export const DELETE_TRANSACTION = "deleteTransaction";
 
-// Define type for transaction
-interface Transaction {
-    id: number; // Use appropriate type for transaction ID
-    code: string; // Transaction code
-    username: string; // User's name associated with the transaction
-    email: string; // User's email
-    noTelp: string; // User's phone number
-    address: string; // User's address
-    merchandiseId: number; // Related merchandise ID
-    qty: number; // Quantity of merchandise
-    payment: string | null; // Payment image path or null
-    status: string; // Current status of the transaction (e.g., waiting, completed)
-}
+type TransactionListResponse = PaginatedData<Transaction>;
 
 // Define type for state
 interface State {
     transactions: Transaction[];
+    transactionPagination: PaginationMeta;
 }
 
 // Define initial state
 const state: State = {
     transactions: [],
+    transactionPagination: {},
 };
 
 // Define getters
@@ -36,19 +36,21 @@ const getters = {
     transactions(state: State): Transaction[] {
         return state.transactions; // Return transaction data
     },
+    transactionPagination(state: State): PaginationMeta {
+        return state.transactionPagination;
+    },
 };
 
 // Define VuexContext type
-type VuexContext = ActionContext<State, any>;
+type VuexContext = ActionContext<State, RootState>;
 
 const actions = {
-    [GET_TRANSACTIONS](context: VuexContext, params: Record<string, any>): Promise<Transaction[]> {
+    [GET_TRANSACTIONS](context: VuexContext, params: ApiActionParams = {}): Promise<Transaction[]> {
         return new Promise((resolve, reject) => {
-            ApiService.get<{ data: Transaction[] }>("/transactions", params.data)
+            ApiService.get<TransactionListResponse>("/transactions", params.data || {})
                 .then(response => {
-                    const { data } = response;
-                    context.commit(SET_TRANSACTIONS, data);
-                    resolve(data);
+                    context.commit(SET_TRANSACTIONS, response);
+                    resolve(response.data || []);
                 })
                 .catch(err => {
                     console.error("Error fetching transactions:", err);
@@ -56,9 +58,9 @@ const actions = {
                 });
         });
     },
-    [POST_TRANSACTION](context: VuexContext, params: Record<string, any>): Promise<Transaction[]> {
+    [POST_TRANSACTION](context: VuexContext, params: ApiActionParams<Partial<Transaction>>): Promise<Transaction[]> {
         return new Promise((resolve, reject) => {
-            ApiService.post<{ data: Transaction[] }>("/transactions", params.data)
+            ApiService.post<ApiDataResponse<Transaction[]>>("/transactions", params.data || {})
                 .then(({ data }) => {
                     resolve(data);
                 })
@@ -67,16 +69,16 @@ const actions = {
                 });
         });
     },
-    [PUT_TRANSACTION](context: VuexContext, params: Record<string, any>): Promise<Transaction[]> {
+    [PUT_TRANSACTION](context: VuexContext, params: ApiActionParams<Partial<Transaction>>): Promise<Transaction[]> {
         return new Promise((resolve, reject) => {
-            ApiService.put<{ data: Transaction[] }>(`/transactions/${params.id}`, params.data)
+            ApiService.put<ApiDataResponse<Transaction[]>>(`/transactions/${params.id}`, params.data || {})
                 .then(({ data }) => resolve(data))
                 .catch((err) => {
                     reject(err);
                 });
         });
     },
-    [DELETE_TRANSACTION](context: VuexContext, params: Record<string, any>): Promise<void> {
+    [DELETE_TRANSACTION](context: VuexContext, params: ApiActionParams): Promise<void> {
         return new Promise((resolve, reject) => {
             ApiService.delete(`/transactions/${params.id}`)
                 .then(() => {
@@ -90,8 +92,15 @@ const actions = {
 };
 
 const mutations = {
-    [SET_TRANSACTIONS](state: State, data: Transaction[]): void {
-        state.transactions = data; // Ensure the data sent matches the expected format
+    [SET_TRANSACTIONS](state: State, response: TransactionListResponse | Transaction[]): void {
+        if (Array.isArray(response)) {
+            state.transactions = response;
+            state.transactionPagination = {};
+            return;
+        }
+
+        state.transactions = response.data || [];
+        state.transactionPagination = response.pagination || {};
     },
 };
 

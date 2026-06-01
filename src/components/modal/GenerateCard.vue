@@ -20,8 +20,8 @@
                   <img :src="data?.picture || '/placeholder.png'" alt="Profile Picture" class="w-full h-full object-cover">
                 </div>
                 <div class="flex flex-col items-center gap-4">
-                  <p class="text-xl !text-[#ffff] font-semibold tracking-widest whitespace-pre-line" style="word-wrap: break-word">{{ data?.parentName || 'Nama Orang Tua' }}</p>
-                  <p class="text-lg !text-[#ffff] tracking-widest">{{ data?.code || 'NIM Anak' }}</p>
+                  <p class="text-xl !text-[#ffff] font-semibold whitespace-pre-line" style="word-wrap: break-word">{{ data?.parentName || 'Nama Orang Tua' }}</p>
+                  <p class="text-lg !text-[#ffff]">{{ data?.code || 'NIM Anak' }}</p>
                 </div>
               </div>
             </div>

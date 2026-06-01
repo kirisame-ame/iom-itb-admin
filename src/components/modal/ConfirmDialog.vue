@@ -1,4 +1,5 @@
 <template>
+  <Teleport to="body">
   <Transition name="popup">
     <div
       v-if="modelValue"
@@ -49,6 +50,7 @@
       </div>
     </div>
   </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">

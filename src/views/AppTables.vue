@@ -7,30 +7,30 @@
       <div class="mt-6">
         <div class="my-6 overflow-hidden bg-white rounded-md shadow">
           <table class="w-full text-left border-collapse">
-            <thead class="border-b">
+            <thead class="bg-slate-50 border-y border-slate-200">
               <tr>
                 <th
-                  class="px-5 py-3 text-sm font-medium text-gray-100 uppercase bg-indigo-800"
+                  class="px-6 py-3 text-[13px] font-bold text-slate-500 uppercase tracking-wider"
                 >
                   City
                 </th>
                 <th
-                  class="px-5 py-3 text-sm font-medium text-gray-100 uppercase bg-indigo-800"
+                  class="px-6 py-3 text-[13px] font-bold text-slate-500 uppercase tracking-wider"
                 >
                   Total orders
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-slate-200">
               <tr
                 v-for="(i, index) in simpleTableData"
                 :key="index"
-                class="hover:bg-gray-200"
+                class="hover:bg-slate-50/80 transition-colors"
               >
-                <td class="px-6 py-4 text-lg text-gray-700 border-b">
+                <td class="px-6 py-4 text-sm font-medium text-slate-700">
                   {{ i.city }}
                 </td>
-                <td class="px-6 py-4 text-gray-500 border-b">
+                <td class="px-6 py-4 text-sm text-slate-500">
                   {{ i.totalOrders }}
                 </td>
               </tr>
@@ -47,10 +47,10 @@
         <h2 class="text-xl font-semibold leading-tight text-gray-700">Users</h2>
 
         <div class="flex flex-col mt-3 sm:flex-row">
-          <div class="flex">
+          <div class="flex gap-2">
             <div class="relative">
               <select
-                class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                class="block w-full px-4 py-2 pr-10 text-sm font-medium text-slate-700 bg-white border border-[#8c8c94] rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
                 <option>5</option>
                 <option>10</option>
@@ -58,23 +58,24 @@
               </select>
 
               <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
+                class="absolute inset-y-0 right-0 flex items-center px-2 text-slate-400 pointer-events-none"
               >
                 <svg
-                  class="w-4 h-4 fill-current"
+                  class="w-4 h-4"
                   xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
                 >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
             </div>
 
             <div class="relative">
               <select
-                class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
+                class="block w-full px-4 py-2 pr-10 text-sm font-medium text-slate-700 bg-white border border-[#8c8c94] rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
                 <option>All</option>
                 <option>Active</option>
@@ -82,16 +83,17 @@
               </select>
 
               <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
+                class="absolute inset-y-0 right-0 flex items-center px-2 text-slate-400 pointer-events-none"
               >
                 <svg
-                  class="w-4 h-4 fill-current"
+                  class="w-4 h-4"
                   xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
                 >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
             </div>
@@ -124,27 +126,27 @@
               <thead>
                 <tr>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     User
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Role
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Created at
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Status
                   </th>
                   <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    class="px-5 py-3 text-sm font-semibold text-left text-gray-700 bg-gray-100 border-b-2 border-gray-200"
                   >
                     Settings
                   </th>
@@ -279,22 +281,22 @@
               <thead>
                 <tr>
                   <th
-                    class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase bg-gray-100 border-b border-gray-200"
+                    class="px-6 py-3 text-xs font-medium leading-4 text-left text-gray-500 bg-gray-100 border-b border-gray-200"
                   >
                     Name
                   </th>
                   <th
-                    class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase bg-gray-100 border-b border-gray-200"
+                    class="px-6 py-3 text-xs font-medium leading-4 text-left text-gray-500 bg-gray-100 border-b border-gray-200"
                   >
                     Title
                   </th>
                   <th
-                    class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase bg-gray-100 border-b border-gray-200"
+                    class="px-6 py-3 text-xs font-medium leading-4 text-left text-gray-500 bg-gray-100 border-b border-gray-200"
                   >
                     Status
                   </th>
                   <th
-                    class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase bg-gray-100 border-b border-gray-200"
+                    class="px-6 py-3 text-xs font-medium leading-4 text-left text-gray-500 bg-gray-100 border-b border-gray-200"
                   >
                     Role
                   </th>

@@ -1,12 +1,11 @@
 <template>
     <div class="relative mt-2 rounded-md shadow-sm">
-      <label class="text-xs capitalize">{{ label.replace(/_/g, " ") }} {{ required ? "*" : "" }}</label>
+      <label class="text-sm font-semibold capitalize text-slate-900">{{ label.replace(/_/g, " ") }} {{ required ? "*" : "" }}</label>
       <input
         v-model="inputValue"
         type="number"
         id="number-input"
         aria-describedby="helper-text-explanation"
-        min="0"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
         :required="required"
         @input="updateValue"

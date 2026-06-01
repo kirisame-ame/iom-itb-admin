@@ -1,280 +1,163 @@
 <template>
-  <div>
+  <div class="min-h-screen">
+    <Breadcrumb :breadcrumb="title" />
 
-    <!-- Modal -->
-    <ModalForm
-      v-if="isOpened"
-      :id="currentId"
-      :title="`${currentId ? 'Edit' : 'Add'} ${title}`"
-      :data="dataUpdate"
-      @close="handleModalClose"
-    />
-
-    <!-- Table -->
-    <div class="mt-8">
-
-      <div class="mt-6">
-        <h2 class="text-xl font-semibold leading-tight text-gray-700">{{ title }}</h2>
-
-        <div class="flex flex-col mt-3 sm:flex-row justify-between">
-          <div class="flex items-center">
-          <div class="flex">
-            <div class="relative">
-              <select
-                class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                v-model="limit"
-                @change="getData"
-              >
-                <option :value="5">5</option>
-                <option :value="10">10</option>
-                <option :value="20">20</option>
-                <option :value="1000">1000</option>
-              </select>
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                  />
-                </svg>
-              </div>
-            </div>
+    <div class="mt-8 space-y-5">
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
+        <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
+        <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
+        <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 class="text-2xl font-bold md:text-4xl">{{ title }}</h1>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Data pendaftar program Orangtua Asuh.</p>
           </div>
-
-          <div class="relative block mt-2 sm:mt-0">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-              <svg
-                viewBox="0 0 24 24"
-                class="w-4 h-4 text-gray-500 fill-current"
-              >
-                <path
-                  d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                />
-              </svg>
-            </span>
-
-            <input
-              placeholder="Search"
-              class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-              v-model="search"
-              @input="getData"
-            />
-          </div>
-        </div>
           <a
-            class="flex justify-between items-center gap-2 px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:bg-green-500"
             href="https://docs.google.com/spreadsheets/d/13w3FcIz4jjIBcf7DvG_83FmU8NBss_MkGt4lM7U6x6k/edit?usp=sharing"
             target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:bg-emerald-400 hover:shadow-xl sm:w-auto"
           >
-          Excel
-          <IcLink class="w-[18px]"/>
-        </a>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Spreadsheet
+          </a>
+        </div>
+      </section>
+
+      <section class="flex flex-wrap items-center gap-3">
+        <AppSelect
+          v-model="limit"
+          :options="limitOptions"
+          class="w-24"
+          @change="() => { page = 1; getData() }"
+        />
+
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+          </svg>
+          <input
+            v-model="search"
+            @input="onSearchInput"
+            placeholder="Cari..."
+            class="pl-9 pr-4 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg w-52 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all placeholder-slate-400"
+          />
         </div>
 
-        <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8">
-          <div
-            class="inline-block min-w-full overflow-hidden rounded-lg shadow"
-          >
-            <table class="min-w-full leading-normal">
-              <thead>
-                <tr>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    No
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Nama
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Nomor HP
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Pekerjaan
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Alamat
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Keterkaitan dengan ITB
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Bersedia memberikan dana setiap bulan sebesar (Rp)
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Untuk diberikan kepada (Jumlah anak asuh).
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Dana akan mulai diberikan (Tanggal)
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Selama: (Jumlah semester)
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Dana akan ditransfer ke rekening IOM setiap tanggal
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                  Saya tidak keberatan untuk berkomunikasi dengan anak asuh
-                  </th>
-                  <th
-                    class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                  >
-                    Tanggal Kirim
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-if="isLoading">
-                  <td colspan="20" class="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                    Loading...
-                  </td>
-                </tr>
-                <tr v-else v-for="(u, index) in computedData" :key="index">
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["no"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["Nama"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">{{ u?.["Nomor HP"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200 max-w-[200px]"
-                  >
-                    <p class="text-gray-900 break-words">{{ u?.["Pekerjaan"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-pre-line" style="word-wrap: break-word">{{ u?.["Alamat"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-pre-line" style="word-wrap: break-word">{{ u?.["Keterkaitan dengan ITB"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-pre-line" style="word-wrap: break-word">{{ formattedPrice(u?.["Bersedia memberikan dana setiap bulan sebesar (Rp):"]) }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-pre-line" style="word-wrap: break-word">{{ u?.["Jumlah anak asuh"] }}</p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ u?.["Dana akan mulai diberikan (Tanggal) :"] }}
-                    </p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ u?.["Selama: (Jumlah semester)"]}}
-                    </p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ u?.["Dana akan ditransfer ke rekening IOM setiap tanggal"]}}
-                    </p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ u?.["Saya tidak keberatan untuk berkomunikasi dengan anak asuh"] === "TRUE" ? "Bersedia" : "Tidak"}}
-                    </p>
-                  </td>
-                  <td
-                    class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                  >
-                    <p class="text-gray-900 whitespace-nowrap">
-                      {{ formatDate(u?.["Submitted at"]) }}
-                    </p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div
-              class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
-            >
-            <span class="text-xs text-gray-900 xs:text-sm"
-            >Showing {{ pagination?.start }} to {{ pagination?.end }} of {{ pagination?.totalEntries }}  Entries</span
-          >
+        <AppSelect
+          v-model="sortOrder"
+          :options="sortOptions"
+          class="w-32"
+          @change="() => { page = 1; getData() }"
+        />
+      </section>
 
-              <div class="inline-flex mt-2 xs:mt-0">
-                <button
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400"
-                    :disabled="page <= 1"
-                    @click="()=>{page = pagination?.currentPage - 1; getData()}"
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr class="bg-blue-900">
+                <th class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 w-10 whitespace-nowrap">No</th>
+                <th class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 whitespace-nowrap">Tanggal Kirim</th>
+                <th
+                  v-for="col in columns"
+                  :key="col"
+                  class="px-5 py-3.5 text-left text-sm font-semibold text-blue-100 whitespace-nowrap"
+                >
+                  {{ col }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-if="isLoading">
+                <tr v-for="i in limit" :key="i" class="border-b border-slate-100">
+                  <td v-for="c in columns.length + 2" :key="c" class="px-5 py-4">
+                    <div class="h-4 bg-slate-100 rounded animate-pulse w-full max-w-[140px]" />
+                  </td>
+                </tr>
+              </template>
+
+              <template v-else-if="!rows.length">
+                <tr>
+                  <td :colspan="columns.length + 2" class="px-5 py-12 text-center text-sm text-slate-400 italic">
+                    Tidak ada data ditemukan.
+                  </td>
+                </tr>
+              </template>
+
+              <template v-else>
+                <tr
+                  v-for="(row, idx) in rows"
+                  :key="row.id"
+                  class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors"
+                >
+                  <td class="px-5 py-4 text-sm text-slate-500 whitespace-nowrap">{{ pagination.start + idx }}.</td>
+                  <td class="px-5 py-4 text-sm text-slate-500 whitespace-nowrap">{{ formatDate(row.submittedAt) }}</td>
+                  <td
+                    v-for="col in columns"
+                    :key="col"
+                    class="px-5 py-4 text-sm text-slate-700 max-w-[260px]"
                   >
-                    Prev
-                  </button>
-                  <button
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400"
-                    :disabled="page >= pagination?.totalPages"
-                    @click="()=>{page = pagination?.currentPage + 1; getData()}"
-                  >
-                    Next
-                  </button>
-              </div>
-            </div>
+                    <a
+                      v-if="isUrl(row.payload?.answersByLabel?.[col])"
+                      :href="row.payload.answersByLabel[col]"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1 text-blue-600 hover:underline break-all"
+                    >
+                      Lihat
+                      <svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                    </a>
+                    <div v-else class="max-h-24 overflow-y-auto break-words whitespace-pre-wrap pr-1">{{ row.payload?.answersByLabel?.[col] ?? '' }}</div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-t border-slate-100">
+          <span class="text-xs text-slate-500">
+            Menampilkan
+            <span class="font-semibold text-slate-700">{{ pagination.start }}</span>
+            -
+            <span class="font-semibold text-slate-700">{{ pagination.end }}</span>
+            dari
+            <span class="font-semibold text-slate-700">{{ pagination.totalEntries }}</span>
+            entri
+          </span>
+
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-500">Halaman</span>
+            <input
+              type="number"
+              :min="1"
+              :max="pagination.totalPages || 1"
+              :value="page"
+              @change="e => jumpToPage((e.target as HTMLInputElement).value)"
+              class="w-14 px-2 py-1.5 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            />
+            <span class="text-xs text-slate-500">dari {{ pagination.totalPages || 1 }}</span>
+          </div>
+
+          <div class="flex gap-2">
+            <button
+              class="px-3.5 py-1.5 text-sm font-medium rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              :disabled="pagination.currentPage <= 1"
+              @click="() => { page = pagination.currentPage - 1; getData() }"
+            >
+              Sebelumnya
+            </button>
+            <button
+              class="px-3.5 py-1.5 text-sm font-medium rounded-lg border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              :disabled="pagination.currentPage >= pagination.totalPages"
+              @click="() => { page = pagination.currentPage + 1; getData() }"
+            >
+              Selanjutnya
+            </button>
           </div>
         </div>
       </div>
@@ -283,101 +166,84 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { GET_ORANGTUA_ASUH, DELETE_ORANGTUA_ASUH } from "@/store/orangtuaAsuh.module";
-import ModalForm from "../components/modal/FormMerchandise.vue";
-import { useStore } from 'vuex'; // Impor useStore dari Vuex
-import Swal from 'sweetalert2';
-import { formatDate, formattedPrice } from '@/utils';
-import IcLink from '@/assets/svg/ic-link.vue';
+import { ref, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { GET_ORANGTUA_ASUH } from '@/store/orangtuaAsuh.module'
+import Breadcrumb from '@/components/AppBreadcrumb.vue'
+import AppSelect from '@/components/input/AppSelect.vue'
 
-// Mengambil data tabel
-const store = useStore(); // Mengambil instance store
+const store = useStore()
 
-const isOpened = ref(false); 
-const isLoading = ref(true); 
-const dataUpdate = ref([]); 
-const currentId = ref(undefined); 
-const page = ref(1);
-const limit = ref(5);
-const search = ref(""); 
-const title = ref("Orangtua Asuh"); 
+const title      = 'Orangtua Asuh'
+const isLoading  = ref(true)
+const page       = ref(1)
+const limit      = ref(5)
+const search     = ref('')
+const sortOrder  = ref('DESC')
 
-const openModal = () => {
-  isOpened.value = true; // Open the modal
-};
+const limitOptions = [
+  { value: 5, label: '5' },
+  { value: 10, label: '10' },
+  { value: 20, label: '20' },
+  { value: 100, label: '100' },
+]
+const sortOptions = [
+  { value: 'DESC', label: 'Terbaru' },
+  { value: 'ASC', label: 'Terlama' },
+]
 
-const handleModalClose = async () => {
-  isOpened.value = false; // Close the modal
-  dataUpdate.value = [];
-  currentId.value = undefined
-  await getData();
-};
+const rows       = computed(() => store.getters['orangtuaAsuh/orangtuaAsuh'] ?? [])
+const pagination = computed(() => store.getters['orangtuaAsuh/orangtuaAsuhPagination'])
 
-// Contoh penggunaan computed
-const computedData = computed(() => {
-  const orangtuaAsuh = store.getters.orangtuaAsuh;
-  return orangtuaAsuh?.data || [];
-});
+const columns = computed<string[]>(() => {
+  const keys = new Set<string>()
+  for (const row of rows.value) {
+    for (const k of Object.keys(row.payload?.answersByLabel ?? {})) {
+      keys.add(k)
+    }
+  }
+  return Array.from(keys)
+})
 
-const pagination = computed(() => {
-  const orangtuaAsuh = store.getters.orangtuaAsuh;
-  return orangtuaAsuh?.pagination || [];
-});
+let searchDebounce: ReturnType<typeof setTimeout> | null = null
+function onSearchInput() {
+  if (searchDebounce) clearTimeout(searchDebounce)
+  searchDebounce = setTimeout(() => {
+    page.value = 1
+    getData()
+  }, 400)
+}
+
+function isUrl(val?: string): boolean {
+  return typeof val === 'string' && /^https?:\/\//.test(val)
+}
+
+function formatDate(iso?: string): string {
+  if (!iso) return '-'
+  return new Date(iso).toLocaleDateString('id-ID', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  })
+}
+
+function jumpToPage(val: string) {
+  const n = parseInt(val, 10)
+  const max = pagination.value.totalPages || 1
+  if (!isNaN(n)) {
+    page.value = Math.max(1, Math.min(n, max))
+    getData()
+  }
+}
 
 const getData = async () => {
-  const params = {
-    data:{
-      search: search.value,
-      limit: limit.value,
-      page: page.value,
-    } 
-  };
-  const data = await store.dispatch(GET_ORANGTUA_ASUH, params);
-  isLoading.value = false;
-  return data;
-};
+  isLoading.value = true
+  await store.dispatch(`orangtuaAsuh/${GET_ORANGTUA_ASUH}`, {
+    search: search.value || undefined,
+    limit: limit.value,
+    page: page.value,
+    sortOrder: sortOrder.value,
+  })
+  isLoading.value = false
+}
 
-// Contoh penggunaan onMounted
-onMounted(async () => {
-  await getData(); // Memanggil fungsi untuk mengambil data
-  console.log('Komponen telah dimount, data siap digunakan');
-});
-
-// Inside <script setup>
-const editItem = (item:any) => {
-  dataUpdate.value = { ...item }; // Copy current item's data to dataUpdate
-  currentId.value = item.id; 
-  isOpened.value = true; // Open the modal
-};
-
-const deleteItem = async (id: number) => {
-   await Swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
-  }).then(async (result) => {
-          if (result.isConfirmed) {
-            const params = { id: id };
-            try {
-              Swal.fire({
-                title: "Deleted!",
-                text: "Your item has been deleted.",
-                icon: "success",
-                confirmButtonColor: '#4CAF50',  // Change the color of the "OK" button
-                confirmButtonText: "OK"
-              }).then(async () => {
-                await getData();
-              });
-              await store.dispatch(DELETE_ORANGTUA_ASUH, params);
-            } catch (err) {
-              console.log(err);
-            }
-          }
-        });
-};
+onMounted(getData)
 </script>

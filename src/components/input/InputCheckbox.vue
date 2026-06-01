@@ -1,6 +1,6 @@
 <template>
   <div class="relative mt-2 rounded-md">
-    <label class="text-sm capitalize flex items-center space-x-2">
+    <label class="text-sm font-semibold capitalize text-slate-900 flex items-center space-x-2">
       <input
         type="checkbox"
         class="text-blue-500 rounded focus:ring-blue-500 focus:border-blue-500"

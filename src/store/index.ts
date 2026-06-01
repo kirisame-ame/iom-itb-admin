@@ -10,7 +10,13 @@ import pendataanAnggota from "./pendataanAnggota.module";
 import pengajuanBantuan from "./pengajuanBantuan.module";
 import orangtuaAsuh from "./orangtuaAsuh.module";
 import donasi from "./donasi.module";
+import fakultas from "./fakultas.module";
 import appSelector from "./appSelector.module";
+import kegiatanKemitraan from "./kegiatanKemitraan.module";
+import kemitraan from "./kemitraan.module";
+import dashboard from './dashboard.module';
+import paymentDashboard from "./paymentDashboard.module";
+import broadcast from "./broadcast.module";
 
 export default createStore({
   modules: {
@@ -25,6 +31,12 @@ export default createStore({
     pengajuanBantuan,
     orangtuaAsuh,
     donasi,
+    fakultas,
     appSelector,
+    kegiatanKemitraan,
+    kemitraan,
+    dashboard,
+    paymentDashboard,
+    broadcast,
   },
 });

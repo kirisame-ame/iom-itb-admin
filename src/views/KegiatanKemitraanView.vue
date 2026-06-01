@@ -1,0 +1,410 @@
+<template>
+  <div class="min-h-screen">
+    <Breadcrumb breadcrumb="kegiatan-kemitraan" />
+
+    <ModalForm
+      v-if="isOpened"
+      :id="currentId"
+      :title="`${currentId ? 'Edit' : 'Tambah'} Kegiatan Kemitraan`"
+      :data="dataUpdate"
+      @close="handleModalClose"
+    />
+
+    <div
+      v-if="isImageModalOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60"
+      @click="closeImageModal"
+    >
+      <img :src="selectedImage" alt="Gambar" class="max-w-full max-h-full rounded-md shadow-lg" />
+    </div>
+
+    <div class="mt-8 space-y-5">
+      <section class="relative overflow-hidden rounded-2xl bg-[#003793] p-4 text-white shadow-sm sm:p-6">
+        <div class="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white opacity-10"></div>
+        <div class="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-blue-300 opacity-10"></div>
+        <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 class="text-2xl font-bold md:text-4xl">Kegiatan Kemitraan</h1>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100">Daftar kegiatan yang terhubung dengan mitra institusi.</p>
+          </div>
+          <button
+            class="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#003793] shadow-lg transition-all hover:-translate-y-px hover:shadow-xl sm:w-auto"
+            @click="openModal"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+              <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+            </svg>
+            Tambah Kegiatan
+          </button>
+        </div>
+      </section>
+
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="grid gap-3 lg:grid-cols-5">
+          <div class="lg:col-span-3">
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Cari</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-2.5">
+                <svg viewBox="0 0 24 24" class="w-4 h-4 text-slate-400 fill-current">
+                  <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z" />
+                </svg>
+              </span>
+              <input
+                v-model="searchQuery"
+                @input="onSearch"
+                placeholder="Cari nama kegiatan..."
+                class="block w-full rounded-lg border border-slate-200 bg-white py-2 pl-8 pr-3 text-sm text-slate-700 placeholder-slate-400 transition-all focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              />
+            </div>
+          </div>
+
+          <div class="lg:col-span-1">
+            <label class="block mb-1.5 text-sm font-semibold text-slate-900">Status</label>
+            <AppSelect
+              v-model="statusFilter"
+              :options="statusFilterOptions"
+            />
+          </div>
+
+          <div class="rounded-xl bg-slate-50 px-4 py-3 lg:col-span-1">
+            <p class="text-sm font-semibold text-slate-500">Jadwal</p>
+            <p class="mt-1 text-sm text-slate-600">Pantau lokasi, periode, dan status kegiatan.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div v-for="card in kpiCards" :key="card.title" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p class="text-sm font-semibold text-slate-500">{{ card.title }}</p>
+          <p class="mt-3 text-2xl font-bold text-slate-900">{{ card.value }}</p>
+          <p class="mt-1 text-xs text-slate-500">{{ card.description }}</p>
+        </div>
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Daftar Kegiatan</h2>
+            <p class="mt-1 text-xs text-slate-500">Kegiatan kemitraan, lokasi, periode, dan status pelaksanaan.</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead>
+              <tr class="bg-blue-900">
+                <th class="px-4 py-3.5 text-sm font-semibold text-left text-blue-100">Gambar</th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Kegiatan" :active="sortPriority('name') > 0" :direction="sortDirectionFor('name')" :priority="sortPriority('name')" @click="toggleSort('name', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Mitra" :active="sortPriority('kemitraanName') > 0" :direction="sortDirectionFor('kemitraanName')" :priority="sortPriority('kemitraanName')" @click="toggleSort('kemitraanName', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Lokasi" :active="sortPriority('location') > 0" :direction="sortDirectionFor('location')" :priority="sortPriority('location')" @click="toggleSort('location', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Periode" :active="sortPriority('startDate') > 0" :direction="sortDirectionFor('startDate')" :priority="sortPriority('startDate')" @click="toggleSort('startDate', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-left">
+                  <SortButton label="Status" :active="sortPriority('status') > 0" :direction="sortDirectionFor('status')" :priority="sortPriority('status')" @click="toggleSort('status', $event)" />
+                </th>
+                <th class="px-4 py-3.5 text-sm font-semibold text-right text-blue-100">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-100">
+              <tr v-if="isLoading">
+                <td v-for="c in 7" :key="c" class="px-4 py-3">
+                  <div class="h-4 w-full max-w-[120px] animate-pulse rounded bg-slate-100"></div>
+                </td>
+              </tr>
+              <tr v-else-if="filteredData.length === 0">
+                <td colspan="7" class="px-5 py-12 text-sm text-center text-slate-400 italic">Belum ada kegiatan.</td>
+              </tr>
+              <tr
+                v-else
+                v-for="(k, index) in filteredData"
+                :key="k.id || index"
+                class="transition-colors hover:bg-blue-50/40"
+              >
+                <td class="px-4 py-3 align-middle">
+                  <img
+                    v-if="k?.image"
+                    :src="k.image"
+                    alt="gambar"
+                    class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer shadow-sm hover:opacity-80"
+                    @click="openImageModal(k.image)"
+                  />
+                  <div
+                    v-else
+                    class="flex items-center justify-center w-10 h-10 text-xs text-slate-400 bg-slate-100 border border-slate-200 rounded-lg"
+                  >
+                    —
+                  </div>
+                </td>
+                <td class="px-4 py-3 align-middle">
+                  <p class="font-semibold text-slate-900 whitespace-nowrap">{{ k?.name || '-' }}</p>
+                  <p v-if="k?.description" class="max-w-xs mt-0.5 text-xs text-slate-500 truncate" :title="k.description">{{ k.description }}</p>
+                </td>
+                <td class="px-4 py-3 align-middle">
+                  <span class="text-slate-700 whitespace-nowrap">{{ k?.kemitraan?.name || '-' }}</span>
+                </td>
+                <td class="px-4 py-3 text-slate-600 align-middle whitespace-nowrap">{{ k?.location || '-' }}</td>
+                <td class="px-4 py-3 align-middle whitespace-nowrap">
+                  <p class="text-slate-900">{{ formatDate(k?.startDate) }}</p>
+                  <p class="text-xs text-slate-500">s/d {{ formatDate(k?.endDate) }}</p>
+                </td>
+                <td class="px-4 py-3 align-middle">
+                  <span :class="statusClass(k?.status)" class="inline-block px-2 py-0.5 text-xs font-medium rounded-full">
+                    {{ statusLabel(k?.status) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-right align-middle whitespace-nowrap">
+                  <button class="mr-2 rounded-lg bg-blue-50 px-2.5 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100" @click="editItem(k)">Edit</button>
+                  <button class="rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100" @click="deleteItem(k.id)">Hapus</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import {
+  GET_KEGIATAN_KEMITRAAN,
+  DELETE_KEGIATAN_KEMITRAAN,
+} from '@/store/kegiatanKemitraan.module';
+import ModalForm from '../components/modal/FormKegiatanKemitraan.vue';
+import { useStore } from 'vuex';
+import Breadcrumb from '../components/AppBreadcrumb.vue';
+import { confirmDelete, errorAlert, successAlert } from '@/utils/swal';
+import AppSelect from '@/components/input/AppSelect.vue';
+import type { EntityId, KegiatanKemitraan } from '@/types/domain';
+import SortButton from '@/components/table/SortButton.vue';
+
+type SortDirection = 'asc' | 'desc';
+type KegiatanSortKey = 'name' | 'kemitraanName' | 'location' | 'startDate' | 'status';
+type SortRule = {
+  key: KegiatanSortKey;
+  direction: SortDirection;
+};
+
+const store = useStore();
+
+const isOpened = ref(false);
+const dataUpdate = ref<Partial<KegiatanKemitraan>>({});
+const currentId = ref<EntityId | undefined>(undefined);
+const isImageModalOpen = ref(false);
+const selectedImage = ref('');
+const searchQuery = ref('');
+const statusFilter = ref('');
+const isLoading = ref(true);
+const sortRules = ref<SortRule[]>([{ key: 'startDate', direction: 'desc' }]);
+const statusFilterOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'planned', label: 'Direncanakan' },
+  { value: 'ongoing', label: 'Berlangsung' },
+  { value: 'completed', label: 'Selesai' },
+  { value: 'cancelled', label: 'Dibatalkan' },
+];
+
+const openModal = () => {
+  dataUpdate.value = {};
+  currentId.value = undefined;
+  isOpened.value = true;
+};
+
+const handleModalClose = async () => {
+  isOpened.value = false;
+  dataUpdate.value = {};
+  currentId.value = undefined;
+  await getData();
+};
+
+const computedData = computed<KegiatanKemitraan[]>(() => {
+  const list = store.getters.kegiatanKemitraan;
+  return Array.isArray(list) ? list : list?.data || [];
+});
+
+const filteredData = computed(() => {
+  const items = computedData.value.filter((k) => !statusFilter.value || k?.status === statusFilter.value);
+  return [...items].sort((a, b) => compareKegiatan(a, b, sortRules.value));
+});
+
+const kpiCards = computed(() => {
+  const items = filteredData.value;
+  const planned = items.filter((item) => item?.status === 'planned').length;
+  const ongoing = items.filter((item) => item?.status === 'ongoing').length;
+  const completed = items.filter((item) => item?.status === 'completed').length;
+
+  return [
+    {
+      title: 'Total Kegiatan',
+      value: String(items.length),
+      description: 'Kegiatan yang tampil pada daftar',
+    },
+    {
+      title: 'Direncanakan',
+      value: String(planned),
+      description: 'Kegiatan yang masih dalam rencana',
+    },
+    {
+      title: 'Berjalan',
+      value: String(ongoing),
+      description: 'Kegiatan yang sedang berlangsung',
+    },
+    {
+      title: 'Selesai',
+      value: String(completed),
+      description: 'Kegiatan yang sudah selesai',
+    },
+  ];
+});
+
+const getData = async () => {
+  isLoading.value = true;
+  try {
+    await store.dispatch(GET_KEGIATAN_KEMITRAAN, {
+      data: { limit: 100, search: searchQuery.value || undefined },
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+const onSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(getData, 350);
+};
+
+const normalizeText = (value: unknown) => String(value ?? '').toLowerCase();
+
+const normalizeDate = (value: unknown) => {
+  if (!value) return 0;
+  const timestamp = new Date(String(value)).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const compareValue = (left: string | number, right: string | number) => {
+  if (typeof left === 'number' && typeof right === 'number') return left - right;
+  return String(left).localeCompare(String(right), 'id', { numeric: true, sensitivity: 'base' });
+};
+
+const compareKegiatan = (
+  left: KegiatanKemitraan,
+  right: KegiatanKemitraan,
+  rules: SortRule[],
+) => {
+  const getValue = (item: KegiatanKemitraan, key: KegiatanSortKey) => {
+    if (key === 'startDate') return normalizeDate(item?.startDate);
+    if (key === 'kemitraanName') return normalizeText(item?.kemitraan?.name);
+    return normalizeText(item?.[key]);
+  };
+
+  for (const rule of rules) {
+    const result = compareValue(getValue(left, rule.key), getValue(right, rule.key));
+    if (result !== 0) {
+      return result * (rule.direction === 'asc' ? 1 : -1);
+    }
+  }
+
+  return 0;
+};
+
+const defaultSortDirection = (key: KegiatanSortKey): SortDirection =>
+  key === 'startDate' ? 'desc' : 'asc';
+
+const sortPriority = (key: KegiatanSortKey) => {
+  const index = sortRules.value.findIndex((rule) => rule.key === key);
+  return index === -1 ? 0 : index + 1;
+};
+
+const sortDirectionFor = (key: KegiatanSortKey): SortDirection => {
+  return sortRules.value.find((rule) => rule.key === key)?.direction || defaultSortDirection(key);
+};
+
+const toggleSort = (key: KegiatanSortKey, event?: MouseEvent) => {
+  const currentRule = sortRules.value.find((rule) => rule.key === key);
+  const nextRule: SortRule = {
+    key,
+    direction: currentRule?.direction === 'asc' ? 'desc' : 'asc',
+  };
+
+  if (event?.shiftKey) {
+    sortRules.value = currentRule
+      ? sortRules.value.map((rule) => (rule.key === key ? nextRule : rule))
+      : [...sortRules.value, { key, direction: defaultSortDirection(key) }];
+    return;
+  }
+
+  sortRules.value = currentRule ? [nextRule] : [{ key, direction: defaultSortDirection(key) }];
+};
+
+onMounted(getData);
+
+const openImageModal = (imageUrl: string) => {
+  selectedImage.value = imageUrl;
+  isImageModalOpen.value = true;
+};
+const closeImageModal = () => {
+  isImageModalOpen.value = false;
+};
+
+const formatDate = (dateString?: string) => {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  return `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+};
+
+const statusLabels: Record<string, string> = {
+  planned: 'Direncanakan',
+  ongoing: 'Berlangsung',
+  completed: 'Selesai',
+  cancelled: 'Dibatalkan',
+};
+
+const statusLabel = (status?: string) => {
+  if (!status) return '—';
+  return statusLabels[status.toLowerCase()] || status;
+};
+
+const statusClass = (status?: string) => {
+  switch ((status || '').toLowerCase()) {
+    case 'ongoing':
+      return 'bg-blue-100 text-blue-700';
+    case 'completed':
+      return 'bg-green-100 text-green-700';
+    case 'planned':
+      return 'bg-yellow-100 text-yellow-700';
+    case 'cancelled':
+      return 'bg-red-100 text-red-700';
+    default:
+      return 'bg-slate-100 text-slate-600';
+  }
+};
+
+const editItem = (item: KegiatanKemitraan) => {
+  dataUpdate.value = { ...item };
+  currentId.value = item.id;
+  isOpened.value = true;
+};
+
+const deleteItem = async (id: EntityId) => {
+  const result = await confirmDelete();
+  if (!result.isConfirmed) return;
+  try {
+    await store.dispatch(DELETE_KEGIATAN_KEMITRAAN, { id });
+    await successAlert('Kegiatan telah dihapus.');
+    await getData();
+  } catch (err) {
+    await errorAlert(err instanceof Error ? err.message : 'Gagal menghapus kegiatan.');
+  }
+};
+</script>

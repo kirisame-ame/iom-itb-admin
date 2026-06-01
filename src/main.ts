@@ -24,6 +24,8 @@ async function bootstrap() {
 		} catch (error) {
 			console.error("Auth initialization failed", error);
 		}
+	} else {
+		store.commit('appSelector/setSelectedRole', { id: 'admin', name: 'Admin', description: 'Administrator' });
 	}
 
 	const app = createApp(App);

@@ -160,6 +160,17 @@ interface ApiError {
 
 type KegiatanKemitraanFormValue = string | number | File | null | undefined;
 
+interface KegiatanFormData {
+  kemitraanId: string | number;
+  name?: string;
+  description?: string;
+  location?: string;
+  status: string;
+  startDate?: string;
+  endDate?: string;
+  image?: string | File | null;
+}
+
 const toInputDate = (value: unknown) => {
   if (!value) return "";
   const date = new Date(String(value));
@@ -230,7 +241,7 @@ export default defineComponent({
         kemitraanId: props.data?.kemitraanId ? Number(props.data.kemitraanId) : "",
         startDate: toInputDate(props.data?.startDate),
         endDate: toInputDate(props.data?.endDate),
-      } as Record<string, unknown>,
+      } as KegiatanFormData,
     });
 
     const imagePreview = computed(() => {
@@ -241,6 +252,16 @@ export default defineComponent({
     const onImageChange = (event: Event) => {
       const input = event.target as HTMLInputElement;
       const file = input.files?.[0] || null;
+      if (file) {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (!['jpg', 'jpeg', 'png'].includes(ext || '')) {
+          showError('Format tidak valid', 'Gambar hanya mendukung format JPG, JPEG, atau PNG.');
+          input.value = '';
+          imageFile.value = null;
+          imagePreviewLocal.value = '';
+          return;
+        }
+      }
       imageFile.value = file;
       if (!file) {
         imagePreviewLocal.value = "";

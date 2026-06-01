@@ -182,6 +182,15 @@ export default defineComponent({
     const onLogoChange = (e: Event) => {
       const input = e.target as HTMLInputElement;
       const file = input.files?.[0] || null;
+      if (file) {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (!['jpg', 'jpeg', 'png'].includes(ext || '')) {
+          showError('Format tidak valid', 'Logo hanya mendukung format JPG, JPEG, atau PNG.');
+          input.value = '';
+          logoFile.value = null;
+          return;
+        }
+      }
       logoFile.value = file;
       if (file) {
         const reader = new FileReader();
@@ -189,9 +198,20 @@ export default defineComponent({
         reader.readAsDataURL(file);
       }
     };
+
     const onMouChange = (e: Event) => {
       const input = e.target as HTMLInputElement;
       const file = input.files?.[0] || null;
+      if (file) {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (ext !== 'pdf') {
+          showError('Format tidak valid', 'Dokumen MoU hanya mendukung format PDF.');
+          input.value = '';
+          mouFile.value = null;
+          mouName.value = '';
+          return;
+        }
+      }
       mouFile.value = file;
       mouName.value = file?.name || '';
     };

@@ -209,6 +209,7 @@ const setLink = () => {
     showCancelButton: true,
     confirmButtonText: 'Set',
     confirmButtonColor: '#2563eb',
+    cancelButtonColor: '#6b7280',
     cancelButtonText: 'Batal',
   }).then(result => {
     if (result.isConfirmed) {
@@ -240,6 +241,7 @@ const addImage = () => {
     showCancelButton: true,
     confirmButtonText: 'Tambah',
     confirmButtonColor: '#2563eb',
+    cancelButtonColor: '#6b7280',
     cancelButtonText: 'Batal',
     preConfirm: async () => {
       const file = (document.getElementById('swal-img-file') as HTMLInputElement)?.files?.[0];
@@ -259,22 +261,57 @@ const addImage = () => {
   });
 };
 
+const getYoutubeVideoId = (value: string) => {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+
+  try {
+    const hasProtocol = /^https?:\/\//i.test(trimmed);
+    const url = new URL(hasProtocol ? trimmed : `https://${trimmed}`);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '').replace(/^m\./, '');
+    const segments = url.pathname.split('/').filter(Boolean);
+    let videoId: string | null = null;
+
+    if (host === 'youtu.be') {
+      videoId = segments[0] || null;
+    } else if (host === 'youtube.com') {
+      if (url.pathname === '/watch') {
+        videoId = url.searchParams.get('v');
+      } else if (['live', 'embed'].includes(segments[0])) {
+        videoId = segments[1] || null;
+      }
+    }
+
+    return videoId && /^[A-Za-z0-9_-]{11}$/.test(videoId) ? videoId : null;
+  } catch {
+    return null;
+  }
+};
+
+const normalizeYoutubeUrl = (value: string) => {
+  const videoId = getYoutubeVideoId(value);
+  return videoId ? `https://www.youtube.com/watch?v=${videoId}` : null;
+};
+
 const addYoutube = () => {
   Swal.fire({
     title: 'Tambah Video YouTube',
     input: 'text',
-    inputPlaceholder: 'https://youtube.com/watch?v=...',
+    inputPlaceholder: 'https://youtube.com/watch?v=... atau https://youtube.com/live/...',
     showCancelButton: true,
     confirmButtonText: 'Tambah',
     confirmButtonColor: '#2563eb',
+    cancelButtonColor: '#6b7280',
     cancelButtonText: 'Batal',
     inputValidator: (value) => {
-      const regex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/;
-      if (!regex.test(value)) return 'URL YouTube tidak valid';
+      if (!normalizeYoutubeUrl(value)) return 'URL YouTube tidak valid';
     }
   }).then(result => {
     if (result.isConfirmed) {
-      editor.value?.chain().focus().setYoutubeVideo({ src: result.value }).run();
+      const normalizedUrl = normalizeYoutubeUrl(result.value);
+      if (normalizedUrl) {
+        editor.value?.chain().focus().setYoutubeVideo({ src: normalizedUrl }).run();
+      }
     }
   });
 };

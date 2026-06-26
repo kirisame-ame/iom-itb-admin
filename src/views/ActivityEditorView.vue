@@ -334,6 +334,17 @@ const formatUpdatedAt = (dateStr: string) => {
   });
 };
 
+const getJakartaDateString = () => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jakarta',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const dateParts = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+};
+
 const handleTitleInput = () => {
   if (form.value.status !== 'published') {
     form.value.url = generateSlug(form.value.title);
@@ -357,7 +368,7 @@ const saveData = async () => {
     if (!activityId.value) {
       // Buat baru
       const result = await store.dispatch(POST_ACTIVITY, {
-        data: { ...form.value, date: new Date().toISOString().split('T')[0], status: 'draft' }
+        data: { ...form.value, date: getJakartaDateString(), status: 'draft' }
       });
       activityId.value = result.id;
       lastUpdated.value = formatUpdatedAt(result.updatedAt);
@@ -430,7 +441,6 @@ const publish = async () => {
       data: {
         ...form.value,
         status: 'published',
-        date: new Date().toISOString().split('T')[0],
         contributors: form.value.contributors.filter(c => c.trim()), // ✅ buang yang kosong
       }
     });

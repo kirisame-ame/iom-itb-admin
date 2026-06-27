@@ -33,7 +33,7 @@
 
         <div class="flex-1 flex flex-col justify-center gap-6">
           <div>
-            <h1 class="font-[800] text-[28px] md:text-[38px] leading-tight mb-4" style="color: #003793;">
+            <h1 class="font-[800] text-[28px] md:text-[38px] leading-tight mb-4 article-copy" style="color: #003793;">
               {{ activity.title }}
             </h1>
             <div v-if="activity.tags?.length > 0" class="flex flex-wrap gap-2 mb-4">
@@ -93,23 +93,25 @@
           </div>
         </div>
 
-        <div class="flex-1 min-w-0">
+        <div class="flex-1 min-w-0 w-full">
           <div
             v-if="activity.description"
-            class="activity-content mb-8"
+            class="activity-content mx-auto mb-8"
             v-html="activity.description"
           />
 
-          <button
-            @click="closeWindow"
-            class="inline-flex items-center gap-2 px-4 py-2 text-[16px] font-medium text-white rounded-full hover:opacity-80 transition-opacity"
-            style="background-color: #003793;"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Tutup Preview
-          </button>
+          <div class="article-actions mx-auto">
+            <button
+              @click="closeWindow"
+              class="inline-flex items-center gap-2 px-4 py-2 text-[16px] font-medium text-white rounded-full hover:opacity-80 transition-opacity"
+              style="background-color: #003793;"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+              Tutup Preview
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -160,14 +162,30 @@ onMounted(async () => {
 <style scoped>
 .activity-content {
   max-width: 760px;
+  width: 100%;
   color: #1f2937;
   font-size: 16px;
   line-height: 1.75;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.article-actions {
+  max-width: 760px;
+  width: 100%;
+}
+.article-copy {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 @media (min-width: 768px) {
   .activity-content {
     font-size: 17px;
   }
+}
+.activity-content :deep(*) {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .activity-content :deep(p) { margin-bottom: 1.1rem; }
 .activity-content :deep(h1),

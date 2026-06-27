@@ -363,6 +363,13 @@ onBeforeUnmount(() => {
   line-height: 1.7;
   outline: none;
   font-size: 16px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.tiptap-editor .ProseMirror * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .tiptap-editor .ProseMirror p { margin-bottom: 1rem; }
 .tiptap-editor .ProseMirror h1 { font-size: 1.75rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
